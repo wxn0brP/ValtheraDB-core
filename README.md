@@ -1,5 +1,17 @@
-# ValtheraDB Core
+# @wxn0brp/db-core
 
-This is the core library for [ValtheraDB](https://github.com/wxn0brp/ValtheraDB)
+Core library for [ValtheraDB](https://github.com/wxn0brp/ValtheraDB).
 
-It is `not recommended` to install this module separately unless you plan to create your own ValtheraDB adapter
+## ⚠️ Disclaimer
+
+It is **not recommended** to install this module separately unless you plan to create your own ValtheraDB adapter.
+
+## Installation
+
+```bash
+npm install @wxn0brp/db-core
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -7,7 +7,7 @@ import Data from "../types/data";
 import FileCpu from "../types/fileCpu";
 import { DbOpts } from "../types/options";
 import { VQuery } from "../types/query";
-import { compareSafe } from "../utils/sort";
+import { findUtil } from "../utils/action";
 
 export class MemoryAction extends dbActionBase {
     folder: string;
@@ -77,35 +77,9 @@ export class MemoryAction extends dbActionBase {
     /**
      * Find entries in the specified database based on search criteria.
      */
-    async find({ collection, search, context = {}, dbFindOpts = {}, findOpts = {} }: VQuery) {
-        const {
-            reverse = false,
-            max = -1,
-            offset = 0,
-            sortBy,
-            sortAsc = true
-        } = dbFindOpts;
-
-        await this.checkCollection(arguments[0]);
-
-        let data = await this.fileCpu.find(collection, search, context, findOpts) as Data[];
-
-        if (reverse) data.reverse();
-
-        if (sortBy) {
-            const dir = sortAsc ? 1 : -1;
-            data.sort((a, b) => compareSafe(a[sortBy], b[sortBy]) * dir);
-        }
-
-        if (offset > 0) {
-            if (data.length <= offset) return [];
-            data = data.slice(offset);
-        }
-
-        if (max !== -1 && data.length > max) {
-            data = data.slice(0, max);
-        }
-
+    async find(query: VQuery) {
+        await this.checkCollection(query);
+        const data = await findUtil(query, this.fileCpu, [query.collection]);
         return data;
     }
 
@@ -165,7 +139,7 @@ export default class ValtheraMemory extends ValtheraClass {
     }
 }
 
-export function createMemoryValthera<T = { [key: string]: Data[] }>(data?: T) {
+export function createMemoryValthera<T extends Record<string, Data[]>>(data?: T) {
     const db = new ValtheraMemory();
     if (!data) return db;
 

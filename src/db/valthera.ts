@@ -75,49 +75,49 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Find data in a database.
      */
-    async find<T = Data>(collection: string, search: Search, context: VContext = {}, dbFindOpts: DbFindOpts = {}, findOpts: FindOpts = {}) {
+    async find<T = Data>(collection: string, search: Search<T>, context: VContext = {}, dbFindOpts: DbFindOpts<T> = {}, findOpts: FindOpts<T> = {}) {
         return await this.execute<T[]>("find", { collection, search, context, dbFindOpts, findOpts });
     }
 
     /**
      * Find one data entry in a database.
      */
-    async findOne<T = Data>(collection: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}) {
+    async findOne<T = Data>(collection: string, search: Search<T>, context: VContext = {}, findOpts: FindOpts = {}) {
         return await this.execute<T | null>("findOne", { collection, search, context, findOpts });
     }
 
     /**
      * Update data in a database.
      */
-    async update(collection: string, search: Search, updater: Updater, context = {}) {
+    async update<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context = {}) {
         return await this.execute<boolean>("update", { collection, search, updater, context });
     }
 
     /**
      * Update one data entry in a database.
      */
-    async updateOne(collection: string, search: Search, updater: Updater, context: VContext = {}) {
+    async updateOne<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context: VContext = {}) {
         return await this.execute<boolean>("updateOne", { collection, search, updater, context });
     }
 
     /**
      * Remove data from a database.
      */
-    async remove(collection: string, search: Search, context: VContext = {}) {
+    async remove<T = Data>(collection: string, search: Search<T>, context: VContext = {}) {
         return await this.execute<boolean>("remove", { collection, search, context });
     }
 
     /**
      * Remove one data entry from a database.
      */
-    async removeOne(collection: string, search: Search, context: VContext = {}) {
+    async removeOne<T = Data>(collection: string, search: Search<T>, context: VContext = {}) {
         return await this.execute<boolean>("removeOne", { collection, search, context });
     }
 
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    async updateOneOrAdd(collection: string, search: Search, updater: Updater, add_arg: Arg = {}, context: VContext = {}, id_gen: boolean = true) {
+    async updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, add_arg: Arg = {}, context: VContext = {}, id_gen: boolean = true) {
         return await this.execute<boolean>("updateOneOrAdd", { collection, search, updater, add_arg, context, id_gen });
     }
 

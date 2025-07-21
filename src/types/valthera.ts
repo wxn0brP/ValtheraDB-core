@@ -11,14 +11,14 @@ export interface ValtheraCompatible {
     checkCollection(collection: string): Promise<boolean>;
     issetCollection(collection: string): Promise<boolean>;
     add<T = Data>(collection: string, data: Arg, id_gen?: boolean): Promise<T>;
-    find<T = Data>(collection: string, search: Search, context?: VContext, options?: DbFindOpts, findOpts?: FindOpts): Promise<T[]>;
-    findOne<T = Data>(collection: string, search: Search, context?: VContext, findOpts?: FindOpts): Promise<T | null>;
-    update(collection: string, search: Search, updater: Updater, context?: VContext): Promise<boolean>;
-    updateOne(collection: string, search: Search, updater: Updater, context?: VContext): Promise<boolean>;
-    remove(collection: string, search: Search, context?: VContext): Promise<boolean>;
-    removeOne(collection: string, search: Search, context?: VContext): Promise<boolean>;
+    find<T = Data>(collection: string, search: Search<T>, context?: VContext, options?: DbFindOpts, findOpts?: FindOpts): Promise<T[]>;
+    findOne<T = Data>(collection: string, search: Search<T>, context?: VContext, findOpts?: FindOpts): Promise<T | null>;
+    update<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context?: VContext): Promise<boolean>;
+    updateOne<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context?: VContext): Promise<boolean>;
+    remove<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
+    removeOne<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
     removeCollection(collection: string): Promise<boolean>;
-    updateOneOrAdd(collection: string, search: Search, updater: Updater, add_arg?: Arg, context?: VContext, id_gen?: boolean): Promise<boolean>;
+    updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, add_arg?: Arg<T>, context?: VContext, id_gen?: boolean): Promise<boolean>;
 }
 
 export interface ValtheraCompatibleInternal {

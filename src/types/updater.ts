@@ -2,32 +2,34 @@
  * Predefined type for updating data.
  */
 
+import { Arg } from "./arg";
+import { PartialOfType } from "./utils";
+
 /** Arrays */
-export type ArrayUpdater = {
-    $push?: any,
+export type ArrayUpdater<T=any> = {
+    $push?: PartialOfType<T, any>,
     /** Pushes items into an array and removes duplicates */
-    $pushset?: any,
-    $pull?: any,
-    $pullall?: any,
+    $pushset?: PartialOfType<T, any>,
+    $pull?: PartialOfType<T, any>,
+    $pullall?: PartialOfType<T, any>,
 }
 
 /** Objects */
-export type ObjectUpdater = {
-    $merge?: any,
+export type ObjectUpdater<T=any> = {
+    $merge?: PartialOfType<T, any[]>,
 }
 
 /** Values */
-export type ValueUpdater = {
-    $set?: any,
-    $inc?: any,
-    $dec?: any,
-    $unset?: any,
-    $rename?: any,
+export type ValueUpdater<T=any> = {
+    $inc?: PartialOfType<T, number>,
+    $dec?: PartialOfType<T, number>,
+    $unset?: PartialOfType<T, any>,
+    $rename?: PartialOfType<T, any>,
 }
 
 
-export type UpdaterArg =
-    ArrayUpdater &
-    ObjectUpdater &
-    ValueUpdater &
-    { [key: string]: any };
+export type UpdaterArg<T=any> =
+    ArrayUpdater<T> &
+    ObjectUpdater<T> &
+    ValueUpdater<T> &
+    Arg<T>;

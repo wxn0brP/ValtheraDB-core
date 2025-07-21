@@ -109,7 +109,7 @@ async function processRelations(
             const [selectSafe, deleteSelect] = autoSelect(rel, fk);
             const results = await db.find(coll, { $in: { [fk]: ids } }, {}, findOpts || {}, { select: selectSafe });
 
-            const grouped = results.reduce((acc, row) => {
+            const grouped = results.reduce((acc: any, row: any) => {
                 const id = row[fk];
                 (acc[id] ||= []).push(row);
                 return acc;

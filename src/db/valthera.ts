@@ -68,7 +68,7 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Add data to a database.
      */
-    async add<T = Data>(collection: string, data: Arg, id_gen: boolean = true) {
+    async add<T = Data>(collection: string, data: Arg<T>, id_gen: boolean = true) {
         return await this.execute<T>("add", { collection, data, id_gen });
     }
 
@@ -82,7 +82,7 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Find one data entry in a database.
      */
-    async findOne<T = Data>(collection: string, search: Search<T>, context: VContext = {}, findOpts: FindOpts = {}) {
+    async findOne<T = Data>(collection: string, search: Search<T>, context: VContext = {}, findOpts: FindOpts<T> = {}) {
         return await this.execute<T | null>("findOne", { collection, search, context, findOpts });
     }
 

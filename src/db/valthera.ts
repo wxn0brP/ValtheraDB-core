@@ -75,14 +75,14 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Find data in a database.
      */
-    async find<T = Data>(collection: string, search: Search<T>, context: VContext = {}, dbFindOpts: DbFindOpts<T> = {}, findOpts: FindOpts<T> = {}) {
+    async find<T = Data>(collection: string, search: Search<T> = {}, context: VContext = {}, dbFindOpts: DbFindOpts<T> = {}, findOpts: FindOpts<T> = {}) {
         return await this.execute<T[]>("find", { collection, search, context, dbFindOpts, findOpts });
     }
 
     /**
      * Find one data entry in a database.
      */
-    async findOne<T = Data>(collection: string, search: Search<T>, context: VContext = {}, findOpts: FindOpts<T> = {}) {
+    async findOne<T = Data>(collection: string, search: Search<T> = {}, context: VContext = {}, findOpts: FindOpts<T> = {}) {
         return await this.execute<T | null>("findOne", { collection, search, context, findOpts });
     }
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.0.6...v0.0.7) (2025-07-21)
+
+
+### Features
+
+* make search optional on find and findOne (ValtheraClass) ([53c55f9](https://github.com/wxn0brP/ValtheraDB-core/commit/53c55f968eee45ab4da8f7b4f975518d05bdbcb1))
+
 ### [0.0.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.0.5...v0.0.6) (2025-07-21)
 
 

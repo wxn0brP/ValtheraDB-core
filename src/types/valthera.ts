@@ -8,7 +8,7 @@ import { VContext } from "./types";
 export interface ValtheraCompatible {
     c(collection: string): CollectionManager;
     getCollections(): Promise<string[]>;
-    checkCollection(collection: string): Promise<boolean>;
+    ensureCollection(collection: string): Promise<boolean>;
     issetCollection(collection: string): Promise<boolean>;
     add<T = Data>(collection: string, data: Arg<T>, id_gen?: boolean): Promise<T>;
     find<T = Data>(collection: string, search: Search<T>, context?: VContext, options?: DbFindOpts<T>, findOpts?: FindOpts<T>): Promise<T[]>;
@@ -24,7 +24,7 @@ export interface ValtheraCompatible {
 export interface ValtheraCompatibleInternal {
     c(config: VQuery): CollectionManager;
     getCollections(): Promise<string[]>;
-    checkCollection(config: VQuery): Promise<boolean>;
+    ensureCollection(config: VQuery): Promise<boolean>;
     issetCollection(config: VQuery): Promise<boolean>;
     add<T = Data>(config: VQuery): Promise<T>;
     find<T = Data>(config: VQuery): Promise<T[]>;

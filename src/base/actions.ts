@@ -2,13 +2,16 @@ import { setDataUsingUpdateOneOrAdd } from "../helpers/updateOneOrAdd";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
 
-class dbActionBase {
+class ActionsBase {
+    _inited: boolean = true;
+    async init(...args: any[]) {}
+
     async getCollections() {
         throw new Error("Not implemented");
         return [] as string[];
     }
 
-    async checkCollection(config: VQuery) {
+    async ensureCollection(config: VQuery) {
         throw new Error("Not implemented");
         return false;
     }
@@ -68,4 +71,4 @@ class dbActionBase {
     }
 }
 
-export default dbActionBase;
+export default ActionsBase;

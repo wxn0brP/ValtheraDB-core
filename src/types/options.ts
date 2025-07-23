@@ -1,10 +1,10 @@
-import dbActionBase from "../base/actions";
+import ActionsBase from "../base/actions";
 import executorC from "../helpers/executor";
 import { KeysMatching } from "./utils";
 
 export interface DbOpts {
     maxFileSize?: number;
-    dbAction?: dbActionBase;
+    dbAction?: ActionsBase;
     executor?: executorC;
 }
 

@@ -1,7 +1,7 @@
 
 import { version } from "../version";
 import { UniversalEventEmitter } from "../helpers/eventEmiter";
-import dbActionBase from "../base/actions";
+import ActionsBase from "../base/actions";
 import CollectionManager from "../helpers/CollectionManager";
 import executorC from "../helpers/executor";
 import { Arg, Search, Updater } from "../types/arg";
@@ -11,7 +11,7 @@ import { VContext } from "../types/types";
 import { ValtheraCompatible } from "../types/valthera";
 
 type DbActionsFns = keyof {
-    [K in keyof dbActionBase as dbActionBase[K] extends (...args: any[]) => any ? K : never]: any;
+    [K in keyof ActionsBase as ActionsBase[K] extends (...args: any[]) => any ? K : never]: any;
 }
 
 /**
@@ -19,21 +19,32 @@ type DbActionsFns = keyof {
  * @class
  */
 class ValtheraClass implements ValtheraCompatible {
-    dbAction: dbActionBase;
+    dbAction: ActionsBase;
     executor: executorC;
     emiter: UniversalEventEmitter;
     version = version;
 
     constructor(options: DbOpts = {}) {
-        this.dbAction = options.dbAction || new dbActionBase();
+        this.dbAction = options.dbAction || new ActionsBase();
         this.executor = options.executor || new executorC();
         this.emiter = new UniversalEventEmitter();
     }
 
+    async init(...args: any[]) {
+        if (this.dbAction._inited) return;
+        const self = this;
+        return await this.executor.addOp(async () => {
+            if (self.dbAction._inited) return;
+            await self.dbAction.init(...args);
+            self.dbAction._inited = true;
+        });
+    }
+
     private async execute<T>(name: DbActionsFns, ...args: any[]) {
+        await this.init();
         const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), ...args) as T;
-        if (this.emiter.listenerCount(name) !== 0) this.emiter.emit(name, args, result);
-        if (this.emiter.listenerCount("*") !== 0) this.emiter.emit("*", name, args, result);
+        this.emiter.emit(name, args, result);
+        this.emiter.emit("*", name, args, result);
         return result;
     }
 
@@ -54,8 +65,8 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Check and create the specified collection if it doesn't exist.
      */
-    async checkCollection(collection: string) {
-        return await this.execute<boolean>("checkCollection", { collection });
+    async ensureCollection(collection: string) {
+        return await this.execute<boolean>("ensureCollection", { collection });
     }
 
     /**

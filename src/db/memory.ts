@@ -1,18 +1,16 @@
 
-import { GeneralAction } from "../base/custom";
+import { CustomActionsBase } from "../base/custom";
+import CustomFileCpu from "../customFileCpu";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
 import ValtheraClass from "./valthera";
 
-export class MemoryAction extends GeneralAction {
+export class MemoryAction extends CustomActionsBase {
     memory: Map<string, any[]>;
 
     constructor() {
         super();
-        this.init(
-            this._readMemory.bind(this),
-            this._writeMemory.bind(this),
-        );
+        this.fileCpu = new CustomFileCpu(this._readMemory.bind(this), this._writeMemory.bind(this));
         this.memory = new Map();
     }
 
@@ -30,7 +28,7 @@ export class MemoryAction extends GeneralAction {
         return collections;
     }
 
-    async checkCollection({ collection }: VQuery) {
+    async ensureCollection({ collection }: VQuery) {
         if (this.issetCollection(collection)) return;
         this.memory.set(collection, []);
         return true;

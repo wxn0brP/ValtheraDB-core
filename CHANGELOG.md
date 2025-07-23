@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.0.7...v0.1.0) (2025-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* update api
+
+### Features
+
+* add generic types to CollectionManager ([5e08625](https://github.com/wxn0brP/ValtheraDB-core/commit/5e08625c95a5e6838b7077d7d02ae25e3dea8cf9))
+* update api ([34f5fc0](https://github.com/wxn0brP/ValtheraDB-core/commit/34f5fc055524c8cb054c1d69fad6acef9daa1fb5))
+
+
+### Bug Fixes
+
+* CollectionManager ([238d3b3](https://github.com/wxn0brP/ValtheraDB-core/commit/238d3b3d4812d1bad597479eb5f9cd99079dd513))
+
 ### [0.0.7](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.0.6...v0.0.7) (2025-07-21)
 
 

@@ -46,14 +46,14 @@ class CollectionManager {
      * Remove data from a database.
      */
     async remove(search: Search, context: VContext = {}) {
-        return await this.db.delete(this.collection, search, context) as boolean;
+        return await this.db.remove(this.collection, search, context) as boolean;
     }
 
     /**
      * Remove one data entry from a database.
      */
     async removeOne(search: Search, context: VContext = {}) {
-        return await this.db.deleteOne(this.collection, search, context) as boolean;
+        return await this.db.removeOne(this.collection, search, context) as boolean;
     }
 
     /**

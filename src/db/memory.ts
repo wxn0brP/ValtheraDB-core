@@ -5,22 +5,13 @@ import genId from "../helpers/gen";
 import dbActionBase from "../base/actions";
 import Data from "../types/data";
 import FileCpu from "../types/fileCpu";
-import { DbOpts } from "../types/options";
 import { VQuery } from "../types/query";
 import { findUtil } from "../utils/action";
 
 export class MemoryAction extends dbActionBase {
-    folder: string;
-    options: DbOpts;
     fileCpu: FileCpu;
     memory: Map<string, any[]>;
 
-    /**
-     * Creates a new instance of dbActionC.
-     * @constructor
-     * @param folder - The folder where database files are stored.
-     * @param options - The options object.
-     */
     constructor() {
         super();
         this.memory = new Map();
@@ -34,10 +25,6 @@ export class MemoryAction extends dbActionBase {
 
     _writeMemory(key: string, data: any[]) {
         this.memory.set(key, data);
-    }
-
-    _getCollectionPath(collection: string) {
-        return this.folder + "/" + collection + "/";
     }
 
     /**

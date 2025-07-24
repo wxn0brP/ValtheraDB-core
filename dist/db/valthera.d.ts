@@ -1,0 +1,32 @@
+import { UniversalEventEmitter } from "../helpers/eventEmiter";
+import ActionsBase from "../base/actions";
+import CollectionManager from "../helpers/CollectionManager";
+import executorC from "../helpers/executor";
+import { Arg, Search, Updater } from "../types/arg";
+import Data from "../types/data";
+import { DbOpts, DbFindOpts, FindOpts } from "../types/options";
+import { VContext } from "../types/types";
+import { ValtheraCompatible } from "../types/valthera";
+declare class ValtheraClass implements ValtheraCompatible {
+    dbAction: ActionsBase;
+    executor: executorC;
+    emiter: UniversalEventEmitter;
+    version: string;
+    constructor(options?: DbOpts);
+    init(...args: any[]): Promise<unknown>;
+    private execute;
+    c<T = Data>(collection: string): CollectionManager<T>;
+    getCollections(): Promise<string[]>;
+    ensureCollection(collection: string): Promise<boolean>;
+    issetCollection(collection: string): Promise<boolean>;
+    add<T = Data>(collection: string, data: Arg<T>, id_gen?: boolean): Promise<T>;
+    find<T = Data>(collection: string, search?: Search<T>, context?: VContext, dbFindOpts?: DbFindOpts<T>, findOpts?: FindOpts<T>): Promise<T[]>;
+    findOne<T = Data>(collection: string, search?: Search<T>, context?: VContext, findOpts?: FindOpts<T>): Promise<T>;
+    update<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context?: {}): Promise<boolean>;
+    updateOne<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context?: VContext): Promise<boolean>;
+    remove<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
+    removeOne<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
+    updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, add_arg?: Arg, context?: VContext, id_gen?: boolean): Promise<boolean>;
+    removeCollection(collection: string): Promise<boolean>;
+}
+export default ValtheraClass;

@@ -6,16 +6,23 @@ import Relation from "./helpers/relation";
 import { ValtheraTypes } from "./types/export";
 import { RelationTypes } from "./types/relation";
 import { ValtheraCompatible } from "./types/valthera";
-import { forgeValthera } from "./utils/forge";
+import { forgeTypedValthera, forgeValthera } from "./utils/forge";
 
 export {
-    createMemoryValthera, CustomFileCpu,
-    forgeValthera, genId, Relation, ValtheraClass,
-    ValtheraMemory
+    createMemoryValthera,
+    CustomFileCpu,
+    forgeTypedValthera,
+    forgeValthera,
+    genId,
+    Relation,
+    ValtheraClass,
+    ValtheraMemory,
 };
 
 export type {
-    RelationTypes, ValtheraCompatible, ValtheraTypes
+    RelationTypes,
+    ValtheraCompatible,
+    ValtheraTypes,
 };
 
 export type Id = import("./types/Id").Id;

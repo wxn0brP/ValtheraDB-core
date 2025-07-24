@@ -1,5 +1,5 @@
 import ValtheraClass from "../db/valthera";
-import CollectionManager from "../helpers/CollectionManager";
+import CollectionManager from "./CollectionManager";
 import Data from "../types/data";
 import { ValtheraCompatible } from "../types/valthera";
 

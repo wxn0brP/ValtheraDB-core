@@ -4,7 +4,7 @@ import CustomFileCpu from "../customFileCpu";
 import CollectionManager from "../helpers/CollectionManager";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
-import { forgeValthera } from "../utils/forge";
+import { forgeValthera } from "../helpers/forge";
 import ValtheraClass from "./valthera";
 
 export class MemoryAction extends CustomActionsBase {

@@ -6,7 +6,7 @@ import Relation from "./helpers/relation";
 import { ValtheraTypes } from "./types/export";
 import { RelationTypes } from "./types/relation";
 import { ValtheraCompatible } from "./types/valthera";
-import { forgeTypedValthera, forgeValthera } from "./utils/forge";
+import { forgeTypedValthera, forgeValthera } from "./helpers/forge";
 
 export {
     createMemoryValthera,

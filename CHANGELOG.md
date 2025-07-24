@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.1.0...v0.1.1) (2025-07-24)
+
+
+### Features
+
+* forge types ([9143329](https://github.com/wxn0brP/ValtheraDB-core/commit/9143329869751585a331735b64070f658b6eb96d))
+
 ## [0.1.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.0.7...v0.1.0) (2025-07-23)
 
 

@@ -51,8 +51,8 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Create a new instance of a CollectionManager class.
      */
-    c(collection: string) {
-        return new CollectionManager(this, collection);
+    c<T = Data>(collection: string): CollectionManager<T> {
+        return new CollectionManager<T>(this, collection);
     }
 
     /**

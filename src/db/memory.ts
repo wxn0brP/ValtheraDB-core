@@ -1,8 +1,10 @@
 
 import { CustomActionsBase } from "../base/custom";
 import CustomFileCpu from "../customFileCpu";
+import CollectionManager from "../helpers/CollectionManager";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
+import { forgeValthera } from "../utils/forge";
 import ValtheraClass from "./valthera";
 
 export class MemoryAction extends CustomActionsBase {
@@ -50,13 +52,15 @@ export default class ValtheraMemory extends ValtheraClass {
     }
 }
 
-export function createMemoryValthera<T extends Record<string, Data[]>>(data?: T) {
+export function createMemoryValthera<T extends Record<string, Data[]>>
+    (data?: T): ValtheraMemory & { [K in keyof T]: CollectionManager<T[K][number]> } {
+
     const db = new ValtheraMemory();
-    if (!data) return db;
+    if (!data) return forgeValthera(db) as any;
 
     for (const collection of Object.keys(data)) {
         (db.dbAction as MemoryAction).memory.set(collection, data[collection]);
     }
 
-    return db;
+    return forgeValthera(db) as any;
 }

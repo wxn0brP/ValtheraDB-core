@@ -1,25 +1,21 @@
+import CustomFileCpu from "./customFileCpu";
+import ValtheraMemory, { createMemoryValthera } from "./db/memory";
+import ValtheraClass from "./db/valthera";
 import genId from "./helpers/gen";
 import Relation from "./helpers/relation";
+import { ValtheraTypes } from "./types/export";
 import { RelationTypes } from "./types/relation";
 import { ValtheraCompatible } from "./types/valthera";
-import { ValtheraTypes } from "./types/export";
-import CustomFileCpu from "./customFileCpu";
-import ValtheraClass from "./db/valthera";
-import ValtheraMemory, { createMemoryValthera } from "./db/memory";
+import { forgeValthera } from "./utils/forge";
 
 export {
-    ValtheraClass,
-    ValtheraMemory,
-    createMemoryValthera,
-    Relation,
-    genId,
-    CustomFileCpu,
-}
+    createMemoryValthera, CustomFileCpu,
+    forgeValthera, genId, Relation, ValtheraClass,
+    ValtheraMemory
+};
 
 export type {
-    ValtheraCompatible,
-    RelationTypes,
-    ValtheraTypes
-}
+    RelationTypes, ValtheraCompatible, ValtheraTypes
+};
 
 export type Id = import("./types/Id").Id;

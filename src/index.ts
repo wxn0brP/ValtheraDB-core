@@ -7,6 +7,7 @@ import { ValtheraTypes } from "./types/export";
 import { RelationTypes } from "./types/relation";
 import { ValtheraCompatible } from "./types/valthera";
 import { forgeTypedValthera, forgeValthera } from "./helpers/forge";
+import { sortByIds } from "./utils/sortId";
 
 export {
     createMemoryValthera,
@@ -17,6 +18,7 @@ export {
     Relation,
     ValtheraClass,
     ValtheraMemory,
+    sortByIds,
 };
 
 export type {

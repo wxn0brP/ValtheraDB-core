@@ -9,6 +9,7 @@ import Data from "../types/data";
 import { DbOpts, DbFindOpts, FindOpts } from "../types/options";
 import { VContext } from "../types/types";
 import { ValtheraCompatible } from "../types/valthera";
+import { VQuery } from "../types/query";
 
 type DbActionsFns = keyof {
     [K in keyof ActionsBase as ActionsBase[K] extends (...args: any[]) => any ? K : never]: any;
@@ -40,11 +41,12 @@ class ValtheraClass implements ValtheraCompatible {
         });
     }
 
-    private async execute<T>(name: DbActionsFns, ...args: any[]) {
+    async execute<T>(name: DbActionsFns, query: VQuery) {
         await this.init();
-        const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), ...args) as T;
-        this.emiter.emit(name, args, result);
-        this.emiter.emit("*", name, args, result);
+        const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
+        const emitArgs = Array.from(arguments).slice(1);
+        this.emiter.emit(name, emitArgs, result);
+        this.emiter.emit("*", name, emitArgs, result);
         return result;
     }
 
@@ -59,7 +61,7 @@ class ValtheraClass implements ValtheraCompatible {
      * Get the names of all available databases.
      */
     async getCollections() {
-        return await this.execute<string[]>("getCollections");
+        return await this.execute<string[]>("getCollections", {});
     }
 
     /**

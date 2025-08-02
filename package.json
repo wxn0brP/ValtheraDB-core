@@ -34,5 +34,8 @@
             "import": "./dist/*.js",
             "default": "./dist/*.js"
         }
+    },
+    "dependencies": {
+        "@wxn0brp/event-emitter": "^0.0.1"
     }
 }

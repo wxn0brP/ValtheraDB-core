@@ -1,15 +1,15 @@
 
-import { version } from "../version";
-import { UniversalEventEmitter } from "../helpers/eventEmiter";
+import { EventEmitter } from "@wxn0brp/event-emitter";
 import ActionsBase from "../base/actions";
 import CollectionManager from "../helpers/CollectionManager";
 import executorC from "../helpers/executor";
 import { Arg, Search, Updater } from "../types/arg";
 import Data from "../types/data";
-import { DbOpts, DbFindOpts, FindOpts } from "../types/options";
+import { DbFindOpts, DbOpts, FindOpts } from "../types/options";
+import { VQuery } from "../types/query";
 import { VContext } from "../types/types";
 import { ValtheraCompatible } from "../types/valthera";
-import { VQuery } from "../types/query";
+import { version } from "../version";
 
 type DbActionsFns = keyof {
     [K in keyof ActionsBase as ActionsBase[K] extends (...args: any[]) => any ? K : never]: any;
@@ -22,13 +22,13 @@ type DbActionsFns = keyof {
 class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
     executor: executorC;
-    emiter: UniversalEventEmitter;
+    emiter: EventEmitter;
     version = version;
 
     constructor(options: DbOpts = {}) {
         this.dbAction = options.dbAction || new ActionsBase();
         this.executor = options.executor || new executorC();
-        this.emiter = new UniversalEventEmitter();
+        this.emiter = new EventEmitter();
     }
 
     async init(...args: any[]) {
@@ -81,6 +81,8 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Add data to a database.
      */
+    add<T extends object>(collection: string, data: T, id_gen?: true): Promise<T & { _id: string }>;
+    add<T extends object>(collection: string, data: T, id_gen: false): Promise<T>;
     async add<T = Data>(collection: string, data: Arg<T>, id_gen: boolean = true) {
         return await this.execute<T>("add", { collection, data, id_gen });
     }

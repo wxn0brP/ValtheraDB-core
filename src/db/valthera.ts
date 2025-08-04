@@ -1,5 +1,5 @@
 
-import { EventEmitter } from "@wxn0brp/event-emitter";
+import { VEE } from "@wxn0brp/event-emitter";
 import ActionsBase from "../base/actions";
 import CollectionManager from "../helpers/CollectionManager";
 import executorC from "../helpers/executor";
@@ -22,13 +22,13 @@ type DbActionsFns = keyof {
 class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
     executor: executorC;
-    emiter: EventEmitter;
+    emiter: VEE;
     version = version;
 
     constructor(options: DbOpts = {}) {
         this.dbAction = options.dbAction || new ActionsBase();
         this.executor = options.executor || new executorC();
-        this.emiter = new EventEmitter();
+        this.emiter = new VEE();
     }
 
     async init(...args: any[]) {

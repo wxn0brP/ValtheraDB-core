@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.1.5...v0.1.6) (2025-09-01)
+
+
+### Features
+
+* add RoutedStorage with multi-backend routing ([9287fcb](https://github.com/wxn0brP/ValtheraDB-core/commit/9287fcb68e0b91c3d8e99dcd64d1152f81ffea3f))
+
+
+### Bug Fixes
+
+* sort id ([1843051](https://github.com/wxn0brP/ValtheraDB-core/commit/18430517893487f66637e634db10d90a61d89382))
+
 ### [0.1.5](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.1.4...v0.1.5) (2025-08-04)
 
 ### [0.1.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.1.3...v0.1.4) (2025-08-02)

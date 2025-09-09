@@ -100,14 +100,14 @@ async function processRelations(
                 if (result && rel.relations) {
                     await processRelations(dbs, rel.relations, result);
                 }
-                if (deleteSelect && result) delete result[fk]; 
+                if (deleteSelect && result) delete result[fk];
                 item[as] = result;
             }
 
         } else if (type === "1n") {
             const ids = targets.map(i => i[pk]);
             const [selectSafe, deleteSelect] = autoSelect(rel, fk);
-            const results = await db.find(coll, { $in: { [fk]: ids } }, {}, findOpts || {}, { select: selectSafe });
+            const results = await db.find(coll, { $in: { [fk]: ids } }, findOpts || {}, { select: selectSafe });
 
             const grouped = results.reduce((acc: any, row: any) => {
                 const id = row[fk];
@@ -178,7 +178,7 @@ class Relation {
     ) {
         const [dbKey, coll] = path;
         const db = this.dbs[dbKey];
-        const data = await db.find(coll, search, {}, findOpts);
+        const data = await db.find(coll, search, findOpts);
         if (relations) await processRelations(this.dbs, relations, null, data);
 
         if (typeof select === "object" && !Array.isArray(select)) {

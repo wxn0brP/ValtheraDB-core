@@ -1,4 +1,3 @@
-
 import { VEE } from "@wxn0brp/event-emitter";
 import ActionsBase from "../base/actions";
 import CollectionManager from "../helpers/CollectionManager";
@@ -8,7 +7,7 @@ import Data from "../types/data";
 import { DbFindOpts, DbOpts, FindOpts } from "../types/options";
 import { VQuery } from "../types/query";
 import { VContext } from "../types/types";
-import { ValtheraCompatible } from "../types/valthera";
+import { UpdateOneOrAdd, ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
 
 type DbActionsFns = keyof {
@@ -90,14 +89,14 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Find data in a database.
      */
-    async find<T = Data>(collection: string, search: Search<T> = {}, context: VContext = {}, dbFindOpts: DbFindOpts<T> = {}, findOpts: FindOpts<T> = {}) {
+    async find<T = Data>(collection: string, search: Search<T> = {}, dbFindOpts: DbFindOpts<T> = {}, findOpts: FindOpts<T> = {}, context: VContext = {}) {
         return await this.execute<T[]>("find", { collection, search, context, dbFindOpts, findOpts });
     }
 
     /**
      * Find one data entry in a database.
      */
-    async findOne<T = Data>(collection: string, search: Search<T> = {}, context: VContext = {}, findOpts: FindOpts<T> = {}) {
+    async findOne<T = Data>(collection: string, search: Search<T> = {}, findOpts: FindOpts<T> = {}, context: VContext = {}) {
         return await this.execute<T | null>("findOne", { collection, search, context, findOpts });
     }
 
@@ -132,7 +131,7 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    async updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, add_arg: Arg = {}, context: VContext = {}, id_gen: boolean = true) {
+    async updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, { add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<T>) {
         return await this.execute<boolean>("updateOneOrAdd", { collection, search, updater, add_arg, context, id_gen });
     }
 

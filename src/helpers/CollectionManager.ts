@@ -2,10 +2,10 @@ import { Arg, Search, Updater } from "../types/arg";
 import { DbFindOpts, FindOpts } from "../types/options";
 import { VContext } from "../types/types";
 import Data from "../types/data";
-import { ValtheraCompatible } from "../types/valthera";
+import { UpdateOneOrAdd, ValtheraCompatible } from "../types/valthera";
 
 class CollectionManager<D = Data> {
-    constructor(private db: ValtheraCompatible, private collection: string) {}
+    constructor(private db: ValtheraCompatible, private collection: string) { }
 
     /**
      * Add data to a database.
@@ -17,15 +17,15 @@ class CollectionManager<D = Data> {
     /**
      * Find data in a database.
      */
-    async find<T = Data>(search: Search<T & D> = {}, context: VContext = {}, options: DbFindOpts<T & Data> = {}, findOpts: FindOpts<T & Data> = {}) {
-        return await this.db.find(this.collection, search, context, options, findOpts) as T[];
+    async find<T = Data>(search: Search<T & D> = {}, options: DbFindOpts<T & Data> = {}, findOpts: FindOpts<T & Data> = {}, context: VContext = {}) {
+        return await this.db.find(this.collection, search, options, findOpts, context) as T[];
     }
 
     /**
      * Find one data entry in a database.
      */
-    async findOne<T = Data>(search: Search<T & Data> = {}, context: VContext = {}, findOpts: FindOpts<T & Data> = {}) {
-        return await this.db.findOne(this.collection, search, context, findOpts) as (T | null);
+    async findOne<T = Data>(search: Search<T & Data> = {}, findOpts: FindOpts<T & Data> = {}, context: VContext = {}) {
+        return await this.db.findOne(this.collection, search, findOpts, context) as (T | null);
     }
 
     /**
@@ -59,8 +59,8 @@ class CollectionManager<D = Data> {
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    async updateOneOrAdd<T = Data>(search: Search<T & Data>, updater: Updater<T & Data>, add_arg: Arg<T & Data> = {}, context: VContext = {}, id_gen: boolean = true) {
-        return await this.db.updateOneOrAdd(this.collection, search, updater, add_arg, context, id_gen) as boolean;
+    async updateOneOrAdd<T = Data>(search: Search<T & Data>, updater: Updater<T & Data>, { add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<T & Data>) {
+        return await this.db.updateOneOrAdd(this.collection, search, updater, { add_arg, context, id_gen }) as boolean;
     }
 }
 

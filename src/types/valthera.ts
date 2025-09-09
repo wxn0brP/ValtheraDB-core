@@ -11,14 +11,20 @@ export interface ValtheraCompatible {
     ensureCollection(collection: string): Promise<boolean>;
     issetCollection(collection: string): Promise<boolean>;
     add<T = Data>(collection: string, data: Arg<T>, id_gen?: boolean): Promise<T>;
-    find<T = Data>(collection: string, search: Search<T>, context?: VContext, options?: DbFindOpts<T>, findOpts?: FindOpts<T>): Promise<T[]>;
-    findOne<T = Data>(collection: string, search: Search<T>, context?: VContext, findOpts?: FindOpts<T>): Promise<T | null>;
+    find<T = Data>(collection: string, search?: Search<T>, options?: DbFindOpts<T>, findOpts?: FindOpts<T>, context?: VContext): Promise<T[]>;
+    findOne<T = Data>(collection: string, search?: Search<T>, findOpts?: FindOpts<T>, context?: VContext): Promise<T | null>;
     update<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context?: VContext): Promise<boolean>;
     updateOne<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context?: VContext): Promise<boolean>;
     remove<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
     removeOne<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
     removeCollection(collection: string): Promise<boolean>;
-    updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, add_arg?: Arg<T>, context?: VContext, id_gen?: boolean): Promise<boolean>;
+    updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, opts: UpdateOneOrAdd<T>): Promise<boolean>;
+}
+
+export interface UpdateOneOrAdd<T> {
+    add_arg?: Arg<T>;
+    id_gen?: boolean;
+    context?: VContext;
 }
 
 export interface ValtheraCompatibleInternal {

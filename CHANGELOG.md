@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.1...v0.2.2) (2025-09-18)
+
+
+### Features
+
+* updateOneOrAdd make opts optional ([422d366](https://github.com/wxn0brP/ValtheraDB-core/commit/422d3660548465e61ccfc57ff5081b2bf45acacb))
+
 ### [0.2.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.0...v0.2.1) (2025-09-18)
 
 

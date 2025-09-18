@@ -131,7 +131,12 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    async updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, { add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<T>) {
+    async updateOneOrAdd<T = Data>(
+        collection: string,
+        search: Search<T>,
+        updater: Updater<T>,
+        { add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<T> = {}
+    ) {
         return await this.execute<boolean>("updateOneOrAdd", { collection, search, updater, add_arg, context, id_gen });
     }
 

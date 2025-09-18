@@ -15,6 +15,9 @@
     "scripts": {
         "build": "tsc && tsc-alias"
     },
+    "dependencies": {
+        "@wxn0brp/event-emitter": "^0.0.2"
+    },
     "devDependencies": {
         "@types/node": "^24.2.0",
         "tsc-alias": "^1.8.10",
@@ -34,8 +37,5 @@
             "import": "./dist/*.js",
             "default": "./dist/*.js"
         }
-    },
-    "dependencies": {
-        "@wxn0brp/event-emitter": "^0.0.2"
     }
 }

@@ -35,7 +35,7 @@ function convertSearchObjToSearchArray(obj: Record<string, any>, parentKeys: str
 
         if (!value) {
             return acc;
-        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        } else if (typeof value === "object" && value !== null && !Array.isArray(value)) {
             return [...acc, ...convertSearchObjToSearchArray(value, currentPath)];
         } else {
             return [...acc, currentPath];
@@ -126,7 +126,7 @@ async function processRelations(
 
         } else if (type === "nm") {
             if (!through || !through.table || !through.pk || !through.fk) {
-                throw new Error(`Relation type "nm" requires a defined 'through' in '${key}'`);
+                throw new Error(`Relation type "nm" requires a defined "through" in "${key}"`);
             }
 
             for (const item of targets) {
@@ -174,11 +174,11 @@ class Relation {
         search: Search,
         relations: RelationTypes.Relation,
         select?: string[][] | Record<string, any>,
-        findOpts: DbFindOpts = {}
+        dbFindOpts: DbFindOpts = {}
     ) {
         const [dbKey, coll] = path;
         const db = this.dbs[dbKey];
-        const data = await db.find(coll, search, findOpts);
+        const data = await db.find(coll, search, dbFindOpts);
         if (relations) await processRelations(this.dbs, relations, null, data);
 
         if (typeof select === "object" && !Array.isArray(select)) {

@@ -9,7 +9,7 @@ import { Arg } from "./arg";
 import { PartialOfType, PartialPickMatching } from "./utils";
 
 /** Logical Operators */
-export type LogicalOperators<T=any> = {
+export type LogicalOperators<T = any> = {
     /**
      * Recursively applies multiple conditions, all of which must evaluate to true.
      * Can include other operators such as $gt, $exists, or nested $and/$or conditions.
@@ -30,7 +30,7 @@ export type LogicalOperators<T=any> = {
 };
 
 /** Comparison Operators */
-export type ComparisonOperators<T=any> = {
+export type ComparisonOperators<T = any> = {
     $gt?: PartialOfType<T, number>;
     $lt?: PartialOfType<T, number>;
     $gte?: PartialOfType<T, number>;
@@ -42,32 +42,32 @@ export type ComparisonOperators<T=any> = {
 };
 
 /** Type and Existence Operators */
-export type TypeAndExistenceOperators<T=any> = {
+export type TypeAndExistenceOperators<T = any> = {
     $exists?: PartialOfType<T, boolean, any>;
     $type?: PartialOfType<T, string>;
 };
 
 /** Array Operators */
-export type ArrayOperators<T=any> = {
+export type ArrayOperators<T = any> = {
     $arrinc?: PartialPickMatching<T, any[]>;
     $arrincall?: PartialPickMatching<T, any[]>;
     $size?: PartialOfType<T, number>;
 };
 
 /** String Operators */
-export type StringOperators<T=any> = {
-    $regex?: PartialOfType<T, RegExp, string>;
+export type StringOperators<T = any> = {
+    $regex?: PartialOfType<T, RegExp | string, string>;
     $startsWith?: PartialOfType<T, string>;
     $endsWith?: PartialOfType<T, string>;
 };
 
 /** Other Operators */
-export type OtherOperators<T=any> = {
+export type OtherOperators<T = any> = {
     $subset?: Partial<Record<keyof T, T[keyof T]>>;
 };
 
 /** Predefined Search Operators */
-export type PredefinedSearchOperators<T=any> = LogicalOperators<T> &
+export type PredefinedSearchOperators<T = any> = LogicalOperators<T> &
     ComparisonOperators<T> &
     TypeAndExistenceOperators<T> &
     ArrayOperators<T> &
@@ -77,4 +77,4 @@ export type PredefinedSearchOperators<T=any> = LogicalOperators<T> &
 /**
  * SearchOptions can be either a function or an object with predefined operators.
  */
-export type SearchOptions<T=any> = PredefinedSearchOperators<T> & Arg<T>;
+export type SearchOptions<T = any> = PredefinedSearchOperators<T> & Arg<T>;

@@ -107,7 +107,8 @@ function checkType(obj: Object, fields: Object) {
 
 function checkRegex(obj: Object, fields: Object) {
     if ("$regex" in fields) {
-        for (const [key, regex] of Object.entries(fields["$regex"])) {
+        for (const [key, regexData] of Object.entries(fields["$regex"])) {
+            const regex = typeof regexData === "string" ? new RegExp(regexData) : regexData;
             if (!regex.test(obj[key])) return false;
         }
     }

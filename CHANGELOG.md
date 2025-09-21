@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.3](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.2...v0.2.3) (2025-09-21)
+
+
+### Features
+
+* multi storage ([86bd45a](https://github.com/wxn0brP/ValtheraDB-core/commit/86bd45af23b935d3c4cb45c34799bce154398f3a))
+* regex | string ([b594bba](https://github.com/wxn0brP/ValtheraDB-core/commit/b594bbaeafbda7034afbc195ebc790426872eb4f))
+
 ### [0.2.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.1...v0.2.2) (2025-09-18)
 
 

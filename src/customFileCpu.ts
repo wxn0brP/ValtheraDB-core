@@ -30,25 +30,25 @@ class CustomFileCpu implements FileCpu {
         await this._writeFile(file, entries);
     }
 
-    async find(file: string, arg: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any[] | false> {
+    async find(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any[] | false> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
         const results = entries.filter(entry =>
-            typeof arg === "function" ? arg(entry, context) : hasFieldsAdvanced(entry, arg)
+            typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search)
         );
         return results.length ? results.map(res => updateFindObject(res, findOpts)) : [];
     }
 
-    async findOne(file: string, arg: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any | false> {
+    async findOne(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any | false> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
         const result = entries.find(entry =>
-            typeof arg === "function" ? arg(entry, context) : hasFieldsAdvanced(entry, arg)
+            typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search)
         );
         return result ? updateFindObject(result, findOpts) : false;
     }
 
-    async remove(file: string, one: boolean, arg: Search, context: VContext = {}): Promise<boolean> {
+    async remove(file: string, one: boolean, search: Search, context: VContext = {}): Promise<boolean> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         let removed = false;
@@ -56,7 +56,7 @@ class CustomFileCpu implements FileCpu {
         entries = entries.filter(entry => {
             if (removed && one) return true;
 
-            let match = typeof arg === "function" ? arg(entry, context) : hasFieldsAdvanced(entry, arg);
+            let match = typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search);
 
             if (match) {
                 removed = true;
@@ -72,7 +72,7 @@ class CustomFileCpu implements FileCpu {
         return true;
     }
 
-    async update(file: string, one: boolean, arg: Search, updater: Updater, context: VContext = {}): Promise<boolean> {
+    async update(file: string, one: boolean, search: Search, updater: Updater, context: VContext = {}): Promise<boolean> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         let updated = false;
@@ -80,7 +80,7 @@ class CustomFileCpu implements FileCpu {
         entries = entries.map(entry => {
             if (updated && one) return entry;
 
-            let match = typeof arg === "function" ? arg(entry, context) : hasFieldsAdvanced(entry, arg);
+            let match = typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search);
 
             if (match) {
                 updated = true;

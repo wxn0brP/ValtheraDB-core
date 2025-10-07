@@ -19,7 +19,7 @@ new CustomFileCpu(readFile: ReadFile, writeFile: WriteFile)
 ## Methods
 
 - `add(file: string, data: Data): Promise<void>` - Add data to a file
-- `find(file: string, arg: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any[] | false>` - Find entries in a file
-- `findOne(file: string, arg: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any | false>` - Find one entry in a file
-- `remove(file: string, one: boolean, arg: Search, context: VContext = {}): Promise<boolean>` - Remove entries from a file
-- `update(file: string, one: boolean, arg: Search, updater: Updater, context: VContext = {}): Promise<boolean>` - Update entries in a file
+- `find(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any[] | false>` - Find entries in a file
+- `findOne(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any | false>` - Find one entry in a file
+- `remove(file: string, one: boolean, search: Search, context: VContext = {}): Promise<boolean>` - Remove entries from a file
+- `update(file: string, one: boolean, search: Search, updater: Updater, context: VContext = {}): Promise<boolean>` - Update entries in a file

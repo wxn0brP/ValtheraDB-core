@@ -10,7 +10,6 @@ export interface VQuery {
     findOpts?: FindOpts;
     data?: Arg;
     id_gen?: boolean;
-    limit?: number;
     add_arg?: Arg;
     updater?: Updater;
 }

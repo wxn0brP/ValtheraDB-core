@@ -5,6 +5,7 @@ import { FindOpts } from "./types/options";
 import { VContext } from "./types/types";
 import hasFieldsAdvanced from "./utils/hasFieldsAdvanced";
 import updateFindObject from "./utils/updateFindObject";
+import updateObjectAdvanced from "./utils/updateObject";
 
 export type WriteFile = (file: string, data: any[]) => Promise<void>
 export type ReadFile = (file: string) => Promise<any[]>
@@ -84,7 +85,7 @@ class CustomFileCpu implements FileCpu {
 
             if (match) {
                 updated = true;
-                return typeof updater === "function" ? updater(entry, context) : { ...entry, ...updater };
+                return typeof updater === "function" ? updater(entry, context) : updateObjectAdvanced(entry, updater);
             }
 
             return entry;

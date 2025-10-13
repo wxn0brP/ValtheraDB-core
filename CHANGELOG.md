@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.3...v0.2.4) (2025-10-13)
+
+
+### Features
+
+* "arg: Search" to "search: Search" ([223f338](https://github.com/wxn0brP/ValtheraDB-core/commit/223f338cb4d0fa1828311744f9d98f7e7a4f396c))
+* number id (auto id++) ([7afb6cf](https://github.com/wxn0brP/ValtheraDB-core/commit/7afb6cf99b741a41082bb1515735a135346c5f79))
+
+
+### Bug Fixes
+
+* ci ([bcb156f](https://github.com/wxn0brP/ValtheraDB-core/commit/bcb156f2a6ca83058ceaf3ac320b0b9a3521ce10))
+* updater in CustomFileCpu ([9080ce0](https://github.com/wxn0brP/ValtheraDB-core/commit/9080ce0ae889c58eff34d4527ce9355291cb3605))
+
 ### [0.2.3](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.2...v0.2.3) (2025-09-21)
 
 

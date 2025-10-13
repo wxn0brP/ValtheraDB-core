@@ -4,7 +4,8 @@ import { VQuery } from "../types/query";
 
 class ActionsBase {
     _inited: boolean = true;
-    async init(...args: any[]) {}
+    numberId: boolean = false;
+    async init(...args: any[]) { }
 
     async getCollections() {
         throw new Error("Not implemented");

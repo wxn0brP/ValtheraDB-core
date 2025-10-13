@@ -1,5 +1,5 @@
 import CustomFileCpu from "../customFileCpu";
-import genId from "../helpers/gen";
+import { addId } from "../helpers/addId";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
 import { findUtil } from "../utils/action";
@@ -15,9 +15,10 @@ export class CustomActionsBase extends ActionsBase {
     /**
      * Add a new entry to the specified database.
      */
-    async add({ collection, data, id_gen = true }: VQuery) {
-        await this.ensureCollection(arguments[0]);
-        if (id_gen) data._id = data._id || genId();
+    async add(query: VQuery) {
+        await this.ensureCollection(query);
+        await addId(query, this);
+        const { collection, data } = query;
         await this.fileCpu.add(collection, data);
         return data;
     }

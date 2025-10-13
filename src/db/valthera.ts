@@ -28,6 +28,7 @@ class ValtheraClass implements ValtheraCompatible {
         this.dbAction = options.dbAction || new ActionsBase();
         this.executor = options.executor || new executorC();
         this.emiter = new VEE();
+        if (options.numberId) this.dbAction.numberId = true;
     }
 
     async init(...args: any[]) {

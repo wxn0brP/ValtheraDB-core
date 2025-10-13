@@ -9,7 +9,7 @@ interface Task {
  * A simple executor for queuing and executing asynchronous operations sequentially.
  * @class
  */
-class executorC {
+class ExecutorC {
     quote: Task[];
     isExecuting: boolean;
 
@@ -52,4 +52,5 @@ class executorC {
     }
 }
 
-export default executorC;
+export default ExecutorC;
+export { ExecutorC as executorC };

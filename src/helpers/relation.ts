@@ -133,7 +133,7 @@ async function processRelations(
                 const pivotDb = dbs[through.db || dbKey];
                 const pivots = await pivotDb.find(through.table, { [through.pk]: item[pk] });
                 const ids = pivots.map(p => p[through.fk]);
-                const related = await db.find(coll, { $in: { [fk]: ids } }, {}, {}, { select });
+                const related = await db.find(coll, { $in: { [fk]: ids } }, {}, { select });
                 item[as] = related;
 
                 if (rel.relations) {

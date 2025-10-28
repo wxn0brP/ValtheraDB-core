@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.4...v0.2.5) (2025-10-28)
+
+
+### Bug Fixes
+
+* nm relation find ([f211b59](https://github.com/wxn0brP/ValtheraDB-core/commit/f211b59c2e1eb9d86518dd4c1b449ed922c90490))
+
 ### [0.2.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.3...v0.2.4) (2025-10-13)
 
 

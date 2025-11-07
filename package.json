@@ -19,9 +19,9 @@
         "@wxn0brp/event-emitter": "^0.0.2"
     },
     "devDependencies": {
-        "@types/node": "^24.2.0",
-        "tsc-alias": "^1.8.10",
-        "typescript": "^5.9.2"
+        "@types/node": "*",
+        "tsc-alias": "*",
+        "typescript": "*"
     },
     "files": [
         "dist"

@@ -9,6 +9,8 @@ export default function hasFieldsAdvanced(obj: Object, fields: Arg) {
         throw new Error("Fields must be an object");
     }
 
+    if (Object.keys(fields).length === 0) return true;
+
     if ("$and" in fields) {
         return fields["$and"].every(subFields => hasFieldsAdvanced(obj, subFields));
     }
@@ -19,151 +21,53 @@ export default function hasFieldsAdvanced(obj: Object, fields: Arg) {
 
     // Check various conditions
     if (!checkConditions(obj, fields)) return false;
-    const fieldsSubset = removeAdvancedOperators({ ...fields });
-    return hasFields(obj, fieldsSubset);
-}
 
-function removeAdvancedOperators(fields: Object) {
-    const advancedOperators = [
-        "and", "or",
-        "gt", "lt", "gte", "lte", "in", "nin",
-        "exists",
-        "type",
-        "regex",
-        "arrinc", "arrincall", "size",
-        "startsWith", "endsWith",
-        "between",
-        "not",
-        "subset"
-    ].map(operator => "$" + operator);
-    advancedOperators.forEach(operator => delete fields[operator]);
-    return fields;
+    const fieldsSubset = { ...fields };
+    Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
+    if (!Object.keys(fieldsSubset).length) return true;
+
+    return hasFields(obj, fieldsSubset);
 }
 
 function checkConditions(obj: Object, fields: Object) {
     return (
-        checkComparison(obj, fields) &&
-        checkExistence(obj, fields) &&
-        checkType(obj, fields) &&
-        checkRegex(obj, fields) &&
-        checkArrayConditions(obj, fields) &&
-        checkStringConditions(obj, fields) &&
-        checkBetween(obj, fields) &&
+        mainCheck(obj, fields) &&
         checkNot(obj, fields) &&
         checkSubset(obj, fields)
     );
 }
 
-function checkComparison(obj: Object, fields: Object) {
-    const comparisonOperators = ["$gt", "$lt", "$gte", "$lte", "$in", "$nin"];
-    for (const operator of comparisonOperators) {
-        if (operator in fields) {
-            for (const entries of Object.entries(fields[operator])) {
-                const [key, value]: [string, any] = entries;
-                switch (operator) {
-                    case "$gt":
-                        if (!(obj[key] > value)) return false;
-                        break;
-                    case "$lt":
-                        if (!(obj[key] < value)) return false;
-                        break;
-                    case "$gte":
-                        if (!(obj[key] >= value)) return false;
-                        break;
-                    case "$lte":
-                        if (!(obj[key] <= value)) return false;
-                        break;
-                    case "$in":
-                        if (!value.includes(obj[key])) return false;
-                        break;
-                    case "$nin":
-                        if (value.includes(obj[key])) return false;
-                        break;
-                }
-            }
-        }
-    }
-    return true;
-}
+function mainCheck(obj: Object, fields: Object) {
+    return _for(fields, {
+        gt: (key, value) => obj[key] > value,
+        lt: (key, value) => obj[key] < value,
+        gte: (key, value) => obj[key] >= value,
+        lte: (key, value) => obj[key] <= value,
+        in: (key, value) => value.includes(obj[key]),
+        nin: (key, value) => !value.includes(obj[key]),
+        type: (key, value) => typeof obj[key] === value,
 
-function checkExistence(obj: Object, fields: Object) {
-    if ("$exists" in fields) {
-        for (const [key, shouldExist] of Object.entries(fields["$exists"])) {
+        exists: (key, shouldExist) => {
             if (shouldExist && !(key in obj)) return false;
             if (!shouldExist && (key in obj)) return false;
-        }
-    }
-    return true;
-}
-
-function checkType(obj: Object, fields: Object) {
-    if ("$type" in fields) {
-        for (const [key, type] of Object.entries(fields["$type"])) {
-            if (typeof obj[key] !== type) return false;
-        }
-    }
-    return true;
-}
-
-function checkRegex(obj: Object, fields: Object) {
-    if ("$regex" in fields) {
-        for (const [key, regexData] of Object.entries(fields["$regex"])) {
+            return true;
+        },
+        regex: (key, regexData) => {
             const regex = typeof regexData === "string" ? new RegExp(regexData) : regexData;
             if (!regex.test(obj[key])) return false;
-        }
-    }
-    return true;
-}
-
-function checkArrayConditions(obj: Object, fields: Object) {
-    if ("$arrinc" in fields) {
-        for (const [key, values] of Object.entries(fields["$arrinc"])) {
-            if (!Array.isArray(obj[key]) || !values.some(val => obj[key].includes(val))) return false;
-        }
-    }
-
-    if ("$arrincall" in fields) {
-        for (const [key, values] of Object.entries(fields["$arrincall"])) {
-            if (!Array.isArray(obj[key]) || !values.every(val => obj[key].includes(val))) return false;
-        }
-    }
-
-    if ("$size" in fields) {
-        for (const [key, size] of Object.entries(fields["$size"])) {
+        },
+        size: (key, size) => {
             if (Array.isArray(obj[key]) || typeof obj[key] === "string") {
                 if (obj[key].length !== size) return false;
             } else {
                 return false;
             }
-        }
-    }
+        },
 
-    return true;
-}
-
-function checkStringConditions(obj: Object, fields: Object) {
-    if ("$startsWith" in fields) {
-        for (const [key, value] of Object.entries(fields["$startsWith"])) {
-            if (typeof obj[key] !== "string" || !obj[key].startsWith(value)) return false;
-        }
-    }
-
-    if ("$endsWith" in fields) {
-        for (const [key, value] of Object.entries(fields["$endsWith"])) {
-            if (typeof obj[key] !== "string" || !obj[key].endsWith(value)) return false;
-        }
-    }
-
-    return true;
-}
-
-function checkBetween(obj: Object, fields: Object) {
-    if ("$between" in fields) {
-        for (const [key, [min, max]] of Object.entries(fields["$between"])) {
-            if (typeof obj[key] !== "number" || obj[key] < min || obj[key] > max) return false;
-        }
-    }
-    return true;
+        startsWith: (key, value) => typeof obj[key] === "string" && obj[key].startsWith(value),
+        endsWith: (key, value) => typeof obj[key] === "string" && obj[key].endsWith(value),
+        between: (key, [min, max]) => typeof obj[key] === "number" && obj[key] >= min && obj[key] <= max
+    });
 }
 
 function checkNot(obj: Object, fields: Object) {
@@ -177,6 +81,20 @@ function checkSubset(obj: Object, fields: Object) {
     if ("$subset" in fields) {
         const setFields = fields["$subset"];
         return hasFields(obj, setFields);
+    }
+    return true;
+}
+
+function _for(fields: Object, opts: Record<string, (key: string, value: any) => boolean>) {
+    for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
+        const field = "$" + fieldRaw;
+
+        if (field in fields) {
+            for (const [key, value] of Object.entries(fields[field])) {
+                if (!fieldFn(key, value)) return false;
+            }
+        }
+
     }
     return true;
 }

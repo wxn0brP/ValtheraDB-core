@@ -66,7 +66,9 @@ function mainCheck(obj: Object, fields: Object) {
 
         startsWith: (key, value) => typeof obj[key] === "string" && obj[key].startsWith(value),
         endsWith: (key, value) => typeof obj[key] === "string" && obj[key].endsWith(value),
-        between: (key, [min, max]) => typeof obj[key] === "number" && obj[key] >= min && obj[key] <= max
+        between: (key, [min, max]) => typeof obj[key] === "number" && obj[key] >= min && obj[key] <= max,
+        arrinc: (key, values) => Array.isArray(obj[key]) && values.some(val => obj[key].includes(val)),
+        arrincall: (key, values) => Array.isArray(obj[key]) && values.every(val => obj[key].includes(val)),
     });
 }
 

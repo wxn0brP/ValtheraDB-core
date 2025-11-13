@@ -14,7 +14,8 @@ npm install @wxn0brp/db-core
 
 ## Documentation
 
-See the [documentation](docs/README.md) for more information about the API and usage.
+- Manual [documentation](docs/README.md)
+- Auto-generated [typedoc](https://wxn0brp.github.io/ValtheraDB-core/).
 
 ## License
 

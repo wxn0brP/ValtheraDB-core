@@ -1,5 +1,6 @@
 import { Arg } from "../types/arg";
 import hasFields from "./hasFields";
+import { compareIds } from "./id";
 
 /**
  * Checks if an object meets the criteria specified in the fields with operators.
@@ -12,11 +13,11 @@ export default function hasFieldsAdvanced(obj: Object, fields: Arg) {
     if (Object.keys(fields).length === 0) return true;
 
     if ("$and" in fields) {
-        return fields["$and"].every(subFields => hasFieldsAdvanced(obj, subFields));
+        return fields["$and"].every((subFields: Object) => hasFieldsAdvanced(obj, subFields));
     }
 
     if ("$or" in fields) {
-        return fields["$or"].some(subFields => hasFieldsAdvanced(obj, subFields));
+        return fields["$or"].some((subFields: Object) => hasFieldsAdvanced(obj, subFields));
     }
 
     // Check various conditions
@@ -38,37 +39,42 @@ function checkConditions(obj: Object, fields: Object) {
 }
 
 function mainCheck(obj: Object, fields: Object) {
-    return _for(fields, {
-        gt: (key, value) => obj[key] > value,
-        lt: (key, value) => obj[key] < value,
-        gte: (key, value) => obj[key] >= value,
-        lte: (key, value) => obj[key] <= value,
-        in: (key, value) => value.includes(obj[key]),
-        nin: (key, value) => !value.includes(obj[key]),
-        type: (key, value) => typeof obj[key] === value,
+    return _for(fields, obj, {
+        gt: (data, value) => data > value,
+        lt: (data, value) => data < value,
+        gte: (data, value) => data >= value,
+        lte: (data, value) => data <= value,
+        in: (data, value) => value.includes(data),
+        nin: (data, value) => !value.includes(data),
+        type: (data, value) => typeof data === value,
 
-        exists: (key, shouldExist) => {
+        exists: (_, shouldExist, key) => {
             if (shouldExist && !(key in obj)) return false;
             if (!shouldExist && (key in obj)) return false;
             return true;
         },
-        regex: (key, regexData) => {
+        regex: (data, regexData) => {
             const regex = typeof regexData === "string" ? new RegExp(regexData) : regexData;
-            if (!regex.test(obj[key])) return false;
+            if (!regex.test(data)) return false;
         },
-        size: (key, size) => {
-            if (Array.isArray(obj[key]) || typeof obj[key] === "string") {
-                if (obj[key].length !== size) return false;
+        size: (data, size) => {
+            if (Array.isArray(data) || typeof data === "string") {
+                if (data.length !== size) return false;
             } else {
                 return false;
             }
         },
 
-        startsWith: (key, value) => typeof obj[key] === "string" && obj[key].startsWith(value),
-        endsWith: (key, value) => typeof obj[key] === "string" && obj[key].endsWith(value),
-        between: (key, [min, max]) => typeof obj[key] === "number" && obj[key] >= min && obj[key] <= max,
-        arrinc: (key, values) => Array.isArray(obj[key]) && values.some(val => obj[key].includes(val)),
-        arrincall: (key, values) => Array.isArray(obj[key]) && values.every(val => obj[key].includes(val)),
+        startsWith: (data, value) => typeof data === "string" && data.startsWith(value),
+        endsWith: (data, value) => typeof data === "string" && data.endsWith(value),
+        between: (data, [min, max]) => typeof data === "number" && data >= min && data <= max,
+        arrinc: (data, values) => Array.isArray(data) && values.some((val: any) => data.includes(val)),
+        arrincall: (data, values) => Array.isArray(data) && values.every((val: any) => data.includes(val)),
+
+        idGt: (data, value) => compareIds(data, value) > 0,
+        idLt: (data, value) => compareIds(data, value) < 0,
+        idGte: (data, value) => compareIds(data, value) >= 0,
+        idLte: (data, value) => compareIds(data, value) <= 0,
     });
 }
 
@@ -87,13 +93,13 @@ function checkSubset(obj: Object, fields: Object) {
     return true;
 }
 
-function _for(fields: Object, opts: Record<string, (key: string, value: any) => boolean>) {
+function _for(fields: Object, obj: Object, opts: Record<string, (data: any, value: any, key: string) => boolean>) {
     for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
         const field = "$" + fieldRaw;
 
         if (field in fields) {
             for (const [key, value] of Object.entries(fields[field])) {
-                if (!fieldFn(key, value)) return false;
+                if (!fieldFn(obj?.[key], value, key)) return false;
             }
         }
 

@@ -39,6 +39,11 @@ export type ComparisonOperators<T = any> = {
 
     $in?: Partial<Record<keyof T, T[keyof T][]>>;
     $nin?: Partial<Record<keyof T, T[keyof T][]>>;
+
+    $idGt?: PartialOfType<T, string | number>;
+    $idLt?: PartialOfType<T, string | number>;
+    $idGte?: PartialOfType<T, string | number>;
+    $idLte?: PartialOfType<T, string | number>;
 };
 
 /** Type and Existence Operators */

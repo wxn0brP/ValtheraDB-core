@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.5...v0.2.6) (2025-11-14)
+
+
+### Features
+
+* add more unit tests ([54b1ebf](https://github.com/wxn0brP/ValtheraDB-core/commit/54b1ebfcd352c231ed3d192c8e52d590b0bd8ec7))
+* improve operators, id operations, refactor operators engine ([d2d855f](https://github.com/wxn0brP/ValtheraDB-core/commit/d2d855f399834d7a0809d26c8469802df4268278))
+* improve update object engine ([e6ebaf7](https://github.com/wxn0brP/ValtheraDB-core/commit/e6ebaf7795e9f93297b6aff8f56faa78aa191196))
+* unit tests ([bf0c4bd](https://github.com/wxn0brP/ValtheraDB-core/commit/bf0c4bd1ced39103e478600942bbe47a2e4b9eae))
+* update types ([8b9c3de](https://github.com/wxn0brP/ValtheraDB-core/commit/8b9c3deb7fbb071824abb0add9b023c6be2dee0a))
+
+
+### Bug Fixes
+
+* $merge types ([de0b952](https://github.com/wxn0brP/ValtheraDB-core/commit/de0b952f99722a68d56fa5193d65d4e611f02b64))
+* add missing operator to hasFieldsAdvanced ([6f67bf8](https://github.com/wxn0brP/ValtheraDB-core/commit/6f67bf8a6a16e0fa0e822cf734ef1d85e5ed4b63))
+* operators ([5aa3c5e](https://github.com/wxn0brP/ValtheraDB-core/commit/5aa3c5ef8e76da4b3a82116b665c11c960afa4e8))
+* update object ([e8ac826](https://github.com/wxn0brP/ValtheraDB-core/commit/e8ac826f3bf8bd6d358184325df0109c4d23e003))
+
 ### [0.2.5](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.4...v0.2.5) (2025-10-28)
 
 

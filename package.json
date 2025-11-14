@@ -19,7 +19,7 @@
         "@wxn0brp/event-emitter": "^0.0.3"
     },
     "devDependencies": {
-        "@types/bun": "^1.3.2",
+        "@types/bun": "*",
         "@types/node": "*",
         "tsc-alias": "*",
         "typescript": "*"

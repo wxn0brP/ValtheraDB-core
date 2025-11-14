@@ -1,15 +1,11 @@
 name: Types
 
 on:
-  push:
-    branches:
-      - master
-    tags:
-      - "*"
+  workflow_run:
+    workflows: ["Unit Tests"]
+    types:
+      - completed
 
-  pull_request:
-    branches:
-      - master
   workflow_dispatch:
 
 concurrency:
@@ -19,6 +15,7 @@ concurrency:
 jobs:
   deploy-types:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
 

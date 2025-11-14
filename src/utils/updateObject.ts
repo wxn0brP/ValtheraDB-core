@@ -4,25 +4,21 @@ import { deepMerge } from "./merge";
 /**
  * Updates an object with new values.
  * @param obj - The object to update.
- * @param fields - An object containing new values to update in the target object.
+ * @param field - An object containing new values to update in the target object.
  */
-export default function updateObjectAdvanced(obj: Object, fields: UpdaterArg | UpdaterArg[]) {
-    if (typeof fields !== "object" || fields === null) {
+export default function updateObjectAdvanced(obj: Object, field: UpdaterArg) {
+    if (typeof field !== "object" || field === null) {
         throw new Error("Fields must be an object or object array");
     }
 
-    const fieldsArray = Array.isArray(fields) ? fields : [fields];
-
-    for (const field of fieldsArray) {
-        if (typeof field !== "object" || field === null) {
-            throw new Error("Fields must be an object or object array");
-        }
-
-        updateAdvanced(obj, field);
-        const fieldsSubset = { ...fields };
-        Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
-        updateObject(obj, fieldsSubset);
+    if (typeof field !== "object" || field === null) {
+        throw new Error("Fields must be an object or object array");
     }
+
+    updateAdvanced(obj, field);
+    const fieldsSubset = { ...field };
+    Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
+    updateObject(obj, fieldsSubset);
 
     return obj;
 }
@@ -83,7 +79,7 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
             if (typeof item === "number" && typeof updater === "number") {
                 return item - updater;
             }
-            if (!(key in obj)) return updater;
+            if (!(key in obj)) return -updater;
             throw new Error(`Cannot decrement non-numeric value at key: ${key}`);
         },
 

@@ -16,8 +16,8 @@ export type ArrayUpdater<T = any> = {
 
 /** Objects */
 export type ObjectUpdater<T = any> = {
-    $merge?: PartialOfType<T, any[]>,
-    $deepMerge?: PartialOfType<T, any[]>,
+    $merge?: PartialOfType<T, any>,
+    $deepMerge?: PartialOfType<T, any>,
 }
 
 /** Values */

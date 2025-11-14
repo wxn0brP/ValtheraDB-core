@@ -16,6 +16,10 @@ npm install @wxn0brp/db-core
 
 See [typedoc](https://wxn0brp.github.io/ValtheraDB-core/).
 
+## Contributing
+
+Contributions are welcome! Please submit pull requests or open issues on GitHub.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

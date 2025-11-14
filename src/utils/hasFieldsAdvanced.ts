@@ -55,11 +55,11 @@ function mainCheck(obj: Object, fields: Object) {
         },
         regex: (data, regexData) => {
             const regex = typeof regexData === "string" ? new RegExp(regexData) : regexData;
-            if (!regex.test(data)) return false;
+            return regex.test(data);
         },
         size: (data, size) => {
             if (Array.isArray(data) || typeof data === "string") {
-                if (data.length !== size) return false;
+                return data.length === size;
             } else {
                 return false;
             }

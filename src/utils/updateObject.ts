@@ -1,4 +1,5 @@
 import { UpdaterArg } from "../types/updater";
+import { deepMerge } from "./merge";
 
 /**
  * Updates an object with new values.
@@ -18,7 +19,8 @@ export default function updateObjectAdvanced(obj: Object, fields: UpdaterArg | U
         }
 
         updateAdvanced(obj, field);
-        const fieldsSubset = removeAdvancedOperators({ ...field });
+        const fieldsSubset = { ...fields };
+        Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
         updateObject(obj, fieldsSubset);
     }
 
@@ -26,117 +28,80 @@ export default function updateObjectAdvanced(obj: Object, fields: UpdaterArg | U
 }
 
 function updateAdvanced(obj: Object, fields: UpdaterArg) {
-    updateArray(obj, fields);
-    updateNested(obj, fields);
-    updateIncrement(obj, fields);
+    mainUpdate(obj, fields);
     updateUnset(obj, fields);
-    updateRename(obj, fields);
 }
 
-function removeAdvancedOperators(fields: Object) {
-    const advancedOperators = [
-        "push", "pushset", "pull", "pullall",
-        "inc", "dec",
-        "unset",
-        "merge",
-        "rename"
-    ].map(operator => "$" + operator);
-    advancedOperators.forEach(operator => delete fields[operator]);
-    return fields;
-}
-
-function updateArray(obj: Object, fields: UpdaterArg) {
-    if ("$push" in fields) {
-        for (const [key, value] of Object.entries(fields["$push"])) {
-            if (Array.isArray(obj[key])) {
-                obj[key].push(value);
-            } else {
-                obj[key] = [value];
+function mainUpdate(obj: Object, fields: UpdaterArg) {
+    _for(fields, obj, {
+        push: (item, updater) => {
+            if (Array.isArray(item)) {
+                item.push(updater);
+                return item;
             }
-        }
-    }
-
-    if ("$pushset" in fields) {
-        for (const [key, value] of Object.entries(fields["$pushset"])) {
-            if (Array.isArray(obj[key])) {
-                obj[key].push(value);
-            } else {
-                obj[key] = [value];
+            return [updater];
+        },
+        pushSet: (item, updater) => {
+            if (Array.isArray(item)) {
+                item.push(updater);
+                return [...new Set(item)];
             }
-            obj[key] = [...new Set(obj[key])];
-        }
-    }
+            return [updater];
+        },
 
-    if ("$pull" in fields) {
-        for (const [key, value] of Object.entries(fields["$pull"])) {
-            if (Array.isArray(obj[key])) {
-                obj[key] = obj[key].filter(item => item !== value);
-            }
-        }
-    }
+        pull: (item, updater) => {
+            if (Array.isArray(item)) return item.filter(i => i !== updater);
+        },
 
-    if ("$pullall" in fields) {
-        for (const [key, values] of Object.entries(fields["$pullall"])) {
-            if (Array.isArray(obj[key])) {
-                obj[key] = obj[key].filter(item => !(values as string[]).includes(item));
-            }
-        }
-    }
-}
+        pullall: (item, updater) => {
+            if (Array.isArray(item)) return item.filter(i => !(updater as string[]).includes(i));
+        },
 
-function updateNested(obj: Object, fields: UpdaterArg) {
-    if ("$merge" in fields) {
-        for (const [key, value] of Object.entries(fields["$merge"])) {
-            if (typeof obj[key] === "object" && typeof value === "object") {
-                obj[key] = { ...obj[key], ...value };
-            } else {
-                obj[key] = value;
+        merge: (item, updater) => {
+            if (typeof item === "object" && typeof updater === "object") {
+                return { ...item, ...updater };
             }
-        }
-    }
-}
+            return updater;
+        },
 
-function updateIncrement(obj: Object, fields: UpdaterArg) {
-    if ("$inc" in fields) {
-        for (const [key, value] of Object.entries(fields["$inc"])) {
-            if (typeof obj[key] === "number" && typeof value === "number") {
-                obj[key] += value;
-            } else if (!(key in obj)) {
-                obj[key] = value;
-            } else {
-                throw new Error(`Cannot increment non-numeric value at key: ${key}`);
+        deepMerge: (item, updater) => {
+            if (typeof item === "object" && typeof updater === "object") {
+                return deepMerge(item, updater);
             }
-        }
-    }
+            return updater;
+        },
 
-    if ("$dec" in fields) {
-        for (const [key, value] of Object.entries(fields["$dec"])) {
-            if (typeof obj[key] === "number" && typeof value === "number") {
-                obj[key] -= value;
-            } else if (!(key in obj)) {
-                obj[key] = value;
-            } else {
-                throw new Error(`Cannot decrement non-numeric value at key: ${key}`);
+        inc: (item, updater, key) => {
+            if (typeof item === "number" && typeof updater === "number") {
+                return item + updater;
             }
-        }
-    }
+            if (!(key in obj)) return updater;
+            throw new Error(`Cannot increment non-numeric value at key: ${key}`);
+        },
+
+        dec: (item, updater, key) => {
+            if (typeof item === "number" && typeof updater === "number") {
+                return item - updater;
+            }
+            if (!(key in obj)) return updater;
+            throw new Error(`Cannot decrement non-numeric value at key: ${key}`);
+        },
+
+        rename: (_, newKey, oldKey) => {
+            if (oldKey in obj) {
+                obj[newKey as string] = obj[oldKey];
+                delete obj[oldKey];
+            }
+        },
+
+        set: (_, value) => value
+    });
 }
 
 function updateUnset(obj: Object, fields: UpdaterArg) {
     if ("$unset" in fields) {
         for (const key of Object.keys(fields["$unset"])) {
             delete obj[key];
-        }
-    }
-}
-
-function updateRename(obj: Object, fields: UpdaterArg) {
-    if ("$rename" in fields) {
-        for (const [oldKey, newKey] of Object.entries(fields["$rename"])) {
-            if (oldKey in obj) {
-                obj[newKey as string] = obj[oldKey];
-                delete obj[oldKey];
-            }
         }
     }
 }
@@ -153,4 +118,17 @@ function updateObject(obj: Object, newVal: UpdaterArg) {
         }
     }
     return obj;
+}
+
+function _for(fields: UpdaterArg, obj: Object, opts: Record<string, (item: any, updater: any, key: string) => any>) {
+    for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
+        const field = "$" + fieldRaw;
+
+        if (field in fields) {
+            for (const [key, value] of Object.entries(fields[field])) {
+                const res = fieldFn(obj?.[key], value, key);
+                if (res !== undefined) obj[key] = res;
+            }
+        }
+    }
 }

@@ -59,8 +59,23 @@ class CollectionManager<D = Data> {
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    async updateOneOrAdd<T = Data>(search: Search<T & Data>, updater: Updater<T & Data>, { add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<T & Data>) {
+    async updateOneOrAdd<T = Data>(
+        search: Search<T & Data>,
+        updater: Updater<T & Data>,
+        {
+            add_arg = {},
+            context = {},
+            id_gen = true
+        }: UpdateOneOrAdd<T & Data>
+    ) {
         return await this.db.updateOneOrAdd(this.collection, search, updater, { add_arg, context, id_gen }) as boolean;
+    }
+
+    /**
+     * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
+     */
+    async toggleOne<T = Data>(search: Search<T & Data>, data: Arg<T & Data> = {}, context: VContext = {}) {
+        return await this.db.toggleOne(this.collection, search, data, context) as boolean;
     }
 }
 

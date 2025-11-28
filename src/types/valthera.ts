@@ -19,7 +19,7 @@ export interface ValtheraCompatible {
     removeOne<T = Data>(collection: string, search: Search<T>, context?: VContext): Promise<boolean>;
     removeCollection(collection: string): Promise<boolean>;
     updateOneOrAdd<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, opts?: UpdateOneOrAdd<T>): Promise<boolean>;
-    toggleOne<T = Data>(collection: string, search: Search<T>, data: Arg<T>, context: VContext): Promise<boolean>;
+    toggleOne<T = Data>(collection: string, search: Search<T>, data?: Arg<T>, context?: VContext): Promise<boolean>;
 }
 
 export interface UpdateOneOrAdd<T> {

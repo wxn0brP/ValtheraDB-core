@@ -1,6 +1,6 @@
 import { VQuery } from "../types/query";
 
-function assignDataPush(data: any) {
+export function assignDataPush(data: any) {
     if (typeof data !== "object" || Array.isArray(data)) return;
     const obj = {};
     for (const key of Object.keys(data)) {
@@ -20,5 +20,13 @@ export function setDataUsingUpdateOneOrAdd(query: VQuery) {
         assignDataPush(query.search),
         assignDataPush(query.updater),
         assignDataPush(query.add_arg)
+    );
+}
+
+export function setDataUsingToggleOne(query: VQuery) {
+    query.data = Object.assign(
+        {},
+        assignDataPush(query.search),
+        assignDataPush(query.data)
     );
 }

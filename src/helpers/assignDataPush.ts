@@ -1,20 +1,27 @@
 import { VQuery } from "../types/query";
 
 export function assignDataPush(data: any) {
-    if (typeof data !== "object" || Array.isArray(data)) return;
+    if (!data) return {};
+    if (typeof data !== "object" || Array.isArray(data)) return {};
+    if (Object.keys(data).length === 0) return {};
+
     const obj = {};
+
     for (const key of Object.keys(data)) {
-        if (key.startsWith("$")) {
-            Object.keys(data[key]).forEach((k) => {
-                obj[k] = data[key][k];
-            })
-        } else
+        if (!key.startsWith("$")) {
             obj[key] = data[key];
+            continue;
+        }
+
+        const dk = data[key];
+        if (Array.isArray(dk)) continue;
+        Object.keys(dk).forEach((k) => obj[k] = dk[k]);
     }
+
     return obj;
 }
 
-export function setDataUsingUpdateOneOrAdd(query: VQuery) {
+export function setDataForUpdateOneOrAdd(query: VQuery) {
     query.data = Object.assign(
         {},
         assignDataPush(query.search),
@@ -23,7 +30,7 @@ export function setDataUsingUpdateOneOrAdd(query: VQuery) {
     );
 }
 
-export function setDataUsingToggleOne(query: VQuery) {
+export function setDataForToggleOne(query: VQuery) {
     query.data = Object.assign(
         {},
         assignDataPush(query.search),

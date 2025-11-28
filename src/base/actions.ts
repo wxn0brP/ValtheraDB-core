@@ -1,4 +1,4 @@
-import { setDataUsingToggleOne, setDataUsingUpdateOneOrAdd } from "../helpers/updateOneOrAdd";
+import { setDataForToggleOne, setDataForUpdateOneOrAdd } from "../helpers/assignDataPush";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
 
@@ -64,20 +64,20 @@ class ActionsBase {
 
     async updateOneOrAdd(config: VQuery) {
         const res = await this.updateOne(config);
-        if (!res) {
-            setDataUsingUpdateOneOrAdd(config);
-            await this.add(config);
-        }
-        return res as boolean;
+        if (res) return true;
+
+        setDataForUpdateOneOrAdd(config);
+        await this.add(config);
+        return false;
     }
 
     async toggleOne(config: VQuery) {
         const res = await this.removeOne(config);
-        if (!res) {
-            setDataUsingToggleOne(config);
-            await this.add(config);
-        }
-        return res as boolean;
+        if (res) return true;
+
+        setDataForToggleOne(config);
+        await this.add(config);
+        return false;
     }
 }
 

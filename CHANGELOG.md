@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.12](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.11...v0.2.12) (2025-11-28)
+
+
+### Bug Fixes
+
+* CollectionManager toggleOne ([cd04c6c](https://github.com/wxn0brP/ValtheraDB-core/commit/cd04c6c0a802fb88f5ba4e3adfb4e986fb7f822a))
+
 ### [0.2.11](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.10...v0.2.11) (2025-11-28)
 
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.8](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.7...v0.2.8) (2025-11-28)
+
+
+### Features
+
+* toggleOne ([18b41a5](https://github.com/wxn0brP/ValtheraDB-core/commit/18b41a57faefcc0ee602fdf526400c7fea838996))
+
 ### [0.2.7](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.6...v0.2.7) (2025-11-15)
 
 

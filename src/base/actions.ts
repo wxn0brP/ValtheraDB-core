@@ -70,6 +70,12 @@ class ActionsBase {
         }
         return res as boolean;
     }
+
+    async toggleOne(config: VQuery) {
+        const res = await this.removeOne(config);
+        if (!res) await this.add(config);
+        return res as boolean;
+    }
 }
 
 export default ActionsBase;

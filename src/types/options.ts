@@ -11,7 +11,7 @@ export interface DbOpts {
 
 export interface DbFindOpts<T = any> {
     reverse?: boolean;
-    max?: number;
+    limit?: number;
     offset?: number;
     sortBy?: KeysMatching<T, any>;
     sortAsc?: boolean;

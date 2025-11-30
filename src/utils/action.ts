@@ -7,8 +7,8 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
     const { search, context = {}, dbFindOpts = {}, findOpts = {} } = query;
     const {
         reverse = false,
-        max = -1,
         offset = 0,
+        limit = -1,
         sortBy,
         sortAsc = true
     } = dbFindOpts;
@@ -33,11 +33,11 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
                 skippedEntries = offset;
             }
 
-            if (max !== -1) {
-                if (totalEntries + entries.length > max) {
-                    const remaining = max - totalEntries;
+            if (limit !== -1) {
+                if (totalEntries + entries.length > limit) {
+                    const remaining = limit - totalEntries;
                     entries = entries.slice(0, remaining);
-                    totalEntries = max;
+                    totalEntries = limit;
                 } else {
                     totalEntries += entries.length;
                 }
@@ -45,7 +45,7 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
 
             datas.push(...entries);
 
-            if (max !== -1 && totalEntries >= max) break;
+            if (limit !== -1 && totalEntries >= limit) break;
         } else {
             datas.push(...entries);
         }
@@ -56,7 +56,7 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
         datas.sort((a, b) => compareSafe(a[sortBy], b[sortBy]) * dir);
 
         const start = offset;
-        const end = max !== -1 ? offset + max : undefined;
+        const end = limit !== -1 ? offset + limit : undefined;
         datas = datas.slice(start, end);
     }
 

@@ -2,11 +2,11 @@ import { describe, test, expect } from "bun:test";
 import hasFieldsAdvanced from "#utils/hasFieldsAdvanced";
 
 describe("hasFieldsAdvanced", () => {
-    test("should return true for empty fields", () => {
+    test("1. should return true for empty fields", () => {
         expect(hasFieldsAdvanced({}, {})).toBe(true);
     });
 
-    test("should throw error for non-object fields", () => {
+    test("2. should throw error for non-object fields", () => {
         expect(() => hasFieldsAdvanced({}, null)).toThrow("Fields must be an object");
         // @ts-expect-error
         expect(() => hasFieldsAdvanced({}, "string")).toThrow("Fields must be an object");
@@ -14,7 +14,7 @@ describe("hasFieldsAdvanced", () => {
         expect(() => hasFieldsAdvanced({}, 123)).toThrow("Fields must be an object");
     });
 
-    test("should handle $and operator", () => {
+    test("3. should handle $and operator", () => {
         const obj = { a: 5, b: 10 };
         expect(
             hasFieldsAdvanced(obj, {
@@ -35,7 +35,7 @@ describe("hasFieldsAdvanced", () => {
         ).toBe(false);
     });
 
-    test("should handle $or operator", () => {
+    test("4. should handle $or operator", () => {
         const obj = { a: 5, b: 10 };
         expect(
             hasFieldsAdvanced(obj, {
@@ -56,45 +56,45 @@ describe("hasFieldsAdvanced", () => {
         ).toBe(false);
     });
 
-    test("should handle $gt operator", () => {
+    test("5. should handle $gt operator", () => {
         const obj = { a: 10, b: 5 };
         expect(hasFieldsAdvanced(obj, { $gt: { a: 5 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $gt: { a: 15 } })).toBe(false);
     });
 
-    test("should handle $lt operator", () => {
+    test("6. should handle $lt operator", () => {
         const obj = { a: 10, b: 5 };
         expect(hasFieldsAdvanced(obj, { $lt: { a: 15 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $lt: { a: 5 } })).toBe(false);
     });
 
-    test("should handle $gte operator", () => {
+    test("7. should handle $gte operator", () => {
         const obj = { a: 10, b: 5 };
         expect(hasFieldsAdvanced(obj, { $gte: { a: 10 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $gte: { a: 9 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $gte: { a: 11 } })).toBe(false);
     });
 
-    test("should handle $lte operator", () => {
+    test("8. should handle $lte operator", () => {
         const obj = { a: 10, b: 5 };
         expect(hasFieldsAdvanced(obj, { $lte: { a: 10 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $lte: { a: 11 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $lte: { a: 9 } })).toBe(false);
     });
 
-    test("should handle $in operator", () => {
+    test("9. should handle $in operator", () => {
         const obj = { a: 5, b: "hello" };
         expect(hasFieldsAdvanced(obj, { $in: { a: [1, 2, 5] } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $in: { a: [1, 2, 3] } })).toBe(false);
     });
 
-    test("should handle $nin operator", () => {
+    test("10. should handle $nin operator", () => {
         const obj = { a: 5, b: "hello" };
         expect(hasFieldsAdvanced(obj, { $nin: { a: [1, 2, 7] } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $nin: { a: [1, 2, 5] } })).toBe(false);
     });
 
-    test("should handle $type operator", () => {
+    test("11. should handle $type operator", () => {
         const obj = { a: 5, b: "hello", c: true };
         expect(hasFieldsAdvanced(obj, { $type: { a: "number" } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $type: { b: "string" } })).toBe(true);
@@ -102,7 +102,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $type: { a: "string" } })).toBe(false);
     });
 
-    test("should handle $exists operator", () => {
+    test("12. should handle $exists operator", () => {
         const obj = { a: 5, b: undefined };
         expect(hasFieldsAdvanced(obj, { $exists: { a: true } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $exists: { c: false } })).toBe(true);
@@ -110,63 +110,63 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $exists: { c: true } })).toBe(false);
     });
 
-    test("should handle $regex operator", () => {
+    test("13. should handle $regex operator", () => {
         const obj = { text: "hello world" };
         expect(hasFieldsAdvanced(obj, { $regex: { text: "hello" } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $regex: { text: "^hello" } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $regex: { text: "goodbye" } })).toBe(false);
     });
 
-    test("should handle $size operator", () => {
+    test("14. should handle $size operator", () => {
         const obj = { arr: [1, 2, 3], str: "abc" };
         expect(hasFieldsAdvanced(obj, { $size: { arr: 3 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $size: { str: 3 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $size: { arr: 2 } })).toBe(false);
     });
 
-    test("should handle $startsWith operator", () => {
+    test("15. should handle $startsWith operator", () => {
         const obj = { text: "hello world" };
         expect(hasFieldsAdvanced(obj, { $startsWith: { text: "hello" } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $startsWith: { text: "world" } })).toBe(false);
     });
 
-    test("should handle $endsWith operator", () => {
+    test("16. should handle $endsWith operator", () => {
         const obj = { text: "hello world" };
         expect(hasFieldsAdvanced(obj, { $endsWith: { text: "world" } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $endsWith: { text: "hello" } })).toBe(false);
     });
 
-    test("should handle $between operator", () => {
+    test("17. should handle $between operator", () => {
         const obj = { num: 10 };
         expect(hasFieldsAdvanced(obj, { $between: { num: [5, 15] } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $between: { num: [15, 20] } })).toBe(false);
     });
 
-    test("should handle $arrinc operator", () => {
+    test("18. should handle $arrinc operator", () => {
         const obj = { arr: [1, 2, 3] };
         expect(hasFieldsAdvanced(obj, { $arrinc: { arr: [2, 4] } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $arrinc: { arr: [4, 5] } })).toBe(false);
     });
 
-    test("should handle $arrincall operator", () => {
+    test("19. should handle $arrincall operator", () => {
         const obj = { arr: [1, 2, 3] };
         expect(hasFieldsAdvanced(obj, { $arrincall: { arr: [1, 2] } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $arrincall: { arr: [1, 4] } })).toBe(false);
     });
 
-    test("should handle $not operator", () => {
+    test("20. should handle $not operator", () => {
         const obj = { a: 5, b: 10 };
         expect(hasFieldsAdvanced(obj, { $not: { a: 10 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $not: { a: 5 } })).toBe(false);
     });
 
-    test("should handle $subset operator", () => {
+    test("21. should handle $subset operator", () => {
         const obj = { a: 5, b: 10, c: 15 };
         expect(hasFieldsAdvanced(obj, { $subset: { a: 5, b: 10 } })).toBe(true);
         expect(hasFieldsAdvanced(obj, { $subset: { a: 5, b: 20 } })).toBe(false);
     });
 
-    test("should combine multiple operators", () => {
+    test("22. should combine multiple operators", () => {
         const obj = { a: 10, b: "hello", c: [1, 2, 3] };
         expect(
             hasFieldsAdvanced(obj, {
@@ -185,7 +185,7 @@ describe("hasFieldsAdvanced", () => {
         ).toBe(false);
     });
 
-    test("should handle complex nested conditions", () => {
+    test("23. should handle complex nested conditions", () => {
         const obj = { a: 10, b: "hello", c: [1, 2, 3] };
         expect(
             hasFieldsAdvanced(obj, {
@@ -216,7 +216,7 @@ describe("hasFieldsAdvanced", () => {
         ).toBe(false);
     });
 
-    test("should handle deep checks for nested object comparisons", () => {
+    test("24. should handle deep checks for nested object comparisons", () => {
         const obj = {
             user: {
                 profile: {
@@ -239,7 +239,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { user: { profile: { address: { city: "Boston" } } } })).toBe(false);
     });
 
-    test("should handle deep operator checks with nested objects", () => {
+    test("25. should handle deep operator checks with nested objects", () => {
         const obj = {
             a: {
                 b: {
@@ -260,7 +260,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $type: { a: { b: { c: "number" } } } })).toBe(true);
     });
 
-    test("should handle deep checks with $exists operator - but note limitations", () => {
+    test("26. should handle deep checks with $exists operator - but note limitations", () => {
         const obj = {
             a: {
                 b: {
@@ -277,7 +277,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $exists: { z: false } })).toBe(true); // 'z' doesn't exist and shouldn't
     });
 
-    test("should handle deep checks with $regex operator and nested objects", () => {
+    test("27. should handle deep checks with $regex operator and nested objects", () => {
         const obj = {
             user: {
                 profile: {
@@ -293,7 +293,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $regex: { user: { profile: { email: "test" } } } })).toBe(false);
     });
 
-    test("should handle deep checks with $size operator and nested objects", () => {
+    test("28. should handle deep checks with $size operator and nested objects", () => {
         const obj = {
             data: {
                 items: [1, 2, 3],
@@ -306,7 +306,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $size: { data: { items: 2 } } })).toBe(false);
     });
 
-    test("should handle deep checks with $not operator and nested objects", () => {
+    test("29. should handle deep checks with $not operator and nested objects", () => {
         const obj = {
             a: { b: { c: 10 } },
             d: 20
@@ -318,7 +318,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $not: { $gt: { a: { b: { c: 5 } } } } })).toBe(false);
     });
 
-    test("should handle deep checks with complex nested objects and operators", () => {
+    test("30. should handle deep checks with complex nested objects and operators", () => {
         const obj = {
             level1: {
                 level2: {
@@ -340,7 +340,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { simple: "value" })).toBe(true);
     });
 
-    test("should handle deep checks with null and undefined values in nested structures", () => {
+    test("31. should handle deep checks with null and undefined values in nested structures", () => {
         const obj = {
             a: {
                 b: {
@@ -363,7 +363,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { a: { b: { d: "anything" } } })).toBe(false);
     });
 
-    test("should handle deep checks with $between operator and nested objects", () => {
+    test("32. should handle deep checks with $between operator and nested objects", () => {
         const obj = {
             data: {
                 score: 85
@@ -374,7 +374,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $between: { data: { score: [90, 100] } } })).toBe(false);
     });
 
-    test("should handle deep checks with $startsWith and $endsWith operators and nested objects", () => {
+    test("33. should handle deep checks with $startsWith and $endsWith operators and nested objects", () => {
         const obj = {
             user: {
                 name: "John Doe"
@@ -387,7 +387,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $endsWith: { user: { name: "Smith" } } })).toBe(false);
     });
 
-    test("should handle deep checks with array inclusion operators and nested objects", () => {
+    test("34. should handle deep checks with array inclusion operators and nested objects", () => {
         const obj = {
             data: {
                 tags: ["javascript", "typescript", "node"]
@@ -400,7 +400,7 @@ describe("hasFieldsAdvanced", () => {
         expect(hasFieldsAdvanced(obj, { $arrincall: { data: { tags: ["javascript", "python"] } } })).toBe(false);
     });
 
-    test("should handle mixed shallow and deep operations", () => {
+    test("35. should handle mixed shallow and deep operations", () => {
         const obj = {
             a: { b: { c: 10 } },
             d: 20,

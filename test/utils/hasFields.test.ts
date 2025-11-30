@@ -2,30 +2,30 @@ import { describe, test, expect } from "bun:test";
 import hasFields from "#utils/hasFields";
 
 describe("hasFields", () => {
-    test("should return true for empty fields", () => {
+    test("1. should return true for empty fields", () => {
         expect(hasFields({}, {})).toBe(true);
     });
 
-    test("should return true when all fields match", () => {
+    test("2. should return true when all fields match", () => {
         const obj = { a: 5, b: 10 };
         expect(hasFields(obj, { a: 5 })).toBe(true);
         expect(hasFields(obj, { a: 5, b: 10 })).toBe(true);
     });
 
-    test("should return false when any field doesn't match", () => {
+    test("3. should return false when any field doesn't match", () => {
         const obj = { a: 5, b: 10 };
         expect(hasFields(obj, { a: 6 })).toBe(false);
         expect(hasFields(obj, { a: 5, b: 11 })).toBe(false);
         expect(hasFields(obj, { c: 5 })).toBe(false);
     });
 
-    test("should return false when object doesn't have required field", () => {
+    test("4. should return false when object doesn't have required field", () => {
         const obj = { a: 5 };
         expect(hasFields(obj, { b: 5 })).toBe(false);
         expect(hasFields(obj, { a: 5, b: 10 })).toBe(false);
     });
 
-    test("should handle different data types correctly", () => {
+    test("5. should handle different data types correctly", () => {
         const obj = {
             string: "hello",
             number: 42,
@@ -45,7 +45,7 @@ describe("hasFields", () => {
         expect(hasFields(obj, { nullValue: undefined })).toBe(false);
     });
 
-    test("should handle nested objects", () => {
+    test("6. should handle nested objects", () => {
         const obj = {
             a: {
                 b: {
@@ -61,7 +61,7 @@ describe("hasFields", () => {
         expect(hasFields(obj, { d: 10 })).toBe(true);
     });
 
-    test("should return false for nested objects when nested field doesn't match", () => {
+    test("7. should return false for nested objects when nested field doesn't match", () => {
         const obj = {
             a: {
                 b: 5
@@ -73,7 +73,7 @@ describe("hasFields", () => {
         expect(hasFields(obj, { a: { c: 5 } })).toBe(false); // c doesn't exist in obj.a
     });
 
-    test("should handle arrays as values", () => {
+    test("8. should handle arrays as values", () => {
         const obj = {
             arr: [1, 2, 3],
             nested: {
@@ -87,7 +87,7 @@ describe("hasFields", () => {
         expect(hasFields(obj, { nested: { arr: ["a", "b", "d"] } })).toBe(false);
     });
 
-    test("should handle null and undefined values properly", () => {
+    test("9. should handle null and undefined values properly", () => {
         const obj = {
             nullField: null,
             zero: 0,
@@ -106,7 +106,7 @@ describe("hasFields", () => {
         expect(hasFields(obj, { emptyString: false })).toBe(false);
     });
 
-    test("should distinguish between objects and primitive values", () => {
+    test("10. should distinguish between objects and primitive values", () => {
         const obj = {
             obj: { value: "test" },
             primitive: 123
@@ -118,7 +118,7 @@ describe("hasFields", () => {
         expect(hasFields(obj, { primitive: { value: "test" } })).toBe(false);
     });
 
-    test("should handle deeply nested structures", () => {
+    test("11. should handle deeply nested structures", () => {
         const obj = {
             level1: {
                 level2: {
@@ -133,13 +133,13 @@ describe("hasFields", () => {
         expect(hasFields(obj, { level1: { level2: { level3: { value: "shallow" } } } })).toBe(false);
     });
 
-    test("should handle objects with same values but different key order", () => {
+    test("12. should handle objects with same values but different key order", () => {
         const obj = { a: 1, b: 2 };
         // The function only checks if the field values match, not the ordering
         expect(hasFields(obj, { b: 2, a: 1 })).toBe(true);
     });
 
-    test("should return true when checking for empty object in nested structure", () => {
+    test("13. should return true when checking for empty object in nested structure", () => {
         const obj = { a: {} };
         expect(hasFields(obj, { a: {} })).toBe(true);
     });

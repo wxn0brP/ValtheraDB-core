@@ -3,7 +3,7 @@ import updateFindObject from "#utils/updateFindObject";
 import { FindOpts } from "#types/options";
 
 describe("updateFindObject", () => {
-    test("should return the object unchanged if no find options are provided", () => {
+    test("1. should return the object unchanged if no find options are provided", () => {
         const obj = { a: 1, b: 2, c: 3 };
         const findOpts: FindOpts = {};
         const result = updateFindObject(obj, findOpts);
@@ -12,7 +12,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, b: 2, c: 3 });
     });
 
-    test("should apply transform function if provided", () => {
+    test("2. should apply transform function if provided", () => {
         const obj = { a: 1, b: 2 };
         const findOpts: FindOpts = {
             transform: (o: any) => ({ ...o, transformed: true })
@@ -22,7 +22,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, b: 2, transformed: true });
     });
 
-    test("should exclude specified fields", () => {
+    test("3. should exclude specified fields", () => {
         const obj = { a: 1, b: 2, c: 3, d: 4 };
         const findOpts: FindOpts = {
             exclude: ["b", "d"]
@@ -32,7 +32,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, c: 3 });
     });
 
-    test("should select specified fields", () => {
+    test("4. should select specified fields", () => {
         const obj = { a: 1, b: 2, c: 3, d: 4 };
         const findOpts: FindOpts = {
             select: ["a", "c"]
@@ -42,7 +42,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, c: 3 });
     });
 
-    test("should handle non-existent fields in exclude", () => {
+    test("5. should handle non-existent fields in exclude", () => {
         const obj = { a: 1, b: 2 };
         const findOpts: FindOpts = {
             exclude: ["c", "d"]  // fields that don't exist
@@ -52,7 +52,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, b: 2 }); // unchanged
     });
 
-    test("should handle non-existent fields in select", () => {
+    test("6. should handle non-existent fields in select", () => {
         const obj = { a: 1, b: 2 };
         const findOpts: FindOpts = {
             select: ["a", "c"]  // "c" doesn't exist
@@ -62,7 +62,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1 }); // only "a" is selected
     });
 
-    test("should apply transform, then exclude, then select in that order", () => {
+    test("7. should apply transform, then exclude, then select in that order", () => {
         const obj = { a: 1, b: 2, c: 3 };
         const findOpts: FindOpts = {
             transform: (o: any) => ({ ...o, d: 4, e: 5 }),
@@ -74,7 +74,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, c: 3, d: 4 });
     });
 
-    test("should handle when findOpts is not a proper object (with destructuring)", () => {
+    test("8. should handle when findOpts is not a proper object (with destructuring)", () => {
         expect(() => {
             updateFindObject({ a: 1 }, null);
         }).toThrow();
@@ -84,7 +84,7 @@ describe("updateFindObject", () => {
         }).toThrow();
     });
 
-    test("should handle empty select array", () => {
+    test("9. should handle empty select array", () => {
         const obj = { a: 1, b: 2, c: 3 };
         const findOpts: FindOpts = {
             select: []
@@ -94,7 +94,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({});
     });
 
-    test("should handle empty exclude array", () => {
+    test("10. should handle empty exclude array", () => {
         const obj = { a: 1, b: 2, c: 3 };
         const findOpts: FindOpts = {
             exclude: []
@@ -104,7 +104,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, b: 2, c: 3 }); // unchanged
     });
 
-    test("should handle both select and exclude (select takes precedence)", () => {
+    test("11. should handle both select and exclude (select takes precedence)", () => {
         const obj = { a: 1, b: 2, c: 3, d: 4 };
         const findOpts: FindOpts = {
             select: ["a", "b", "c"],
@@ -117,7 +117,7 @@ describe("updateFindObject", () => {
         expect(result).toEqual({ a: 1, c: 3 });
     });
 
-    test("should work with nested objects", () => {
+    test("12. should work with nested objects", () => {
         const obj = {
             a: 1,
             nested: { x: 10, y: 20 },

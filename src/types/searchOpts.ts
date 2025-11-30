@@ -1,85 +1,73 @@
-/**
- * Predefined Search Options Quick Reference
- * 
- * This module defines the types and structures for search operators used
- * to validate and query data objects.
- */
-
-import { Arg } from "./arg";
-import { PartialOfType, PartialPickMatching } from "./utils";
+import { DeepPartial, NestedValue } from "./utils";
 
 /** Logical Operators */
 export type LogicalOperators<T = any> = {
-    /**
-     * Recursively applies multiple conditions, all of which must evaluate to true.
-     * Can include other operators such as $gt, $exists, or nested $and/$or conditions.
-     */
-    $and?: Array<SearchOptions<T>>;
-
-    /**
-     * Recursively applies multiple conditions, at least one of which must evaluate to true.
-     * Can include other operators such as $lt, $type, or nested $and/$or conditions.
-     */
-    $or?: Array<SearchOptions<T>>;
-
-    /**
-     * Negates a single condition.
-     * Can include any other operator as its value.
-     */
-    $not?: SearchOptions<T>;
+	/**
+	 * Recursively applies multiple conditions, all of which must evaluate to true.
+	 * Can include other operators such as $gt, $exists, or nested $and/$or conditions.
+	 */
+	$and?: Array<SearchOptions<T>>;
+	/**
+	 * Recursively applies multiple conditions, at least one of which must evaluate to true.
+	 * Can include other operators such as $lt, $type, or nested $and/$or conditions.
+	 */
+	$or?: Array<SearchOptions<T>>;
+	/**
+	 * Negates a single condition.
+	 * Can include any other operator as its value.
+	 */
+	$not?: SearchOptions<T>;
 };
 
-/** Comparison Operators */
+/** Comparison Operators with nested support */
 export type ComparisonOperators<T = any> = {
-    $gt?: PartialOfType<T, number>;
-    $lt?: PartialOfType<T, number>;
-    $gte?: PartialOfType<T, number>;
-    $lte?: PartialOfType<T, number>;
-    $between?: PartialOfType<T, [number, number], number>;
-
-    $in?: Partial<Record<keyof T, T[keyof T][]>>;
-    $nin?: Partial<Record<keyof T, T[keyof T][]>>;
-
-    $idGt?: PartialOfType<T, string | number>;
-    $idLt?: PartialOfType<T, string | number>;
-    $idGte?: PartialOfType<T, string | number>;
-    $idLte?: PartialOfType<T, string | number>;
+	$gt?: NestedValue<T, number, number>;
+	$lt?: NestedValue<T, number, number>;
+	$gte?: NestedValue<T, number, number>;
+	$lte?: NestedValue<T, number, number>;
+	$between?: NestedValue<T, [number, number], number>;
+	$in?: DeepPartial<T> & { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
+	$nin?: DeepPartial<T> & { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
+	$idGt?: NestedValue<T, string | number, string | number>;
+	$idLt?: NestedValue<T, string | number, string | number>;
+	$idGte?: NestedValue<T, string | number, string | number>;
+	$idLte?: NestedValue<T, string | number, string | number>;
 };
 
-/** Type and Existence Operators */
+/** Type and Existence Operators with nested support */
 export type TypeAndExistenceOperators<T = any> = {
-    $exists?: PartialOfType<T, boolean, any>;
-    $type?: PartialOfType<T, string>;
+	$exists?: NestedValue<T, boolean>;
+	$type?: NestedValue<T, string>;
 };
 
-/** Array Operators */
+/** Array Operators with nested support */
 export type ArrayOperators<T = any> = {
-    $arrinc?: PartialPickMatching<T, any[]>;
-    $arrincall?: PartialPickMatching<T, any[]>;
-    $size?: PartialOfType<T, number>;
+	$arrinc?: DeepPartial<T>;
+	$arrincall?: DeepPartial<T>;
+	$size?: NestedValue<T, number>;
 };
 
-/** String Operators */
+/** String Operators with nested support */
 export type StringOperators<T = any> = {
-    $regex?: PartialOfType<T, RegExp | string, string>;
-    $startsWith?: PartialOfType<T, string>;
-    $endsWith?: PartialOfType<T, string>;
+	$regex?: NestedValue<T, RegExp | string, string>;
+	$startsWith?: NestedValue<T, string, string>;
+	$endsWith?: NestedValue<T, string, string>;
 };
 
-/** Other Operators */
+/** Other Operators with nested support */
 export type OtherOperators<T = any> = {
-    $subset?: Partial<Record<keyof T, T[keyof T]>>;
+	$subset?: DeepPartial<T>;
 };
 
 /** Predefined Search Operators */
 export type PredefinedSearchOperators<T = any> = LogicalOperators<T> &
-    ComparisonOperators<T> &
-    TypeAndExistenceOperators<T> &
-    ArrayOperators<T> &
-    StringOperators<T> &
-    OtherOperators<T>;
+	ComparisonOperators<T> &
+	TypeAndExistenceOperators<T> &
+	ArrayOperators<T> &
+	StringOperators<T> &
+	OtherOperators<T>;
 
 /**
  * SearchOptions can be either a function or an object with predefined operators.
  */
-export type SearchOptions<T = any> = PredefinedSearchOperators<T> & Arg<T>;
+export type SearchOptions<T = any> = PredefinedSearchOperators<T> & DeepPartial<T> & Record<string, any>;

@@ -93,16 +93,37 @@ function checkSubset(obj: Object, fields: Object) {
     return true;
 }
 
-function _for(fields: Object, obj: Object, opts: Record<string, (data: any, value: any, key: string) => boolean>) {
+function _for(fields: Record<string, any>, obj: Record<string, any>, opts: Record<string, (data: any, value: any, key: string) => boolean>): boolean {
     for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
         const field = "$" + fieldRaw;
 
         if (field in fields) {
             for (const [key, value] of Object.entries(fields[field])) {
-                if (!fieldFn(obj?.[key], value, key)) return false;
+
+                const targetValue = obj?.[key];
+
+                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                    if (!deepCheck(value, targetValue, fieldFn)) return false;
+                } else {
+                    if (!fieldFn(targetValue, value, key)) return false;
+                }
+
             }
         }
+    }
+    return true;
+}
 
+function deepCheck(valueObj: Record<string, any>, targetObj: any, fieldFn: (data: any, value: any, key: string) => boolean): boolean {
+    if (typeof targetObj !== "object" || targetObj === null) return false;
+
+    for (const [k, v] of Object.entries(valueObj)) {
+        const targetValue = targetObj[k];
+        if (typeof v === "object" && v !== null && !Array.isArray(v)) {
+            if (!deepCheck(v, targetValue, fieldFn)) return false;
+        } else {
+            if (!fieldFn(targetValue, v, k)) return false;
+        }
     }
     return true;
 }

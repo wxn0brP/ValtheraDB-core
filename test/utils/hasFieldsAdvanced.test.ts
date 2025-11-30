@@ -215,4 +215,217 @@ describe("hasFieldsAdvanced", () => {
             })
         ).toBe(false);
     });
+
+    test("should handle deep checks for nested object comparisons", () => {
+        const obj = {
+            user: {
+                profile: {
+                    age: 25,
+                    address: {
+                        city: "New York",
+                        zip: 10001
+                    }
+                }
+            }
+        };
+
+        // Test deep equality
+        expect(hasFieldsAdvanced(obj, { user: { profile: { age: 25 } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { user: { profile: { age: 30 } } })).toBe(false);
+
+        // Test deep nested structure
+        expect(hasFieldsAdvanced(obj, { user: { profile: { address: { city: "New York" } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { user: { profile: { address: { zip: 10001 } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { user: { profile: { address: { city: "Boston" } } } })).toBe(false);
+    });
+
+    test("should handle deep operator checks with nested objects", () => {
+        const obj = {
+            a: {
+                b: {
+                    c: 10,
+                    nested: { value: 5 }
+                }
+            },
+            d: 20
+        };
+
+        // Deep comparison with operators - nested objects inside operator fields
+        expect(hasFieldsAdvanced(obj, { $gt: { a: { b: { c: 5 } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $lt: { a: { b: { c: 15 } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $gte: { a: { b: { c: 10 } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $lte: { a: { b: { c: 10 } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $in: { a: { b: { c: [8, 9, 10] } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $nin: { a: { b: { c: [1, 2, 3] } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $type: { a: { b: { c: "number" } } } })).toBe(true);
+    });
+
+    test("should handle deep checks with $exists operator - but note limitations", () => {
+        const obj = {
+            a: {
+                b: {
+                    c: 5,
+                    d: undefined
+                }
+            }
+        };
+
+        // Note: $exists checks keys in the top-level object, not nested paths
+        // This is a limitation of the current implementation
+        expect(hasFieldsAdvanced(obj, { $exists: { a: true } })).toBe(true); // 'a' exists in obj
+        expect(hasFieldsAdvanced(obj, { $exists: { a: false } })).toBe(false); // 'a' exists but should not
+        expect(hasFieldsAdvanced(obj, { $exists: { z: false } })).toBe(true); // 'z' doesn't exist and shouldn't
+    });
+
+    test("should handle deep checks with $regex operator and nested objects", () => {
+        const obj = {
+            user: {
+                profile: {
+                    email: "john@example.com",
+                    description: "Software developer"
+                }
+            }
+        };
+
+        expect(hasFieldsAdvanced(obj, { $regex: { user: { profile: { email: "example" } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $regex: { user: { profile: { email: "^john" } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $regex: { user: { profile: { description: "developer" } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $regex: { user: { profile: { email: "test" } } } })).toBe(false);
+    });
+
+    test("should handle deep checks with $size operator and nested objects", () => {
+        const obj = {
+            data: {
+                items: [1, 2, 3],
+                text: "hello"
+            }
+        };
+
+        expect(hasFieldsAdvanced(obj, { $size: { data: { items: 3 } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $size: { data: { text: 5 } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $size: { data: { items: 2 } } })).toBe(false);
+    });
+
+    test("should handle deep checks with $not operator and nested objects", () => {
+        const obj = {
+            a: { b: { c: 10 } },
+            d: 20
+        };
+
+        expect(hasFieldsAdvanced(obj, { $not: { a: { b: { c: 15 } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $not: { a: { b: { c: 10 } } } })).toBe(false);
+        expect(hasFieldsAdvanced(obj, { $not: { $gt: { a: { b: { c: 15 } } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $not: { $gt: { a: { b: { c: 5 } } } } })).toBe(false);
+    });
+
+    test("should handle deep checks with complex nested objects and operators", () => {
+        const obj = {
+            level1: {
+                level2: {
+                    level3: {
+                        value: 42,
+                        items: [1, 2, 3],
+                        nested: {
+                            deep: true
+                        }
+                    }
+                }
+            },
+            simple: "value"
+        };
+
+        expect(hasFieldsAdvanced(obj, { $gt: { level1: { level2: { level3: { value: 40 } } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $size: { level1: { level2: { level3: { items: 3 } } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { level1: { level2: { level3: { nested: { deep: true } } } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { simple: "value" })).toBe(true);
+    });
+
+    test("should handle deep checks with null and undefined values in nested structures", () => {
+        const obj = {
+            a: {
+                b: {
+                    c: null,
+                    d: undefined,
+                    e: "exists"
+                }
+            },
+            f: 5
+        };
+
+        // Direct nested object equality check (not using operators)
+        // Note: Properties explicitly set to undefined are not matched by hasFields
+        expect(hasFieldsAdvanced(obj, { a: { b: { c: null } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { a: { b: { e: "exists" } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { a: { b: { c: null, e: "exists" } } })).toBe(true);
+
+        // Properties set to undefined can't be matched by hasFields (due to implementation)
+        // This demonstrates a limitation of the current implementation
+        expect(hasFieldsAdvanced(obj, { a: { b: { d: "anything" } } })).toBe(false);
+    });
+
+    test("should handle deep checks with $between operator and nested objects", () => {
+        const obj = {
+            data: {
+                score: 85
+            }
+        };
+
+        expect(hasFieldsAdvanced(obj, { $between: { data: { score: [80, 90] } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $between: { data: { score: [90, 100] } } })).toBe(false);
+    });
+
+    test("should handle deep checks with $startsWith and $endsWith operators and nested objects", () => {
+        const obj = {
+            user: {
+                name: "John Doe"
+            }
+        };
+
+        expect(hasFieldsAdvanced(obj, { $startsWith: { user: { name: "John" } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $endsWith: { user: { name: "Doe" } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $startsWith: { user: { name: "Jane" } } })).toBe(false);
+        expect(hasFieldsAdvanced(obj, { $endsWith: { user: { name: "Smith" } } })).toBe(false);
+    });
+
+    test("should handle deep checks with array inclusion operators and nested objects", () => {
+        const obj = {
+            data: {
+                tags: ["javascript", "typescript", "node"]
+            }
+        };
+
+        expect(hasFieldsAdvanced(obj, { $arrinc: { data: { tags: ["typescript"] } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $arrinc: { data: { tags: ["python"] } } })).toBe(false);
+        expect(hasFieldsAdvanced(obj, { $arrincall: { data: { tags: ["javascript", "typescript"] } } })).toBe(true);
+        expect(hasFieldsAdvanced(obj, { $arrincall: { data: { tags: ["javascript", "python"] } } })).toBe(false);
+    });
+
+    test("should handle mixed shallow and deep operations", () => {
+        const obj = {
+            a: { b: { c: 10 } },
+            d: 20,
+            e: "test"
+        };
+
+        // Both shallow and deep conditions should pass
+        expect(hasFieldsAdvanced(obj, {
+            $gt: { a: { b: { c: 5 } } },
+            $lt: { d: 25 },
+            e: "test"
+        })).toBe(true);
+
+        // One deep condition fails
+        expect(hasFieldsAdvanced(obj, {
+            $gt: { a: { b: { c: 15 } } },
+            $lt: { d: 25 },
+            e: "test"
+        })).toBe(false);
+
+        // One shallow condition fails
+        expect(hasFieldsAdvanced(obj, {
+            $gt: { a: { b: { c: 5 } } },
+            $lt: { d: 15 },
+            e: "test"
+        })).toBe(false);
+    });
 });

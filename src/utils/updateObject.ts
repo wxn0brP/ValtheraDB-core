@@ -15,17 +15,12 @@ export default function updateObjectAdvanced(obj: Object, field: UpdaterArg) {
         throw new Error("Fields must be an object or object array");
     }
 
-    updateAdvanced(obj, field);
+    mainUpdate(obj, field);
     const fieldsSubset = { ...field };
     Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
     updateObject(obj, fieldsSubset);
 
     return obj;
-}
-
-function updateAdvanced(obj: Object, fields: UpdaterArg) {
-    mainUpdate(obj, fields);
-    updateUnset(obj, fields);
 }
 
 function mainUpdate(obj: Object, fields: UpdaterArg) {
@@ -37,7 +32,14 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
             }
             return [updater];
         },
-        pushSet: (item, updater) => {
+        pushall: (item, updater) => {
+            if (Array.isArray(item)) {
+                item.push(...updater);
+                return item;
+            }
+            return updater;
+        },
+        pushset: (item, updater) => {
             if (Array.isArray(item)) {
                 item.push(updater);
                 return [...new Set(item)];
@@ -60,46 +62,44 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
             return updater;
         },
 
-        deepMerge: (item, updater) => {
+        deepmerge: (item, updater) => {
             if (typeof item === "object" && typeof updater === "object") {
                 return deepMerge(item, updater);
             }
             return updater;
         },
 
-        inc: (item, updater, key) => {
+        inc: (item, updater, key, deepObj) => {
+            console.log(item, updater, key, deepObj);
             if (typeof item === "number" && typeof updater === "number") {
                 return item + updater;
             }
-            if (!(key in obj)) return updater;
+            if (!(key in deepObj)) return updater;
             throw new Error(`Cannot increment non-numeric value at key: ${key}`);
         },
 
-        dec: (item, updater, key) => {
+        dec: (item, updater, key, deepObj) => {
             if (typeof item === "number" && typeof updater === "number") {
                 return item - updater;
             }
-            if (!(key in obj)) return -updater;
+            if (!(key in deepObj)) return -updater;
             throw new Error(`Cannot decrement non-numeric value at key: ${key}`);
         },
 
-        rename: (_, newKey, oldKey) => {
-            if (oldKey in obj) {
-                obj[newKey as string] = obj[oldKey];
-                delete obj[oldKey];
+        rename: (_, newKey, oldKey, deepObj) => {
+            if (oldKey in deepObj) {
+                deepObj[newKey as string] = deepObj[oldKey];
+                delete deepObj[oldKey];
             }
         },
 
-        set: (_, value) => value
-    });
-}
+        set: (_, value) => value,
 
-function updateUnset(obj: Object, fields: UpdaterArg) {
-    if ("$unset" in fields) {
-        for (const key of Object.keys(fields["$unset"])) {
-            delete obj[key];
+        unset: (_, __, key, deepObj) => {
+            if (key in deepObj)
+                delete deepObj[key];
         }
-    }
+    });
 }
 
 /**
@@ -116,15 +116,40 @@ function updateObject(obj: Object, newVal: UpdaterArg) {
     return obj;
 }
 
-function _for(fields: UpdaterArg, obj: Object, opts: Record<string, (item: any, updater: any, key: string) => any>) {
+function _for(
+    fields: Record<string, any>,
+    obj: Record<string, any>,
+    opts: Record<string, (data: any, value: any, key: string, deepObj: Record<string, any>) => any>
+) {
     for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
-        const field = "$" + fieldRaw;
+        const field = "$" + fieldRaw.toLowerCase();
 
         if (field in fields) {
             for (const [key, value] of Object.entries(fields[field])) {
-                const res = fieldFn(obj?.[key], value, key);
-                if (res !== undefined) obj[key] = res;
+                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                    deepUpdateCheck(value, obj[key], fieldFn);
+                } else {
+                    const res = fieldFn(obj?.[key], value, key, obj);
+                    if (res !== undefined) obj[key] = res;
+                }
             }
+        }
+    }
+}
+
+function deepUpdateCheck(
+    valueObj: Record<string, any>,
+    targetObj: any,
+    fieldFn: (data: any, value: any, key: string, deepObj: Record<string, any>) => any
+): boolean {
+    if (typeof targetObj !== "object" || targetObj === null) return false;
+
+    for (const [k, v] of Object.entries(valueObj)) {
+        if (typeof v === "object" && v !== null && !Array.isArray(v)) {
+            deepUpdateCheck(v, targetObj[k], fieldFn);
+        } else {
+            const res = fieldFn(targetObj[k], v, k, targetObj);
+            if (res !== undefined) targetObj[k] = res;
         }
     }
 }

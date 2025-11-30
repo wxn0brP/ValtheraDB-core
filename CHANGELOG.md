@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.12...v0.3.0-alpha.0) (2025-11-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix
+* find.max to find.limit
+* ignore search special operators letter size
+* deep update for advanced operators
+* deep matching for search advanced operators
+
+### Features
+
+* change deepMerge ([66bf502](https://github.com/wxn0brP/ValtheraDB-core/commit/66bf502013481fb0a78009bdfad908a7a636bdb4))
+* deep matching for search advanced operators ([8ce59e2](https://github.com/wxn0brP/ValtheraDB-core/commit/8ce59e213317a880a3eb4f41e3e8afeeff85e0c5))
+* deep update for advanced operators ([5597ef6](https://github.com/wxn0brP/ValtheraDB-core/commit/5597ef6dddf42285b24d195229eee439cde9782c))
+* find.max to find.limit ([7451bce](https://github.com/wxn0brP/ValtheraDB-core/commit/7451bce430ded05251b5e52b6023cb81b097cf00))
+* ignore search special operators letter size ([1d71733](https://github.com/wxn0brP/ValtheraDB-core/commit/1d71733e4fea5fc283550208ba1c170a69ee24b9))
+
+
+### Bug Fixes
+
+* CollectionManager types ([247c371](https://github.com/wxn0brP/ValtheraDB-core/commit/247c37131597509daa5d2128a600ceca13cc7097))
+* fix ([6aaae7e](https://github.com/wxn0brP/ValtheraDB-core/commit/6aaae7e78a27bf00aef2c1c878d64c5aa0920805))
+
 ### [0.2.12](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.11...v0.2.12) (2025-11-28)
 
 

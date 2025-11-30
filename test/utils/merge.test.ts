@@ -104,9 +104,7 @@ describe("deepMerge", () => {
 
         // Test with target as null
         const result2 = deepMerge(null, { b: 2 });
-        // When target is null, output = { ...null } = {}, and since isObject(null) is false,
-        // no merging occurs, so result is {}
-        expect(result2).toEqual({});
+        expect(result2).toEqual({ b: 2 });
     });
 
     test("8. should handle source with primitive values", () => {

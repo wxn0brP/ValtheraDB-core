@@ -20,14 +20,18 @@ export default function hasFieldsAdvanced(obj: Object, fields: Arg) {
         return fields["$or"].some((subFields: Object) => hasFieldsAdvanced(obj, subFields));
     }
 
-    // Check various conditions
-    if (!checkConditions(obj, fields)) return false;
+    const $fields = {};
+    const subsetFields = {};
 
-    const fieldsSubset = { ...fields };
-    Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
-    if (!Object.keys(fieldsSubset).length) return true;
+    Object.keys(fields).forEach(key => {
+        if (key.startsWith("$")) $fields[key.toLowerCase()] = fields[key];
+        else subsetFields[key] = fields[key];
+    });
 
-    return hasFields(obj, fieldsSubset);
+    if (!checkConditions(obj, $fields)) return false;
+
+    if (!Object.keys(subsetFields).length) return true;
+    return hasFields(obj, subsetFields);
 }
 
 function checkConditions(obj: Object, fields: Object) {
@@ -95,11 +99,10 @@ function checkSubset(obj: Object, fields: Object) {
 
 function _for(fields: Record<string, any>, obj: Record<string, any>, opts: Record<string, (data: any, value: any, key: string) => boolean>): boolean {
     for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
-        const field = "$" + fieldRaw.toLowerCase();
+        const field = "$" + fieldRaw;
 
         if (field in fields) {
             for (const [key, value] of Object.entries(fields[field])) {
-
                 const targetValue = obj?.[key];
 
                 if (typeof value === "object" && value !== null && !Array.isArray(value)) {
@@ -107,7 +110,6 @@ function _for(fields: Record<string, any>, obj: Record<string, any>, opts: Recor
                 } else {
                     if (!fieldFn(targetValue, value, key)) return false;
                 }
-
             }
         }
     }

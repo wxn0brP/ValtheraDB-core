@@ -1,25 +1,41 @@
 import { UpdaterArg } from "../types/updater";
-import { deepMerge } from "./merge";
+import { _deepMerge } from "./merge";
 
 /**
  * Updates an object with new values.
  * @param obj - The object to update.
  * @param field - An object containing new values to update in the target object.
  */
-export default function updateObjectAdvanced(obj: Object, field: UpdaterArg) {
+export default function updateObjectAdvanced(obj: Record<string, any>, field: UpdaterArg): Record<string, any> {
     if (typeof field !== "object" || field === null) {
         throw new Error("Fields must be an object or object array");
     }
 
-    if (typeof field !== "object" || field === null) {
-        throw new Error("Fields must be an object or object array");
+    if (Object.keys(field).length === 0) {
+        return obj;
     }
 
-    mainUpdate(obj, field);
-    const fieldsSubset = { ...field };
-    Object.keys(fieldsSubset).filter(key => key.startsWith("$")).forEach(key => delete fieldsSubset[key]);
-    updateObject(obj, fieldsSubset);
+    const newObj = structuredClone(obj);
 
+    const $fields = {};
+    const subsetFields = {};
+
+    Object.keys(field).forEach(key => {
+        if (key.startsWith("$")) $fields[key.toLowerCase()] = field[key];
+        else subsetFields[key] = field[key];
+    });
+
+    mainUpdate(newObj, $fields);
+    const mergedObj = deepMerge(newObj, $fields);
+    updateObject(mergedObj, subsetFields);
+
+    return mergedObj;
+}
+
+function deepMerge(obj: Object, fields: UpdaterArg) {
+    if (!("$deepmerge" in fields)) return obj;
+    if (Object.keys(obj).length === 0) return fields.$deepmerge;
+    _deepMerge(obj, fields.$deepmerge);
     return obj;
 }
 
@@ -57,20 +73,13 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 
         merge: (item, updater) => {
             if (typeof item === "object" && typeof updater === "object") {
-                return { ...item, ...updater };
-            }
-            return updater;
-        },
-
-        deepmerge: (item, updater) => {
-            if (typeof item === "object" && typeof updater === "object") {
-                return deepMerge(item, updater);
+                Object.assign(item, updater);
+                return item;
             }
             return updater;
         },
 
         inc: (item, updater, key, deepObj) => {
-            console.log(item, updater, key, deepObj);
             if (typeof item === "number" && typeof updater === "number") {
                 return item + updater;
             }
@@ -122,11 +131,13 @@ function _for(
     opts: Record<string, (data: any, value: any, key: string, deepObj: Record<string, any>) => any>
 ) {
     for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
-        const field = "$" + fieldRaw.toLowerCase();
+        const field = "$" + fieldRaw;
 
         if (field in fields) {
             for (const [key, value] of Object.entries(fields[field])) {
+
                 if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                    if (!obj[key]) obj[key] = {};
                     deepUpdateCheck(value, obj[key], fieldFn);
                 } else {
                     const res = fieldFn(obj?.[key], value, key, obj);
@@ -141,11 +152,11 @@ function deepUpdateCheck(
     valueObj: Record<string, any>,
     targetObj: any,
     fieldFn: (data: any, value: any, key: string, deepObj: Record<string, any>) => any
-): boolean {
-    if (typeof targetObj !== "object" || targetObj === null) return false;
+) {
 
     for (const [k, v] of Object.entries(valueObj)) {
         if (typeof v === "object" && v !== null && !Array.isArray(v)) {
+            if (!targetObj[k]) targetObj[k] = {};
             deepUpdateCheck(v, targetObj[k], fieldFn);
         } else {
             const res = fieldFn(targetObj[k], v, k, targetObj);

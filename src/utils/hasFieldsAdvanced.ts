@@ -65,16 +65,16 @@ function mainCheck(obj: Object, fields: Object) {
             }
         },
 
-        startsWith: (data, value) => typeof data === "string" && data.startsWith(value),
-        endsWith: (data, value) => typeof data === "string" && data.endsWith(value),
+        startswith: (data, value) => typeof data === "string" && data.startsWith(value),
+        endswith: (data, value) => typeof data === "string" && data.endsWith(value),
         between: (data, [min, max]) => typeof data === "number" && data >= min && data <= max,
         arrinc: (data, values) => Array.isArray(data) && values.some((val: any) => data.includes(val)),
         arrincall: (data, values) => Array.isArray(data) && values.every((val: any) => data.includes(val)),
 
-        idGt: (data, value) => compareIds(data, value) > 0,
-        idLt: (data, value) => compareIds(data, value) < 0,
-        idGte: (data, value) => compareIds(data, value) >= 0,
-        idLte: (data, value) => compareIds(data, value) <= 0,
+        idgt: (data, value) => compareIds(data, value) > 0,
+        idlt: (data, value) => compareIds(data, value) < 0,
+        idgte: (data, value) => compareIds(data, value) >= 0,
+        idlte: (data, value) => compareIds(data, value) <= 0,
     });
 }
 
@@ -95,7 +95,7 @@ function checkSubset(obj: Object, fields: Object) {
 
 function _for(fields: Record<string, any>, obj: Record<string, any>, opts: Record<string, (data: any, value: any, key: string) => boolean>): boolean {
     for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
-        const field = "$" + fieldRaw;
+        const field = "$" + fieldRaw.toLowerCase();
 
         if (field in fields) {
             for (const [key, value] of Object.entries(fields[field])) {

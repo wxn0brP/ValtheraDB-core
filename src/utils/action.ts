@@ -52,8 +52,12 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
     }
 
     if (sortBy) {
-        const dir = sortAsc ? 1 : -1;
-        datas.sort((a, b) => compareSafe(a[sortBy], b[sortBy]) * dir);
+        if (sortBy === "random()") {
+            datas.sort(() => Math.random() - 0.5);
+        } else {
+            const dir = sortAsc ? 1 : -1;
+            datas.sort((a, b) => compareSafe(a[sortBy], b[sortBy]) * dir);
+        }
 
         const start = offset;
         const end = limit !== -1 ? offset + limit : undefined;

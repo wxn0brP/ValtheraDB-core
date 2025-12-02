@@ -16,7 +16,7 @@
         "build": "tsc && tsc-alias"
     },
     "dependencies": {
-        "@wxn0brp/event-emitter": "^0.0.3"
+        "@wxn0brp/event-emitter": "^0.0.4"
     },
     "devDependencies": {
         "@types/bun": "*",

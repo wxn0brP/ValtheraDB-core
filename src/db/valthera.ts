@@ -21,7 +21,19 @@ type DbActionsFns = keyof {
 class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
     executor: executorC;
-    emiter: VEE;
+    emiter: VEE<{
+        [K in Exclude<DbActionsFns, "init">]:
+        (
+            query: VQuery,
+            result: Awaited<ReturnType<ValtheraCompatible[K]>>
+        ) => void;
+    } & {
+        "*": (
+            name: DbActionsFns,
+            query: VQuery,
+            result: any
+        ) => void;
+    }>;
     version = version;
 
     constructor(options: DbOpts = {}) {
@@ -44,9 +56,8 @@ class ValtheraClass implements ValtheraCompatible {
     async execute<T>(name: DbActionsFns, query: VQuery) {
         await this.init();
         const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
-        const emitArgs = Array.from(arguments).slice(1);
-        this.emiter.emit(name, emitArgs, result);
-        this.emiter.emit("*", name, emitArgs, result);
+        this.emiter.emit(name, query, result);
+        this.emiter.emit("*", name, query, result);
         return result;
     }
 

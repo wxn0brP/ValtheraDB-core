@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.3.0-alpha.0...v0.3.0) (2025-12-05)
+
+
+### Features
+
+* sortBy random() ([150863f](https://github.com/wxn0brP/ValtheraDB-core/commit/150863fcb2c25c6eb0f61d4065527f44e8c8e1cc))
+* update event emitter ([6543a20](https://github.com/wxn0brP/ValtheraDB-core/commit/6543a205a6b3638b947975d10c8176b7c1b97f09))
+
 ## [0.3.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.2.12...v0.3.0-alpha.0) (2025-11-30)
 
 

@@ -1,0 +1,39 @@
+{
+  "name": "@wxn0brp/db-core",
+  "version": "0.3.0",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "author": "wxn0brP",
+  "license": "MIT",
+  "type": "module",
+  "description": "ValtheraDB Core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wxn0brP/ValtheraDB-core.git"
+  },
+  "homepage": "https://github.com/wxn0brP/ValtheraDB",
+  "dependencies": {
+    "@wxn0brp/event-emitter": "^0.0.4"
+  },
+  "devDependencies": {
+    "@types/bun": "*",
+    "@types/node": "*",
+    "tsc-alias": "*",
+    "typescript": "*"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js",
+      "default": "./dist/*.js"
+    }
+  }
+}

@@ -66,7 +66,7 @@ class CollectionManager<D = Data> {
             add_arg = {},
             context = {},
             id_gen = true
-        }: UpdateOneOrAdd<T & D>
+        }: UpdateOneOrAdd<T & D> = {}
     ) {
         return await this.db.updateOneOrAdd(this.collection, search, updater, { add_arg, context, id_gen }) as boolean;
     }

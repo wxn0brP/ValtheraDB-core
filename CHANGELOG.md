@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.3.0...v0.3.1) (2025-12-23)
+
+
+### Bug Fixes
+
+* CollectionManager - make updateOneOrAdd options optional ([e2664e7](https://github.com/wxn0brP/ValtheraDB-core/commit/e2664e7476daf312294691581e69a02ce199f324))
+
 ## [0.3.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.3.0-alpha.0...v0.3.0) (2025-12-05)
 
 

@@ -1,5 +1,15 @@
 import { DeepPartial, NestedValue } from "./utils";
 
+export type JSPrimitiveType =
+	| "string"
+	| "number"
+	| "boolean"
+	| "bigint"
+	| "symbol"
+	| "undefined"
+	| "function"
+	| "object";
+
 /** Logical Operators */
 export type LogicalOperators<T = any> = {
 	/**
@@ -48,9 +58,9 @@ export type ComparisonOperators<T = any> = {
 /** Type and Existence Operators with nested support */
 export type TypeAndExistenceOperators<T = any> = {
 	/** "name" in { name: "John" } */
-	$exists?: NestedValue<T, boolean>;
+	$exists?: NestedValue<T, boolean, any>;
 	/** "name" == "string" in { name: "John" } */
-	$type?: NestedValue<T, string>;
+	$type?: NestedValue<T, JSPrimitiveType, any>;
 };
 
 /** Array Operators with nested support */

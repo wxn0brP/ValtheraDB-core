@@ -1,4 +1,4 @@
-import CollectionManager from "./CollectionManager";
+import { CollectionManager } from "./collectionManager";
 import Data from "../types/data";
 import { ValtheraCompatible } from "../types/valthera";
 

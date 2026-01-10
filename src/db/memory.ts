@@ -1,7 +1,7 @@
 
 import { CustomActionsBase } from "../base/custom";
 import CustomFileCpu from "../customFileCpu";
-import CollectionManager from "../helpers/CollectionManager";
+import { CollectionManager } from "../helpers/collectionManager";
 import Data from "../types/data";
 import { VQuery } from "../types/query";
 import { forgeValthera } from "../helpers/forge";

@@ -1,6 +1,6 @@
 import { VEE } from "@wxn0brp/event-emitter";
 import ActionsBase from "../base/actions";
-import CollectionManager from "../helpers/CollectionManager";
+import { CollectionManager } from "../helpers/collectionManager";
 import executorC from "../helpers/executor";
 import { Arg, Search, Updater } from "../types/arg";
 import Data from "../types/data";

@@ -2,7 +2,6 @@ import { CollectionManager } from "../helpers/collectionManager";
 import { Arg, Search, Updater } from "./arg";
 import Data from "./data";
 import { DbFindOpts, FindOpts } from "./options";
-import { VQuery } from "./query";
 import { VContext } from "./types";
 
 export interface ValtheraCompatible {
@@ -26,21 +25,4 @@ export interface UpdateOneOrAdd<T> {
     add_arg?: Arg<T>;
     id_gen?: boolean;
     context?: VContext;
-}
-
-export interface ValtheraCompatibleInternal {
-    c(config: VQuery): CollectionManager;
-    getCollections(): Promise<string[]>;
-    ensureCollection(config: VQuery): Promise<boolean>;
-    issetCollection(config: VQuery): Promise<boolean>;
-    add<T = Data>(config: VQuery): Promise<T>;
-    find<T = Data>(config: VQuery): Promise<T[]>;
-    findOne<T = Data>(config: VQuery): Promise<T | null>;
-    update(config: VQuery): Promise<boolean>;
-    updateOne(config: VQuery): Promise<boolean>;
-    remove(config: VQuery): Promise<boolean>;
-    removeOne(config: VQuery): Promise<boolean>;
-    removeCollection(config: VQuery): Promise<boolean>;
-    updateOneOrAdd(config: VQuery): Promise<boolean>;
-    toggleOne(config: VQuery): Promise<boolean>;
 }

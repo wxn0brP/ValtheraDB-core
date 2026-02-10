@@ -1,4 +1,4 @@
-interface Task {
+export interface Task {
     func: Function;
     param: any[];
     resolve: Function;
@@ -9,7 +9,7 @@ interface Task {
  * A simple executor for queuing and executing asynchronous operations sequentially.
  * @class
  */
-class ExecutorC {
+export class Executor {
     quote: Task[];
     isExecuting: boolean;
 
@@ -51,6 +51,3 @@ class ExecutorC {
         this.isExecuting = false;
     }
 }
-
-export default ExecutorC;
-export { ExecutorC as executorC };

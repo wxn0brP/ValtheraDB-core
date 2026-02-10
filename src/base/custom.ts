@@ -1,9 +1,9 @@
-import CustomFileCpu from "../customFileCpu";
+import { CustomFileCpu } from "../customFileCpu";
 import { addId } from "../helpers/addId";
-import Data from "../types/data";
+import { Data } from "../types/data";
 import { VQuery } from "../types/query";
 import { findUtil } from "../utils/action";
-import ActionsBase from "./actions";
+import { ActionsBase } from "./actions";
 
 export class CustomActionsBase extends ActionsBase {
     fileCpu: CustomFileCpu;
@@ -54,7 +54,8 @@ export class CustomActionsBase extends ActionsBase {
      */
     async updateOne({ collection, search, updater, context = {} }: VQuery) {
         await this.ensureCollection(arguments[0]);
-        return await this.fileCpu.update(collection, true, search, updater, context);
+        const res = await this.fileCpu.update(collection, true, search, updater, context);
+        return res.length ? res[0] : null;
     }
 
     /**
@@ -70,6 +71,7 @@ export class CustomActionsBase extends ActionsBase {
      */
     async removeOne({ collection, search, context = {} }: VQuery) {
         await this.ensureCollection(arguments[0]);
-        return await this.fileCpu.remove(collection, true, search, context);
+        const res = await this.fileCpu.remove(collection, true, search, context);
+        return res.length ? res[0] : null;
     }
 }

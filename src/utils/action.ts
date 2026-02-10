@@ -1,5 +1,5 @@
-import Data from "../types/data";
-import FileCpu from "../types/fileCpu";
+import { Data } from "../types/data";
+import { FileCpu } from "../types/fileCpu";
 import { VQuery } from "../types/query";
 import { compareSafe } from "./compare";
 

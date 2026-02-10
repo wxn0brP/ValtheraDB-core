@@ -9,7 +9,7 @@ import { FindOpts } from "../types/options";
  * @param [findOpts.exclude] - An array of fields to exclude from the target object.
  * @returns The updated object.
  */
-export default function updateFindObject(obj: Object, findOpts: FindOpts) {
+export function updateFindObject(obj: Object, findOpts: FindOpts) {
     const {
         transform,
         select,

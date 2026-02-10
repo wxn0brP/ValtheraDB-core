@@ -6,7 +6,7 @@ import { _deepMerge } from "./merge";
  * @param obj - The object to update.
  * @param field - An object containing new values to update in the target object.
  */
-export default function updateObjectAdvanced(obj: Record<string, any>, field: UpdaterArg): Record<string, any> {
+export function updateObjectAdvanced(obj: Record<string, any>, field: UpdaterArg): Record<string, any> {
     if (typeof field !== "object" || field === null) {
         throw new Error("Fields must be an object or object array");
     }

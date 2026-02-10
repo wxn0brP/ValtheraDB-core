@@ -1,13 +1,20 @@
 import { VEE } from "@wxn0brp/event-emitter";
-import ActionsBase from "../base/actions";
-import { CollectionManager } from "../helpers/collectionManager";
-import executorC from "../helpers/executor";
-import { Arg, Search, Updater } from "../types/arg";
-import Data from "../types/data";
-import { DbFindOpts, DbOpts, FindOpts } from "../types/options";
+import { ActionsBase } from "../base/actions";
+import { Collection } from "../helpers/collection";
+import { Executor } from "../helpers/executor";
+import { Data } from "../types/data";
+import { DbOpts } from "../types/options";
 import { VQuery } from "../types/query";
-import { VContext } from "../types/types";
-import { UpdateOneOrAdd, ValtheraCompatible } from "../types/valthera";
+import {
+    AddQuery,
+    FindOneQuery,
+    FindQuery,
+    RemoveQuery,
+    ToggleOneQuery,
+    UpdateOneOrAddQuery,
+    UpdateQuery,
+    ValtheraCompatible
+} from "../types/valthera";
 import { version } from "../version";
 
 type DbActionsFns = keyof {
@@ -18,9 +25,9 @@ type DbActionsFns = keyof {
  * Represents a database management class for performing CRUD operations.
  * @class
  */
-class ValtheraClass implements ValtheraCompatible {
+export class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
-    executor: executorC;
+    executor: Executor;
     emiter: VEE<{
         [K in Exclude<DbActionsFns, "init">]:
         (
@@ -38,7 +45,7 @@ class ValtheraClass implements ValtheraCompatible {
 
     constructor(options: DbOpts = {}) {
         this.dbAction = options.dbAction || new ActionsBase();
-        this.executor = options.executor || new executorC();
+        this.executor = options.executor || new Executor();
         this.emiter = new VEE();
         if (options.numberId) this.dbAction.numberId = true;
     }
@@ -64,8 +71,8 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Create a new instance of a CollectionManager class.
      */
-    c<T = Data>(collection: string): CollectionManager<T> {
-        return new CollectionManager<T>(this, collection);
+    c<T = Data>(collection: string): Collection<T> {
+        return new Collection<T>(this, collection);
     }
 
     /**
@@ -92,79 +99,93 @@ class ValtheraClass implements ValtheraCompatible {
     /**
      * Add data to a database.
      */
-    add<T extends object>(collection: string, data: T, id_gen?: true): Promise<T & { _id: string }>;
-    add<T extends object>(collection: string, data: T, id_gen: false): Promise<T>;
-    async add<T = Data>(collection: string, data: Arg<T>, id_gen: boolean = true) {
-        return await this.execute<T>("add", { collection, data, id_gen });
+    add<T = Data>(query: AddQuery) {
+        query.control ||= {};
+        return this.execute<T>("add", query);
     }
 
     /**
      * Find data in a database.
      */
-    async find<T = Data>(collection: string, search: Search<T> = {}, dbFindOpts: DbFindOpts<T> = {}, findOpts: FindOpts<T> = {}, context: VContext = {}) {
-        return await this.execute<T[]>("find", { collection, search, context, dbFindOpts, findOpts });
+    find<T = Data>(query: FindQuery) {
+        query.dbFindOpts ||= {};
+        query.findOpts ||= {};
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T[]>("find", query);
     }
 
     /**
      * Find one data entry in a database.
      */
-    async findOne<T = Data>(collection: string, search: Search<T> = {}, findOpts: FindOpts<T> = {}, context: VContext = {}) {
-        return await this.execute<T | null>("findOne", { collection, search, context, findOpts });
+    findOne<T = Data>(query: FindOneQuery) {
+        query.findOpts ||= {};
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T | null>("findOne", query);
     }
 
     /**
      * Update data in a database.
      */
-    async update<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context = {}) {
-        return await this.execute<boolean>("update", { collection, search, updater, context });
+    update<T = Data>(query: UpdateQuery) {
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T[] | null>("update", query);
     }
 
     /**
      * Update one data entry in a database.
      */
-    async updateOne<T = Data>(collection: string, search: Search<T>, updater: Updater<T>, context: VContext = {}) {
-        return await this.execute<boolean>("updateOne", { collection, search, updater, context });
+    updateOne<T = Data>(query: UpdateQuery) {
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T | null>("updateOne", query);
     }
 
     /**
      * Remove data from a database.
      */
-    async remove<T = Data>(collection: string, search: Search<T>, context: VContext = {}) {
-        return await this.execute<boolean>("remove", { collection, search, context });
+    remove<T = Data>(query: RemoveQuery) {
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T[] | null>("remove", query);
     }
 
     /**
      * Remove one data entry from a database.
      */
-    async removeOne<T = Data>(collection: string, search: Search<T>, context: VContext = {}) {
-        return await this.execute<boolean>("removeOne", { collection, search, context });
+    removeOne<T = Data>(query: RemoveQuery) {
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T | null>("removeOne", query);
     }
 
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    async updateOneOrAdd<T = Data>(
-        collection: string,
-        search: Search<T>,
-        updater: Updater<T>,
-        { add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<T> = {}
-    ) {
-        return await this.execute<boolean>("updateOneOrAdd", { collection, search, updater, add_arg, context, id_gen });
+    updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery) {
+        query.context ||= {};
+        query.add_arg ||= {};
+        query.control ||= {};
+        query.id_gen ||= true;
+        return this.execute<T>("updateOneOrAdd", query);
     }
 
     /**
      * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
      */
-    async toggleOne<T = Data>(collection: string, search: Search<T>, data: Arg<T> = {}, context: VContext = {}) {
-        return await this.execute<boolean>("toggleOne", { collection, search, data, context, id_gen: false });
+    toggleOne<T = Data>(query: ToggleOneQuery) {
+        query.data ||= {};
+        query.context ||= {};
+        query.control ||= {};
+        return this.execute<T | null>("toggleOne", query);
     }
 
     /**
      * Removes a database collection from the file system.
      */
-    async removeCollection(collection: string) {
-        return await this.execute<boolean>("removeCollection", { collection });
+    removeCollection(collection: string) {
+        return this.execute<boolean>("removeCollection", { collection });
     }
 }
-
-export default ValtheraClass;

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import updateFindObject from "#utils/updateFindObject";
+import { updateFindObject } from "#utils/updateFindObject";
 import { FindOpts } from "#types/options";
 
 describe("updateFindObject", () => {

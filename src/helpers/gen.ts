@@ -13,7 +13,7 @@ let lastRandomValue = 0;
  * @param {number[]} [parts] - an array of lengths of parts of the identifier
  * @returns {Id} - a new unique identifier
  */
-export default function genId(parts: number[] = null): Id {
+export function genId(parts: number[] = null): Id {
     if (parts === null) parts = [1, 1];
 
     const time = getTime();

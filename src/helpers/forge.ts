@@ -1,5 +1,5 @@
-import { CollectionManager } from "./collectionManager";
-import Data from "../types/data";
+import { Collection } from "./collection";
+import { Data } from "../types/data";
 import { ValtheraCompatible } from "../types/valthera";
 
 export function forgeValthera<T extends string>(target: ValtheraCompatible) {
@@ -9,7 +9,7 @@ export function forgeValthera<T extends string>(target: ValtheraCompatible) {
                 return Reflect.get(target, prop, receiver);
             }
 
-            const collection = new CollectionManager(target, prop);
+            const collection = new Collection(target, prop);
             target[prop] = collection;
             return collection;
         },
@@ -17,9 +17,9 @@ export function forgeValthera<T extends string>(target: ValtheraCompatible) {
         set(target, prop: string, value, receiver) {
             return Reflect.set(target, prop, value, receiver);
         }
-    }) as ValtheraCompatible & { [K in T]: CollectionManager };
+    }) as ValtheraCompatible & { [K in T]: Collection };
 }
 
 export function forgeTypedValthera<T extends Record<string, Data>>(target: ValtheraCompatible) {
-    return forgeValthera(target) as ValtheraCompatible & { [K in keyof T]: CollectionManager<T[K]> };
+    return forgeValthera(target) as ValtheraCompatible & { [K in keyof T]: Collection<T[K]> };
 }

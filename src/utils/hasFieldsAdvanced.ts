@@ -1,11 +1,11 @@
 import { Arg } from "../types/arg";
-import hasFields from "./hasFields";
+import { hasFields } from "./hasFields";
 import { compareIds } from "./id";
 
 /**
  * Checks if an object meets the criteria specified in the fields with operators.
  */
-export default function hasFieldsAdvanced(obj: Object, fields: Arg) {
+export function hasFieldsAdvanced(obj: Object, fields: Arg) {
     if (typeof fields !== "object" || fields === null) {
         throw new Error("Fields must be an object");
     }

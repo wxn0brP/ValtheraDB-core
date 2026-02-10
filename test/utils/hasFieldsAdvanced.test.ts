@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import hasFieldsAdvanced from "#utils/hasFieldsAdvanced";
+import { hasFieldsAdvanced } from "#utils/hasFieldsAdvanced";
 
 describe("hasFieldsAdvanced", () => {
     test("1. should return true for empty fields", () => {

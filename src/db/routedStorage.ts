@@ -1,4 +1,4 @@
-import ActionsBase from "../base/actions";
+import { ActionsBase } from "../base/actions";
 import { VQuery } from "../types/query";
 
 export type MatchRule = string | RegExp | ((query: VQuery) => boolean);

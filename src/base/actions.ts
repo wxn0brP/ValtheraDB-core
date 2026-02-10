@@ -1,8 +1,8 @@
 import { setDataForToggleOne, setDataForUpdateOneOrAdd } from "../helpers/assignDataPush";
-import Data from "../types/data";
+import { Data } from "../types/data";
 import { VQuery } from "../types/query";
 
-class ActionsBase {
+export class ActionsBase {
     _inited: boolean = true;
     numberId: boolean = false;
     async init(...args: any[]) { }
@@ -39,22 +39,22 @@ class ActionsBase {
 
     async update(config: VQuery) {
         throw new Error("Not implemented");
-        return false;
+        return [] as Data;
     }
 
     async updateOne(config: VQuery) {
         throw new Error("Not implemented");
-        return false;
+        return {} as Data;
     }
 
     async remove(config: VQuery) {
         throw new Error("Not implemented");
-        return false;
+        return [] as Data;
     }
 
     async removeOne(config: VQuery) {
         throw new Error("Not implemented");
-        return false;
+        return {} as Data;
     }
 
     async removeCollection(config: VQuery) {
@@ -80,5 +80,3 @@ class ActionsBase {
         return false;
     }
 }
-
-export default ActionsBase;

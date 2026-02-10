@@ -1,4 +1,4 @@
-import ActionsBase from "../base/actions";
+import { ActionsBase } from "../base/actions";
 import { VQuery } from "../types/query";
 
 export class MultiBackend extends ActionsBase {
@@ -46,21 +46,19 @@ export class MultiBackend extends ActionsBase {
             this.backends.map(b => b.update({ ...config }))
         );
 
-        return results.some(Boolean);
+        return results.flat();
     }
 
     async updateOne(config: VQuery) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.updateOne({ ...config });
-                if (result === true) {
-                    return true;
-                }
+                if (result) return result;
             } catch (error) {
                 continue;
             }
         }
-        return false;
+        return null;
     }
 
     async remove(config: VQuery) {
@@ -68,21 +66,19 @@ export class MultiBackend extends ActionsBase {
             this.backends.map(b => b.remove({ ...config }))
         );
 
-        return results.some(Boolean);
+        return results.flat();
     }
 
     async removeOne(config: VQuery) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.removeOne({ ...config });
-                if (result === true) {
-                    return true;
-                }
+                if (result) return result;
             } catch (error) {
                 continue;
             }
         }
-        return false;
+        return null;
     }
 
     async ensureCollection(config: VQuery) {

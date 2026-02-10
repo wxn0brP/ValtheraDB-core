@@ -1,6 +1,6 @@
-import ActionsBase from "../base/actions";
+import { ActionsBase } from "../base/actions";
 import { VQuery } from "../types/query";
-import genId from "./gen";
+import { genId } from "./gen";
 
 export async function addId(query: VQuery, actions: ActionsBase, defaultGen = true) {
     const { collection, data } = query;

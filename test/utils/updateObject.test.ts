@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import updateObjectAdvanced from "#utils/updateObject";
-import Data from "#types/data";
+import { updateObjectAdvanced } from "#utils/updateObject";
+import { Data } from "#types/data";
 
 describe("updateObjectAdvanced", () => {
     test("1. should throw error for non-object fields", () => {

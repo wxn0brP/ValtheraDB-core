@@ -4,7 +4,7 @@
  * @param fields - Criteria to compare.
  * @returns Whether the object matches the criteria.
  */
-export default function hasFields(obj: Object, fields: Object): boolean {
+export function hasFields(obj: Object, fields: Object): boolean {
     const keys = Object.keys(fields);
     return keys.every(key => {
         if (obj[key] !== undefined) {

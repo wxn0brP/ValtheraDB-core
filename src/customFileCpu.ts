@@ -1,11 +1,11 @@
 import { Search, Updater } from "./types/arg";
-import Data from "./types/data";
-import FileCpu from "./types/fileCpu";
+import { Data } from "./types/data";
+import { FileCpu } from "./types/fileCpu";
 import { FindOpts } from "./types/options";
 import { VContext } from "./types/types";
-import hasFieldsAdvanced from "./utils/hasFieldsAdvanced";
-import updateFindObject from "./utils/updateFindObject";
-import updateObjectAdvanced from "./utils/updateObject";
+import { hasFieldsAdvanced } from "./utils/hasFieldsAdvanced";
+import { updateFindObject } from "./utils/updateFindObject";
+import { updateObjectAdvanced } from "./utils/updateObject";
 
 export type WriteFile = (file: string, data: any[]) => Promise<void>
 export type ReadFile = (file: string) => Promise<any[]>
@@ -15,7 +15,7 @@ export function pathRepair(path: string) {
     return path.replaceAll("//", "/");
 }
 
-class CustomFileCpu implements FileCpu {
+export class CustomFileCpu implements FileCpu {
     _readFile: ReadFile;
     _writeFile: WriteFile;
 
@@ -31,7 +31,7 @@ class CustomFileCpu implements FileCpu {
         await this._writeFile(file, entries);
     }
 
-    async find(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any[] | false> {
+    async find(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<Data[]> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
         const results = entries.filter(entry =>
@@ -40,7 +40,7 @@ class CustomFileCpu implements FileCpu {
         return results.length ? results.map(res => updateFindObject(res, findOpts)) : [];
     }
 
-    async findOne(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<any | false> {
+    async findOne(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<Data | false> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
         const result = entries.find(entry =>
@@ -49,53 +49,52 @@ class CustomFileCpu implements FileCpu {
         return result ? updateFindObject(result, findOpts) : false;
     }
 
-    async remove(file: string, one: boolean, search: Search, context: VContext = {}): Promise<boolean> {
+    async remove(file: string, one: boolean, search: Search, context: VContext = {}): Promise<Data[]> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
-        let removed = false;
+        const removed = [];
 
         entries = entries.filter(entry => {
-            if (removed && one) return true;
+            if (removed.length && one) return true;
 
             let match = typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search);
 
             if (match) {
-                removed = true;
+                removed.push(entry);
                 return false;
             }
 
             return true;
         });
 
-        if (!removed) return false;
+        if (removed.length)
+            await this._writeFile(file, entries);
 
-        await this._writeFile(file, entries);
-        return true;
+        return removed;
     }
 
-    async update(file: string, one: boolean, search: Search, updater: Updater, context: VContext = {}): Promise<boolean> {
+    async update(file: string, one: boolean, search: Search, updater: Updater, context: VContext = {}): Promise<Data[]> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
-        let updated = false;
+        const updated = [];
 
         entries = entries.map(entry => {
-            if (updated && one) return entry;
+            if (updated.length && one) return entry;
 
             let match = typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search);
 
             if (match) {
-                updated = true;
-                return typeof updater === "function" ? updater(entry, context) : updateObjectAdvanced(entry, updater);
+                const updatedEntry = typeof updater === "function" ? updater(entry, context) : updateObjectAdvanced(entry, updater);
+                updated.push(updatedEntry);
+                return updatedEntry;
             }
 
             return entry;
         });
 
-        if (!updated) return false;
+        if (updated.length)
+            await this._writeFile(file, entries);
 
-        await this._writeFile(file, entries);
-        return true;
+        return updated;
     }
 }
-
-export default CustomFileCpu;

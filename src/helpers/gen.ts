@@ -1,11 +1,25 @@
 import { Id } from "../types/Id";
 
-const usedIdsMap = new Map();
-let lastId: Id;
-const recentIdsTimestamps: number[] = [];
-let startIndex = 0;
-let lastGeneratedMs = 0;
-let lastRandomValue = 0;
+interface GetUniqueRandomOpts {
+    time: string;
+    partsSchema: number[];
+    s: number;
+}
+
+export function getIdData() {
+    return {
+        usedIds: new Map(),
+        lastId: undefined as Id,
+        recentIdsTimestamps: [] as number[],
+        startIndex: 0,
+        lastGeneratedMs: 0,
+        lastRandomValue: 0,
+    }
+}
+
+export type IdData = ReturnType<typeof getIdData>;
+
+const defaultIdData = getIdData();
 
 /**
  * Generates a unique random identifier based on time and parts.
@@ -13,7 +27,7 @@ let lastRandomValue = 0;
  * @param {number[]} [parts] - an array of lengths of parts of the identifier
  * @returns {Id} - a new unique identifier
  */
-export function genId(parts: number[] = null): Id {
+export function genId(parts: number[] = null, idData = defaultIdData): Id {
     if (parts === null) parts = [1, 1];
 
     const time = getTime();
@@ -21,24 +35,18 @@ export function genId(parts: number[] = null): Id {
         time,
         partsSchema: parts,
         s: 0,
-    });
+    }, idData);
     return id;
-}
-
-interface GetUniqueRandomOpts {
-    time: string,
-    partsSchema: number[],
-    s: number
 }
 
 /**
  * Generates a unique random identifier based on time and parts.
  */
-function getUniqueRandom(opts: GetUniqueRandomOpts): string {
+function getUniqueRandom(opts: GetUniqueRandomOpts, idData: IdData): string {
     while (true) {
         let minValue = 0;
-        if (lastId) {
-            const parts = lastId.split("-");
+        if (idData.lastId) {
+            const parts = idData.lastId.split("-");
             const lastTime = parts.shift();
             if (lastTime === opts.time) {
                 const int36 = parts.join("");
@@ -47,15 +55,15 @@ function getUniqueRandom(opts: GetUniqueRandomOpts): string {
         }
 
         const partsLengthSum = opts.partsSchema.reduce((acc, num) => acc + num, 0);
-        const partsData = generateBase36InRange(minValue, partsLengthSum);
+        const partsData = generateBase36InRange(minValue, partsLengthSum, idData);
         const parts = splitStringByArray(opts.partsSchema, partsData);
 
         const id = [opts.time, ...parts].join("-");
 
-        if (!usedIdsMap.has(id)) {
-            usedIdsMap.set(id, true);
-            setTimeout(() => usedIdsMap.delete(id), 1000);
-            lastId = id;
+        if (!idData.usedIds.has(id)) {
+            idData.usedIds.set(id, true);
+            setTimeout(() => idData.usedIds.delete(id), 1000);
+            idData.lastId = id;
             return id;
         }
         opts.s++;
@@ -70,15 +78,18 @@ function getUniqueRandom(opts: GetUniqueRandomOpts): string {
  * Tracks the current load of the application by counting the number of ids that have been generated in the last second.
  * @returns The number of ids that have been generated in the last second.
  */
-function trackLoad() {
+function trackLoad(idData: IdData) {
     const now = Date.now();
-    recentIdsTimestamps.push(now);
+    idData.recentIdsTimestamps.push(now);
 
-    while (startIndex < recentIdsTimestamps.length && recentIdsTimestamps[startIndex] < now - 1) {
-        startIndex++;
+    while (
+        idData.startIndex < idData.recentIdsTimestamps.length &&
+        idData.recentIdsTimestamps[idData.startIndex] < now - 1
+    ) {
+        idData.startIndex++;
     }
 
-    return recentIdsTimestamps.length - startIndex;
+    return idData.recentIdsTimestamps.length - idData.startIndex;
 }
 
 /**
@@ -95,26 +106,26 @@ function trackLoad() {
  * @returns A base-36 encoded string representation of the random value, padded to the specified length.
  */
 
-function generateBase36InRange(minValue: number, length: number): string {
+function generateBase36InRange(minValue: number, length: number, idData: IdData): string {
     const maxValue = Math.pow(36, length) - 1;
-    const load = trackLoad();
+    const load = trackLoad(idData);
     const currentMs = Date.now();
 
-    if (load < 3 || currentMs !== lastGeneratedMs) {
-        lastRandomValue = biasedRandomInRange(minValue, maxValue);
-        lastGeneratedMs = currentMs;
+    if (load < 3 || currentMs !== idData.lastGeneratedMs) {
+        idData.lastRandomValue = biasedRandomInRange(minValue, maxValue);
+        idData.lastGeneratedMs = currentMs;
     } else {
         const rand = Math.random();
         if (rand < 0.6) {
-            lastRandomValue += 1;
+            idData.lastRandomValue += 1;
         } else if (rand < 0.9) {
-            lastRandomValue += 2;
+            idData.lastRandomValue += 2;
         } else {
-            lastRandomValue = biasedRandomInRange(lastRandomValue, maxValue);
+            idData.lastRandomValue = biasedRandomInRange(idData.lastRandomValue, maxValue);
         }
     }
 
-    return lastRandomValue.toString(36).padStart(length, "0");
+    return idData.lastRandomValue.toString(36).padStart(length, "0");
 }
 
 /**

@@ -5,7 +5,7 @@ import { DbFindOpts, FindOpts } from "./options";
 /**
  * To extend via adapters
  * @example
- * declare module "@wxn0brp/db-core" {
+ * declare module "@wxn0brp/db-core/types/query" {
  *   export interface VQuery_Control {
  *     key?: "value";
  *   }

@@ -10,8 +10,7 @@
         },
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "outDir": "./dist",
-        "declaration": true
+        "noEmit": true
     },
     "include": [
         "."

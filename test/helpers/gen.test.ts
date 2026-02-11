@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test";
-import { genId, getIdData, IdData } from "#helpers/gen";
+import { genId, getIdData } from "#helpers/gen";
+import { describe, expect, test } from "bun:test";
 
 describe("getIdData", () => {
     test("1. should return an object with required properties", () => {

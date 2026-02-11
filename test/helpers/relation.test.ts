@@ -1,12 +1,12 @@
-import { describe, test, expect } from "bun:test";
+import { createMemoryValthera } from "#db/memory";
 import {
-    pickByPath,
     autoSelect,
     convertSearchObjToSearchArray,
+    pickByPath,
     processRelations,
     Relation
 } from "#helpers/relation";
-import { createMemoryValthera } from "#db/memory";
+import { describe, expect, test } from "bun:test";
 
 describe("pickByPath", () => {
     test("1. should extract values by specified paths", () => {

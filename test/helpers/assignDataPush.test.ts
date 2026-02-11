@@ -1,6 +1,10 @@
-import { describe, test, expect } from "bun:test";
-import { assignDataPush, setDataForUpdateOneOrAdd, setDataForToggleOne } from "#helpers/assignDataPush";
+import {
+    assignDataPush,
+    setDataForToggleOne,
+    setDataForUpdateOneOrAdd
+} from "#helpers/assignDataPush";
 import { VQuery } from "#types/query";
+import { describe, expect, test } from "bun:test";
 
 describe("assignDataPush", () => {
     test("1. should return empty object when data is null or undefined", () => {

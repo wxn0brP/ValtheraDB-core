@@ -29,7 +29,7 @@ export class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
     executor: Executor;
     emiter: VEE<{
-        [K in Exclude<DbActionsFns, "init">]:
+        [K in keyof ValtheraCompatible]:
         (
             query: VQuery,
             result: Awaited<ReturnType<ValtheraCompatible[K]>>
@@ -40,13 +40,12 @@ export class ValtheraClass implements ValtheraCompatible {
             query: VQuery,
             result: any
         ) => void;
-    }>;
+    }> = new VEE();
     version = version;
 
     constructor(options: DbOpts = {}) {
         this.dbAction = options.dbAction || new ActionsBase();
         this.executor = options.executor || new Executor();
-        this.emiter = new VEE();
         if (options.numberId) this.dbAction.numberId = true;
     }
 
@@ -64,7 +63,6 @@ export class ValtheraClass implements ValtheraCompatible {
         await this.init();
         const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
         this.emiter.emit(name, query, result);
-        this.emiter.emit("*", name, query, result);
         return result;
     }
 

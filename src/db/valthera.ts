@@ -17,10 +17,6 @@ import {
 } from "../types/valthera";
 import { version } from "../version";
 
-type DbActionsFns = keyof {
-    [K in keyof ActionsBase as ActionsBase[K] extends (...args: any[]) => any ? K : never]: any;
-}
-
 /**
  * Represents a database management class for performing CRUD operations.
  * @class
@@ -36,7 +32,7 @@ export class ValtheraClass implements ValtheraCompatible {
         ) => void;
     } & {
         "*": (
-            name: DbActionsFns,
+            name: keyof ValtheraCompatible,
             query: VQuery,
             result: any
         ) => void;
@@ -59,7 +55,7 @@ export class ValtheraClass implements ValtheraCompatible {
         });
     }
 
-    async execute<T>(name: DbActionsFns, query: VQuery) {
+    async execute<T>(name: keyof ValtheraCompatible, query: VQuery) {
         await this.init();
         const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
         this.emiter.emit(name, query, result);

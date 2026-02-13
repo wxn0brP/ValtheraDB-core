@@ -39,8 +39,8 @@ export class ValtheraClass implements ValtheraCompatible {
     }> = new VEE();
     version = version;
 
-    constructor(options: DbOpts = {}) {
-        this.dbAction = options.dbAction || new ActionsBase();
+    constructor(options: DbOpts) {
+        this.dbAction = options.dbAction;
         this.executor = options.executor || new Executor();
         if (options.numberId) this.dbAction.numberId = true;
     }

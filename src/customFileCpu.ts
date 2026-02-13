@@ -37,7 +37,9 @@ export class CustomFileCpu implements FileCpu {
         const results = entries.filter(entry =>
             typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search)
         );
-        return results.length ? results.map(res => updateFindObject(res, findOpts)) : [];
+        return results.length ?
+            results.map(res => updateFindObject(res, findOpts)) :
+            [];
     }
 
     async findOne(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<Data | false> {
@@ -46,7 +48,9 @@ export class CustomFileCpu implements FileCpu {
         const result = entries.find(entry =>
             typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search)
         );
-        return result ? updateFindObject(result, findOpts) : false;
+        return result ?
+            updateFindObject(result, findOpts) :
+            false;
     }
 
     async remove(file: string, one: boolean, search: Search, context: VContext = {}): Promise<Data[]> {

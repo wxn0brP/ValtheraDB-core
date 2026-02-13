@@ -1,5 +1,5 @@
 import { Search, Updater } from "./arg";
-import { Data } from "./data";
+import { Data, DataInternal } from "./data";
 import { FindOpts } from "./options";
 import { VContext } from "./types";
 
@@ -25,7 +25,7 @@ export interface FileCpu {
         search: Search,
         context?: VContext,
         findOpts?: FindOpts
-    ): Promise<Data[]>;
+    ): Promise<DataInternal[]>;
 
     /**
      * Asynchronously finds one entry in a file based on search criteria.
@@ -40,7 +40,7 @@ export interface FileCpu {
         search: Search,
         context?: VContext,
         findOpts?: FindOpts
-    ): Promise<Data | false>;
+    ): Promise<DataInternal | false>;
 
     /**
    * Asynchronously removes entries from a file based on search criteria.
@@ -55,7 +55,7 @@ export interface FileCpu {
         one: boolean,
         search: Search,
         context?: VContext
-    ): Promise<Data[]>;
+    ): Promise<DataInternal[]>;
 
     /**
      * Asynchronously updates entries in a file based on search criteria and an updater function or object.
@@ -72,5 +72,5 @@ export interface FileCpu {
         search: Search,
         updater: Updater,
         context?: VContext,
-    ): Promise<Data[]>;
+    ): Promise<DataInternal[]>;
 }

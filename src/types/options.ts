@@ -4,7 +4,7 @@ import { KeysMatching } from "./utils";
 
 export interface DbOpts {
     maxFileSize?: number;
-    dbAction?: ActionsBase;
+    dbAction: ActionsBase;
     executor?: Executor;
     numberId?: boolean;
 }

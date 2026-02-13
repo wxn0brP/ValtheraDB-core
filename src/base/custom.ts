@@ -5,7 +5,7 @@ import { VQuery } from "../types/query";
 import { findUtil } from "../utils/action";
 import { ActionsBase } from "./actions";
 
-export class CustomActionsBase extends ActionsBase {
+export abstract class CustomActionsBase extends ActionsBase {
     fileCpu: CustomFileCpu;
 
     constructor() {

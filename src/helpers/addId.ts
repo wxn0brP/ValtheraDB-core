@@ -15,8 +15,8 @@ export async function addId(query: VQuery, actions: ActionsBase, defaultGen = tr
         return;
     }
 
-    const find = await actions.findOne({ collection: "__vdb_id", search: { c: collection } });
-    data._id = find ? find.i + 1 : 1;
+    const find = await actions.findOne({ collection: "__vdb_id", search: { c: collection } }) as { i: number };
+    data._id = find?.i ? find.i + 1 : 1;
     await actions.updateOneOrAdd({
         collection: "__vdb_id",
         search: { c: collection },

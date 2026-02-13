@@ -11,7 +11,14 @@ import { DbFindOpts, FindOpts } from "./options";
  *   }
  * }
  */
-export interface VQuery_Control { }
+export interface VQuery_Control {
+    updateOneOrAdd?: {
+        updated?: boolean;
+    };
+    toggleOne?: {
+        created?: boolean;
+    };
+}
 
 export interface VQuery {
     collection?: string;

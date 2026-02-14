@@ -3,7 +3,6 @@ import { Executor } from "../helpers/executor";
 import { KeysMatching } from "./utils";
 
 export interface DbOpts {
-    maxFileSize?: number;
     dbAction: ActionsBase;
     executor?: Executor;
     numberId?: boolean;

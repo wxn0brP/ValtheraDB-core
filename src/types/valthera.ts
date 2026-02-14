@@ -27,7 +27,7 @@ export interface ValtheraCompatible {
     removeOne<T = Data>(query: RemoveQuery): Promise<T | null>;
     removeCollection(collection: string): Promise<boolean>;
     updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery): Promise<T>;
-    toggleOne<T = Data>(query: ToggleOneQuery): Promise<T | null>;
+    toggleOne(query: ToggleOneQuery): Promise<boolean>;
 }
 
 export interface UpdateOneOrAdd<T> {

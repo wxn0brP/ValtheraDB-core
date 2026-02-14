@@ -1,6 +1,7 @@
-import { VContext } from "./types";
 import { Arg, Search, Updater } from "./arg";
+import { Data } from "./data";
 import { DbFindOpts, FindOpts } from "./options";
+import { VContext } from "./types";
 
 /**
  * To extend via adapters
@@ -16,7 +17,7 @@ export interface VQuery_Control {
         updated?: boolean;
     };
     toggleOne?: {
-        created?: boolean;
+        data?: Data;
     };
 }
 

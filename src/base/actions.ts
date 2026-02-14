@@ -34,17 +34,18 @@ export abstract class ActionsBase implements ActionsBaseInterface {
         return await this.add(config);
     }
 
-    async toggleOne(config: VQuery): Promise<DataInternal | null> {
+    async toggleOne(config: VQuery): Promise<boolean> {
         const res = await this.removeOne(config);
 
-        const controlData = { created: false };
+        const controlData = { data: res };
         config.control ||= {};
         config.control.toggleOne = controlData;
 
-        if (res) return res;
+        if (res) return false;
 
         setDataForToggleOne(config);
-        config.control.toggleOne.created = true;
-        return await this.add(config);
+        config.control.toggleOne.data = await this.add(config);
+
+        return true;
     }
 }

@@ -78,8 +78,11 @@ export class Collection<D = Data> {
 
     /**
      * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
+     * Returns a promise resolving to `false` if the entry was found and removed,
+     * or `true` if the entry was added. The returned value reflects the state of the database
+     * after the operation.
      */
-    toggleOne(search: Search<D>, data: Arg<D> = {}, context: VContext = {}): Promise<D> {
+    toggleOne(search: Search<D>, data: Arg<D> = {}, context: VContext = {}): Promise<boolean> {
         return this.db.toggleOne({ collection: this.collection, search, data, context });
     }
 }

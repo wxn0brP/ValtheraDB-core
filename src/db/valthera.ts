@@ -169,6 +169,9 @@ export class ValtheraClass implements ValtheraCompatible {
 
     /**
      * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
+     * Returns a promise resolving to `false` if the entry was found and removed,
+     * or `true` if the entry was added. The returned value reflects the state of the database
+     * after the operation.
      */
     toggleOne<T = Data>(query: ToggleOneQuery) {
         query.data ||= {};

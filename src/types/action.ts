@@ -17,5 +17,5 @@ export interface ActionsBaseInterface {
     removeOne(config: VQuery): Promise<DataInternal | null>;
     removeCollection(config: VQuery): Promise<boolean>;
     updateOneOrAdd(config: VQuery): Promise<DataInternal>;
-    toggleOne(config: VQuery): Promise<DataInternal | null>;
+    toggleOne(config: VQuery): Promise<boolean>;
 }

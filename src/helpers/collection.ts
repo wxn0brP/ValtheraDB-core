@@ -13,7 +13,7 @@ export class Collection<D = Data> {
     /**
      * Add data to a database.
      */
-    add(data: Arg<D>, id_gen: true): Promise<D>;
+    add(data: Arg<D>, id_gen: false): Promise<D>;
     add(data: Arg<D>, id_gen?: true): Promise<D & { _id: string }>;
     add(data: Arg<D>, id_gen?: boolean): Promise<D> {
         return this.db.add({ collection: this.collection, data, id_gen });

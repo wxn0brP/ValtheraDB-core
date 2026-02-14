@@ -6,7 +6,7 @@ import { VContext } from "./types";
 
 export type QueryBase = Required<Pick<VQuery, "collection" | "search">> & Pick<VQuery, "control">;
 export type AddQuery = Required<Pick<VQuery, "data" | "collection">> & Pick<VQuery, "id_gen" | "control">;
-export type FindQuery = QueryBase & Pick<VQuery, "findOpts" | "dbFindOpts" | "context">;
+export type FindQuery = Omit<QueryBase, "search"> & Pick<VQuery, "search"> & Pick<VQuery, "findOpts" | "dbFindOpts" | "context">;
 export type FindOneQuery = QueryBase & Pick<VQuery, "findOpts" | "context">;
 export type UpdateQuery = QueryBase & Required<Pick<VQuery, "updater">> & Pick<VQuery, "context">;
 export type RemoveQuery = QueryBase & Pick<VQuery, "context">;

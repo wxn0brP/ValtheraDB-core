@@ -102,6 +102,7 @@ export class ValtheraClass implements ValtheraCompatible {
      * Find data in a database.
      */
     find<T = Data>(query: FindQuery) {
+        query.search ||= {};
         query.dbFindOpts ||= {};
         query.findOpts ||= {};
         query.context ||= {};

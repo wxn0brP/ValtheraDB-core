@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.6.0...v0.6.1) (2026-02-14)
+
+
+### Features
+
+* make find.search optional ([5133e72](https://github.com/wxn0brP/ValtheraDB-core/commit/5133e723baa3b816ed5a8193860659dbcf0001f2))
+
+
+### Bug Fixes
+
+* collection add type ([b902573](https://github.com/wxn0brP/ValtheraDB-core/commit/b902573059b9922b880e6fa3ea8cdb7f3a68c0a0))
+
 ## [0.6.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.5.0...v0.6.0) (2026-02-14)
 
 

@@ -94,6 +94,7 @@ export class ValtheraClass implements ValtheraCompatible {
      */
     add<T = Data>(query: AddQuery) {
         query.control ||= {};
+        query.id_gen ??= true;
         return this.execute<T>("add", query);
     }
 
@@ -162,7 +163,7 @@ export class ValtheraClass implements ValtheraCompatible {
         query.context ||= {};
         query.add_arg ||= {};
         query.control ||= {};
-        query.id_gen ||= true;
+        query.id_gen ??= true;
         return this.execute<T>("updateOneOrAdd", query);
     }
 

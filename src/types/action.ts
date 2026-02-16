@@ -1,5 +1,5 @@
 import { DataInternal } from "./data";
-import { VQuery } from "./query";
+import { ToggleOneResult, UpdateOneOrAddResult, VQuery } from "./query";
 
 export interface ActionsBaseInterface {
     _inited: boolean;
@@ -16,6 +16,6 @@ export interface ActionsBaseInterface {
     remove(config: VQuery): Promise<DataInternal[] | null>;
     removeOne(config: VQuery): Promise<DataInternal | null>;
     removeCollection(config: VQuery): Promise<boolean>;
-    updateOneOrAdd(config: VQuery): Promise<DataInternal>;
-    toggleOne(config: VQuery): Promise<boolean>;
+    updateOneOrAdd(config: VQuery): Promise<UpdateOneOrAddResult<DataInternal>>;
+    toggleOne(config: VQuery): Promise<ToggleOneResult<DataInternal>>;
 }

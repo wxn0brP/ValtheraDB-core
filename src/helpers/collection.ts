@@ -1,8 +1,10 @@
 import { Arg, Search, Updater } from "../types/arg";
+import { UpdateOneOrAdd } from "../types/collection";
 import { Data } from "../types/data";
 import { DbFindOpts, FindOpts } from "../types/options";
+import { ToggleOneResult, UpdateOneOrAddResult } from "../types/query";
 import { VContext } from "../types/types";
-import { UpdateOneOrAdd, ValtheraCompatible } from "../types/valthera";
+import { ValtheraCompatible } from "../types/valthera";
 
 export class Collection<D = Data> {
     constructor(
@@ -72,7 +74,7 @@ export class Collection<D = Data> {
             context = {},
             id_gen = true
         }: UpdateOneOrAdd<D> = {}
-    ): Promise<D> {
+    ): Promise<UpdateOneOrAddResult<D>> {
         return this.db.updateOneOrAdd({ collection: this.collection, search, updater, add_arg, context, id_gen });
     }
 
@@ -82,7 +84,7 @@ export class Collection<D = Data> {
      * or `true` if the entry was added. The returned value reflects the state of the database
      * after the operation.
      */
-    toggleOne(search: Search<D>, data: Arg<D> = {}, context: VContext = {}): Promise<boolean> {
+    toggleOne(search: Search<D>, data: Arg<D> = {}, context: VContext = {}): Promise<ToggleOneResult<D>> {
         return this.db.toggleOne({ collection: this.collection, search, data, context });
     }
 }

@@ -1,17 +1,16 @@
 import { Collection } from "../helpers/collection";
-import { Arg } from "./arg";
 import { Data } from "./data";
-import { VQuery } from "./query";
-import { VContext } from "./types";
-
-export type QueryBase = Required<Pick<VQuery, "collection" | "search">> & Pick<VQuery, "control">;
-export type AddQuery = Required<Pick<VQuery, "data" | "collection">> & Pick<VQuery, "id_gen" | "control">;
-export type FindQuery = Omit<QueryBase, "search"> & Pick<VQuery, "search"> & Pick<VQuery, "findOpts" | "dbFindOpts" | "context">;
-export type FindOneQuery = QueryBase & Pick<VQuery, "findOpts" | "context">;
-export type UpdateQuery = QueryBase & Required<Pick<VQuery, "updater">> & Pick<VQuery, "context">;
-export type RemoveQuery = QueryBase & Pick<VQuery, "context">;
-export type UpdateOneOrAddQuery = QueryBase & UpdateQuery & Pick<VQuery, "add_arg" | "id_gen">;
-export type ToggleOneQuery = QueryBase & Pick<VQuery, "data" | "context">;
+import {
+    AddQuery,
+    FindOneQuery,
+    FindQuery,
+    RemoveQuery,
+    ToggleOneQuery,
+    ToggleOneResult,
+    UpdateOneOrAddQuery,
+    UpdateOneOrAddResult,
+    UpdateQuery
+} from "./query";
 
 export interface ValtheraCompatible {
     c(collection: string): Collection;
@@ -26,12 +25,6 @@ export interface ValtheraCompatible {
     remove<T = Data>(query: RemoveQuery): Promise<T[] | null>;
     removeOne<T = Data>(query: RemoveQuery): Promise<T | null>;
     removeCollection(collection: string): Promise<boolean>;
-    updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery): Promise<T>;
-    toggleOne(query: ToggleOneQuery): Promise<boolean>;
-}
-
-export interface UpdateOneOrAdd<T> {
-    add_arg?: Arg<T>;
-    id_gen?: boolean;
-    context?: VContext;
+    updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery): Promise<UpdateOneOrAddResult<T>>;
+    toggleOne<T = Data>(query: ToggleOneQuery): Promise<ToggleOneResult<T>>;
 }

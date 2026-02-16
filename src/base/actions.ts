@@ -1,7 +1,7 @@
 import { setDataForToggleOne, setDataForUpdateOneOrAdd } from "../helpers/assignDataPush";
 import { ActionsBaseInterface } from "../types/action";
 import { DataInternal } from "../types/data";
-import { VQuery } from "../types/query";
+import { ToggleOneResult, UpdateOneOrAddResult, VQuery } from "../types/query";
 
 export abstract class ActionsBase implements ActionsBaseInterface {
     _inited: boolean = true;
@@ -20,32 +20,37 @@ export abstract class ActionsBase implements ActionsBaseInterface {
     abstract removeOne(config: VQuery): Promise<DataInternal | null>;
     abstract removeCollection(config: VQuery): Promise<boolean>;
 
-    async updateOneOrAdd(config: VQuery): Promise<DataInternal> {
+    async updateOneOrAdd(config: VQuery): Promise<UpdateOneOrAddResult<DataInternal>> {
         const res = await this.updateOne(config);
 
-        const controlData = { updated: true };
-        config.control ||= {};
-        config.control.updateOneOrAdd = controlData;
-
-        if (res) return res;
+        if (res)
+            return {
+                data: res,
+                type: "updated"
+            }
 
         setDataForUpdateOneOrAdd(config);
-        config.control.updateOneOrAdd.updated = false;
-        return await this.add(config);
+
+        return {
+            data: await this.add(config),
+            type: "added"
+        }
     }
 
-    async toggleOne(config: VQuery): Promise<boolean> {
+    async toggleOne(config: VQuery): Promise<ToggleOneResult<DataInternal>> {
         const res = await this.removeOne(config);
 
-        const controlData = { data: res };
-        config.control ||= {};
-        config.control.toggleOne = controlData;
-
-        if (res) return false;
+        if (res)
+            return {
+                data: res,
+                type: "removed"
+            }
 
         setDataForToggleOne(config);
-        config.control.toggleOne.data = await this.add(config);
 
-        return true;
+        return {
+            data: await this.add(config),
+            type: "added"
+        }
     }
 }

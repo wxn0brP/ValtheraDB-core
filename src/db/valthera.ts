@@ -4,7 +4,6 @@ import { Collection } from "../helpers/collection";
 import { Executor } from "../helpers/executor";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
-import { VQuery } from "../types/query";
 import {
     AddQuery,
     FindOneQuery,
@@ -12,9 +11,9 @@ import {
     RemoveQuery,
     ToggleOneQuery,
     UpdateOneOrAddQuery,
-    UpdateQuery,
-    ValtheraCompatible
-} from "../types/valthera";
+    UpdateQuery, VQuery
+} from "../types/query";
+import { ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
 
 /**

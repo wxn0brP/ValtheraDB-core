@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.7.0...v0.8.0) (2026-02-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* return result objects from updateOneOrAdd and toggleOne
+
+### Features
+
+* return result objects from updateOneOrAdd and toggleOne ([b37f6e5](https://github.com/wxn0brP/ValtheraDB-core/commit/b37f6e56abdd04b5e1a66d0508dd8d4dcff86ea5))
+
 ## [0.7.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.6.1...v0.7.0) (2026-02-14)
 
 

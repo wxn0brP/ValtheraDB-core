@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.8.2...v0.9.0) (2026-02-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove and update api
+
+### Features
+
+* add VQuery generic and fix ValtheraClass types ([e3c8dc3](https://github.com/wxn0brP/ValtheraDB-core/commit/e3c8dc3fc935bd6c7a01534cb4ca4197ab3065b1))
+
+
+### Bug Fixes
+
+* collection types ([412fa80](https://github.com/wxn0brP/ValtheraDB-core/commit/412fa8045a072899d83f65f374549d1fe63d11c8))
+
+
+* remove and update api ([03ad1e5](https://github.com/wxn0brP/ValtheraDB-core/commit/03ad1e520e03caee65ba6dffd3e517ebb6323658))
+
 ### [0.8.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.8.1...v0.8.2) (2026-02-17)
 
 

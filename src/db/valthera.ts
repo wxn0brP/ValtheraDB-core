@@ -10,7 +10,9 @@ import {
     FindQuery,
     RemoveQuery,
     ToggleOneQuery,
+    ToggleOneResult,
     UpdateOneOrAddQuery,
+    UpdateOneOrAddResult,
     UpdateQuery, VQuery
 } from "../types/query";
 import { ValtheraCompatible } from "../types/valthera";
@@ -54,7 +56,7 @@ export class ValtheraClass implements ValtheraCompatible {
         });
     }
 
-    async execute<T>(name: keyof ValtheraCompatible, query: VQuery) {
+    async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any>) {
         await this.init();
         const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
         this.emiter.emit(name, query, result);
@@ -92,7 +94,7 @@ export class ValtheraClass implements ValtheraCompatible {
     /**
      * Add data to a database.
      */
-    add<T = Data>(query: AddQuery) {
+    add<T = Data>(query: AddQuery<T>) {
         query.control ||= {};
         query.id_gen ??= true;
         return this.execute<T>("add", query);
@@ -101,7 +103,7 @@ export class ValtheraClass implements ValtheraCompatible {
     /**
      * Find data in a database.
      */
-    find<T = Data>(query: FindQuery) {
+    find<T = Data>(query: FindQuery<T>) {
         query.search ||= {};
         query.dbFindOpts ||= {};
         query.findOpts ||= {};
@@ -113,7 +115,7 @@ export class ValtheraClass implements ValtheraCompatible {
     /**
      * Find one data entry in a database.
      */
-    findOne<T = Data>(query: FindOneQuery) {
+    findOne<T = Data>(query: FindOneQuery<T>) {
         query.findOpts ||= {};
         query.context ||= {};
         query.control ||= {};
@@ -123,16 +125,16 @@ export class ValtheraClass implements ValtheraCompatible {
     /**
      * Update data in a database.
      */
-    update<T = Data>(query: UpdateQuery) {
+    update<T = Data>(query: UpdateQuery<T>) {
         query.context ||= {};
         query.control ||= {};
-        return this.execute<T[] | null>("update", query);
+        return this.execute<T[]>("update", query);
     }
 
     /**
      * Update one data entry in a database.
      */
-    updateOne<T = Data>(query: UpdateQuery) {
+    updateOne<T = Data>(query: UpdateQuery<T>) {
         query.context ||= {};
         query.control ||= {};
         return this.execute<T | null>("updateOne", query);
@@ -141,16 +143,16 @@ export class ValtheraClass implements ValtheraCompatible {
     /**
      * Remove data from a database.
      */
-    remove<T = Data>(query: RemoveQuery) {
+    remove<T = Data>(query: RemoveQuery<T>) {
         query.context ||= {};
         query.control ||= {};
-        return this.execute<T[] | null>("remove", query);
+        return this.execute<T[]>("remove", query);
     }
 
     /**
      * Remove one data entry from a database.
      */
-    removeOne<T = Data>(query: RemoveQuery) {
+    removeOne<T = Data>(query: RemoveQuery<T>) {
         query.context ||= {};
         query.control ||= {};
         return this.execute<T | null>("removeOne", query);
@@ -159,12 +161,12 @@ export class ValtheraClass implements ValtheraCompatible {
     /**
      * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
      */
-    updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery) {
+    updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery<T>) {
         query.context ||= {};
         query.add_arg ||= {};
         query.control ||= {};
         query.id_gen ??= true;
-        return this.execute<T>("updateOneOrAdd", query);
+        return this.execute<UpdateOneOrAddResult<T>>("updateOneOrAdd", query);
     }
 
     /**
@@ -173,11 +175,11 @@ export class ValtheraClass implements ValtheraCompatible {
      * or `true` if the entry was added. The returned value reflects the state of the database
      * after the operation.
      */
-    toggleOne<T = Data>(query: ToggleOneQuery) {
+    toggleOne<T = Data>(query: ToggleOneQuery<T>) {
         query.data ||= {};
         query.context ||= {};
         query.control ||= {};
-        return this.execute<T | null>("toggleOne", query);
+        return this.execute<ToggleOneResult<T>>("toggleOne", query);
     }
 
     /**

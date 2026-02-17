@@ -38,28 +38,28 @@ export class Collection<D = Data> {
     /**
      * Update data in a database.
      */
-    update(search: Search<D>, updater: Updater<D>, context: VContext = {}): Promise<D[]> {
+    update(search: Search<D>, updater: Updater<D>, context: VContext = {}): Promise<D[] | null> {
         return this.db.update({ collection: this.collection, search, updater, context });
     }
 
     /**
      * Update one data entry in a database.
      */
-    updateOne(search: Search<D>, updater: Updater<D>, context: VContext = {}): Promise<D> {
+    updateOne(search: Search<D>, updater: Updater<D>, context: VContext = {}): Promise<D | null> {
         return this.db.updateOne({ collection: this.collection, search, updater, context });
     }
 
     /**
      * Remove data from a database.
      */
-    remove(search: Search<D>, context: VContext = {}): Promise<D[]> {
+    remove(search: Search<D>, context: VContext = {}): Promise<D[] | null> {
         return this.db.remove({ collection: this.collection, search, context });
     }
 
     /**
      * Remove one data entry from a database.
      */
-    removeOne(search: Search<D>, context: VContext = {}): Promise<D> {
+    removeOne(search: Search<D>, context: VContext = {}): Promise<D | null> {
         return this.db.removeOne({ collection: this.collection, search, context });
     }
 

@@ -20,9 +20,9 @@ export interface ValtheraCompatible {
     add<T = Data>(query: AddQuery): Promise<T>;
     find<T = Data>(query: FindQuery): Promise<T[]>;
     findOne<T = Data>(query: FindOneQuery): Promise<T | null>;
-    update<T = Data>(query: UpdateQuery): Promise<T[] | null>;
+    update<T = Data>(query: UpdateQuery): Promise<T[]>;
     updateOne<T = Data>(query: UpdateQuery): Promise<T | null>;
-    remove<T = Data>(query: RemoveQuery): Promise<T[] | null>;
+    remove<T = Data>(query: RemoveQuery): Promise<T[]>;
     removeOne<T = Data>(query: RemoveQuery): Promise<T | null>;
     removeCollection(collection: string): Promise<boolean>;
     updateOneOrAdd<T = Data>(query: UpdateOneOrAddQuery): Promise<UpdateOneOrAddResult<T>>;

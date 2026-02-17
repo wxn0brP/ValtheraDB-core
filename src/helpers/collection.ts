@@ -38,7 +38,7 @@ export class Collection<D = Data> {
     /**
      * Update data in a database.
      */
-    update(search: Search<D>, updater: Updater<D>, context: VContext = {}): Promise<D[] | null> {
+    update(search: Search<D>, updater: Updater<D>, context: VContext = {}): Promise<D[]> {
         return this.db.update({ collection: this.collection, search, updater, context });
     }
 
@@ -52,7 +52,7 @@ export class Collection<D = Data> {
     /**
      * Remove data from a database.
      */
-    remove(search: Search<D>, context: VContext = {}): Promise<D[] | null> {
+    remove(search: Search<D>, context: VContext = {}): Promise<D[]> {
         return this.db.remove({ collection: this.collection, search, context });
     }
 

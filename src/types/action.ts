@@ -11,9 +11,9 @@ export interface ActionsBaseInterface {
     add(config: VQuery): Promise<DataInternal>;
     find(config: VQuery): Promise<DataInternal[]>;
     findOne(config: VQuery): Promise<DataInternal | null>;
-    update(config: VQuery): Promise<DataInternal[] | null>;
+    update(config: VQuery): Promise<DataInternal[]>;
     updateOne(config: VQuery): Promise<DataInternal | null>;
-    remove(config: VQuery): Promise<DataInternal[] | null>;
+    remove(config: VQuery): Promise<DataInternal[]>;
     removeOne(config: VQuery): Promise<DataInternal | null>;
     removeCollection(config: VQuery): Promise<boolean>;
     updateOneOrAdd(config: VQuery): Promise<UpdateOneOrAddResult<DataInternal>>;

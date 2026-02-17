@@ -14,9 +14,9 @@ export abstract class ActionsBase implements ActionsBaseInterface {
     abstract add(config: VQuery): Promise<DataInternal>;
     abstract find(config: VQuery): Promise<DataInternal[]>;
     abstract findOne(config: VQuery): Promise<DataInternal | null>;
-    abstract update(config: VQuery): Promise<DataInternal[] | null>;
+    abstract update(config: VQuery): Promise<DataInternal[]>;
     abstract updateOne(config: VQuery): Promise<DataInternal | null>;
-    abstract remove(config: VQuery): Promise<DataInternal[] | null>;
+    abstract remove(config: VQuery): Promise<DataInternal[]>;
     abstract removeOne(config: VQuery): Promise<DataInternal | null>;
     abstract removeCollection(config: VQuery): Promise<boolean>;
 

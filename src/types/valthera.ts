@@ -13,7 +13,7 @@ import {
 } from "./query";
 
 export interface ValtheraCompatible {
-    c(collection: string): Collection;
+    c<T = Data>(collection: string): Collection<T>;
     getCollections(): Promise<string[]>;
     ensureCollection(collection: string): Promise<boolean>;
     issetCollection(collection: string): Promise<boolean>;

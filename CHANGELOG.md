@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.8.1...v0.8.2) (2026-02-17)
+
+
+### Bug Fixes
+
+* ValtheraCompatible missing c<T> ([b356df9](https://github.com/wxn0brP/ValtheraDB-core/commit/b356df980c02e63845de5cd0c30949ec146099d3))
+
 ### [0.8.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.8.0...v0.8.1) (2026-02-16)
 
 

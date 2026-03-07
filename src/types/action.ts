@@ -1,21 +1,23 @@
 import { DataInternal } from "./data";
-import { ToggleOneResult, UpdateOneOrAddResult, VQuery } from "./query";
+import * as Query from "./query";
 
 export interface ActionsBaseInterface {
     _inited: boolean;
     numberId: boolean;
     init(...args: any[]): Promise<void>;
+
     getCollections(): Promise<string[]>;
-    ensureCollection(config: VQuery): Promise<boolean>;
-    issetCollection(config: VQuery): Promise<boolean>;
-    add(config: VQuery): Promise<DataInternal>;
-    find(config: VQuery): Promise<DataInternal[]>;
-    findOne(config: VQuery): Promise<DataInternal | null>;
-    update(config: VQuery): Promise<DataInternal[]>;
-    updateOne(config: VQuery): Promise<DataInternal | null>;
-    remove(config: VQuery): Promise<DataInternal[]>;
-    removeOne(config: VQuery): Promise<DataInternal | null>;
-    removeCollection(config: VQuery): Promise<boolean>;
-    updateOneOrAdd(config: VQuery): Promise<UpdateOneOrAddResult<DataInternal>>;
-    toggleOne(config: VQuery): Promise<ToggleOneResult<DataInternal>>;
+    ensureCollection(collection: string): Promise<boolean>;
+    issetCollection(collection: string): Promise<boolean>;
+    removeCollection(collection: string): Promise<boolean>;
+
+    add(query: Query.AddQuery): Promise<DataInternal>;
+    find(query: Query.FindQuery): Promise<DataInternal[]>;
+    findOne(query: Query.FindOneQuery): Promise<DataInternal | null>;
+    update(query: Query.UpdateQuery): Promise<DataInternal[]>;
+    updateOne(query: Query.UpdateQuery): Promise<DataInternal | null>;
+    remove(query: Query.RemoveQuery): Promise<DataInternal[]>;
+    removeOne(query: Query.RemoveQuery): Promise<DataInternal | null>;
+    updateOneOrAdd(query: Query.UpdateOneOrAddQuery): Promise<Query.UpdateOneOrAddResult<DataInternal>>;
+    toggleOne(query: Query.ToggleOneQuery): Promise<Query.ToggleOneResult<DataInternal>>;
 }

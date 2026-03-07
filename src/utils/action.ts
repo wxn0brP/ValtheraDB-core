@@ -4,7 +4,7 @@ import { VQuery } from "../types/query";
 import { compareSafe } from "./compare";
 
 export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[]) {
-    const { search, context = {}, dbFindOpts = {}, findOpts = {} } = query;
+    const { dbFindOpts = {} } = query;
     const {
         reverse = false,
         offset = 0,
@@ -19,7 +19,7 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
     let skippedEntries = 0;
 
     for (const f of files) {
-        let entries = await fileCpu.find(f, search, context, findOpts) as Data[];
+        let entries = await fileCpu.find(Object.assign({}, query, { collection: f })) as Data[];
         if (reverse && !sortBy) entries.reverse();
 
         if (!sortBy) {

@@ -1,15 +1,12 @@
-import { Search, Updater } from "./types/arg";
 import { Data } from "./types/data";
 import { FileCpu } from "./types/fileCpu";
-import { FindOpts } from "./types/options";
-import { VContext } from "./types/types";
+import * as Query from "./types/query";
 import { hasFieldsAdvanced } from "./utils/hasFieldsAdvanced";
 import { updateFindObject } from "./utils/updateFindObject";
 import { updateObjectAdvanced } from "./utils/updateObject";
 
 export type WriteFile = (file: string, data: any[]) => Promise<void>
 export type ReadFile = (file: string) => Promise<any[]>
-
 
 export function pathRepair(path: string) {
     return path.replaceAll("//", "/");
@@ -24,27 +21,34 @@ export class CustomFileCpu implements FileCpu {
         this._writeFile = writeFile;
     }
 
-    async add(file: string, data: Data): Promise<void> {
-        file = pathRepair(file);
+    async add(config: Query.AddQuery): Promise<void> {
+        const file = pathRepair(config.collection);
         let entries = await this._readFile(file);
-        entries.push(data);
+        entries.push(config.data);
         await this._writeFile(file, entries);
     }
 
-    async find(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<Data[]> {
-        file = pathRepair(file);
+    async find(config: Query.FindQuery): Promise<Data[]> {
+        const file = pathRepair(config.collection);
         const entries = await this._readFile(file);
+
+        const { search, context = {}, findOpts = {} } = config;
+
         const results = entries.filter(entry =>
             typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search)
         );
+
         return results.length ?
             results.map(res => updateFindObject(res, findOpts)) :
             [];
     }
 
-    async findOne(file: string, search: Search, context: VContext = {}, findOpts: FindOpts = {}): Promise<Data | false> {
-        file = pathRepair(file);
+    async findOne(config: Query.FindOneQuery): Promise<Data | false> {
+        const file = pathRepair(config.collection);
         const entries = await this._readFile(file);
+
+        const { search, context = {}, findOpts = {} } = config;
+
         const result = entries.find(entry =>
             typeof search === "function" ? search(entry, context) : hasFieldsAdvanced(entry, search)
         );
@@ -53,10 +57,12 @@ export class CustomFileCpu implements FileCpu {
             false;
     }
 
-    async remove(file: string, one: boolean, search: Search, context: VContext = {}): Promise<Data[]> {
-        file = pathRepair(file);
+    async remove(config: Query.RemoveQuery, one: boolean): Promise<Data[]> {
+        const file = pathRepair(config.collection);
         let entries = await this._readFile(file);
         const removed = [];
+
+        const { search, context = {} } = config;
 
         entries = entries.filter(entry => {
             if (removed.length && one) return true;
@@ -77,10 +83,12 @@ export class CustomFileCpu implements FileCpu {
         return removed;
     }
 
-    async update(file: string, one: boolean, search: Search, updater: Updater, context: VContext = {}): Promise<Data[]> {
-        file = pathRepair(file);
+    async update(config: Query.UpdateQuery, one: boolean): Promise<Data[]> {
+        const file = pathRepair(config.collection);
         let entries = await this._readFile(file);
         const updated = [];
+
+        const { search, updater, context = {} } = config;
 
         entries = entries.map(entry => {
             if (updated.length && one) return entry;

@@ -1,7 +1,7 @@
 import { CustomFileCpu } from "../customFileCpu";
 import { addId } from "../helpers/addId";
 import { Data } from "../types/data";
-import { VQuery } from "../types/query";
+import * as Query from "../types/query";
 import { findUtil } from "../utils/action";
 import { ActionsBase } from "./actions";
 
@@ -15,19 +15,19 @@ export abstract class CustomActionsBase extends ActionsBase {
     /**
      * Add a new entry to the specified database.
      */
-    async add(query: VQuery) {
-        await this.ensureCollection(query);
+    async add(query: Query.AddQuery) {
+        await this.ensureCollection(query.collection);
         await addId(query, this);
         const { collection, data } = query;
-        await this.fileCpu.add(collection, data);
+        await this.fileCpu.add({ collection, data });
         return data;
     }
 
     /**
      * Find entries in the specified database based on search criteria.
      */
-    async find(query: VQuery) {
-        await this.ensureCollection(query);
+    async find(query: Query.FindQuery) {
+        await this.ensureCollection(query.collection);
         const data = await findUtil(query, this.fileCpu, [query.collection]);
         return data;
     }
@@ -35,43 +35,43 @@ export abstract class CustomActionsBase extends ActionsBase {
     /**
      * Find the first matching entry in the specified database based on search criteria.
      */
-    async findOne({ collection, search, context = {}, findOpts = {} }: VQuery) {
-        await this.ensureCollection(arguments[0]);
-        let data = await this.fileCpu.findOne(collection, search, context, findOpts) as Data;
+    async findOne(query: Query.FindOneQuery) {
+        await this.ensureCollection(query.collection);
+        let data = await this.fileCpu.findOne(query) as Data;
         return data || null;
     }
 
     /**
      * Update entries in the specified database based on search criteria and an updater function or object.
      */
-    async update({ collection, search, updater, context = {} }: VQuery) {
-        await this.ensureCollection(arguments[0]);
-        return await this.fileCpu.update(collection, false, search, updater, context);
+    async update(query: Query.UpdateQuery) {
+        await this.ensureCollection(query.collection);
+        return await this.fileCpu.update(query, false);
     }
 
     /**
      * Update the first matching entry in the specified database based on search criteria and an updater function or object.
      */
-    async updateOne({ collection, search, updater, context = {} }: VQuery) {
-        await this.ensureCollection(arguments[0]);
-        const res = await this.fileCpu.update(collection, true, search, updater, context);
+    async updateOne(query: Query.UpdateQuery) {
+        await this.ensureCollection(query.collection);
+        const res = await this.fileCpu.update(query, true);
         return res.length ? res[0] : null;
     }
 
     /**
      * Remove entries from the specified database based on search criteria.
      */
-    async remove({ collection, search, context = {} }: VQuery) {
-        await this.ensureCollection(arguments[0]);
-        return await this.fileCpu.remove(collection, false, search, context);
+    async remove(query: Query.RemoveQuery) {
+        await this.ensureCollection(query.collection);
+        return await this.fileCpu.remove(query, false);
     }
 
     /**
      * Remove the first matching entry from the specified database based on search criteria.
      */
-    async removeOne({ collection, search, context = {} }: VQuery) {
-        await this.ensureCollection(arguments[0]);
-        const res = await this.fileCpu.remove(collection, true, search, context);
+    async removeOne(query: Query.RemoveQuery) {
+        await this.ensureCollection(query.collection);
+        const res = await this.fileCpu.remove(query, true);
         return res.length ? res[0] : null;
     }
 }

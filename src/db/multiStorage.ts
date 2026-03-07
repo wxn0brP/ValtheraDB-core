@@ -1,5 +1,5 @@
 import { ActionsBase } from "../base/actions";
-import { VQuery } from "../types/query";
+import * as Query from "../types/query";
 
 export class MultiBackend extends ActionsBase {
     backends: ActionsBase[];
@@ -15,11 +15,11 @@ export class MultiBackend extends ActionsBase {
         await Promise.all(this.backends.map(b => b.init?.(...args)));
     }
 
-    async add(config: VQuery) {
+    async add(config: Query.AddQuery) {
         return await this.primaryBackend.add({ ...config });
     }
 
-    async find(config: VQuery) {
+    async find(config: Query.FindQuery) {
         const results = await Promise.all(
             this.backends.map(b => b.find({ ...config }))
         );
@@ -27,7 +27,7 @@ export class MultiBackend extends ActionsBase {
         return results.flat();
     }
 
-    async findOne(config: VQuery) {
+    async findOne(config: Query.FindOneQuery) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.findOne({ ...config });
@@ -41,7 +41,7 @@ export class MultiBackend extends ActionsBase {
         return null;
     }
 
-    async update(config: VQuery) {
+    async update(config: Query.UpdateQuery) {
         const results = await Promise.all(
             this.backends.map(b => b.update({ ...config }))
         );
@@ -49,7 +49,7 @@ export class MultiBackend extends ActionsBase {
         return results.flat();
     }
 
-    async updateOne(config: VQuery) {
+    async updateOne(config: Query.UpdateQuery) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.updateOne({ ...config });
@@ -61,7 +61,7 @@ export class MultiBackend extends ActionsBase {
         return null;
     }
 
-    async remove(config: VQuery) {
+    async remove(config: Query.RemoveQuery) {
         const results = await Promise.all(
             this.backends.map(b => b.remove({ ...config }))
         );
@@ -69,7 +69,7 @@ export class MultiBackend extends ActionsBase {
         return results.flat();
     }
 
-    async removeOne(config: VQuery) {
+    async removeOne(config: Query.RemoveQuery) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.removeOne({ ...config });
@@ -81,25 +81,25 @@ export class MultiBackend extends ActionsBase {
         return null;
     }
 
-    async ensureCollection(config: VQuery) {
+    async ensureCollection(collection: string) {
         const results = await Promise.all(
-            this.backends.map(b => b.ensureCollection({ ...config }))
+            this.backends.map(b => b.ensureCollection(collection))
         );
         return results.some(Boolean);
     }
 
-    async issetCollection(config: VQuery) {
+    async issetCollection(collection: string) {
         for (const backend of this.backends) {
-            if (await backend.issetCollection({ ...config })) {
+            if (await backend.issetCollection(collection)) {
                 return true;
             }
         }
         return false;
     }
 
-    async removeCollection(config: VQuery) {
+    async removeCollection(collection: string) {
         const results = await Promise.all(
-            this.backends.map(b => b.removeCollection({ ...config }))
+            this.backends.map(b => b.removeCollection(collection))
         );
         return results.some(Boolean);
     }

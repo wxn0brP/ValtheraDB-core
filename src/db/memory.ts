@@ -2,9 +2,8 @@
 import { CustomActionsBase } from "../base/custom";
 import { CustomFileCpu } from "../customFileCpu";
 import { Collection } from "../helpers/collection";
-import { Data } from "../types/data";
-import { VQuery } from "../types/query";
 import { forgeValthera } from "../helpers/forge";
+import { Data } from "../types/data";
 import { ValtheraClass } from "./valthera";
 
 export class MemoryAction extends CustomActionsBase {
@@ -30,17 +29,17 @@ export class MemoryAction extends CustomActionsBase {
         return collections;
     }
 
-    async ensureCollection({ collection }: VQuery) {
+    async ensureCollection(collection: string) {
         if (this.issetCollection(collection)) return;
         this.memory.set(collection, []);
         return true;
     }
 
-    async issetCollection({ collection }: VQuery) {
+    async issetCollection(collection: string) {
         return this.memory.has(collection);
     }
 
-    async removeCollection({ collection }: VQuery) {
+    async removeCollection(collection: string) {
         this.memory.delete(collection);
         return true;
     }

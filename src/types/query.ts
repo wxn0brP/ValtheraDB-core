@@ -15,6 +15,7 @@ import { VContext } from "./types";
 export interface VQuery_Control { }
 
 export interface VQuery<T = Data> {
+    /** logic path, dir or file, depends on context */
     collection?: string;
     search?: Search<T>;
     context?: VContext;

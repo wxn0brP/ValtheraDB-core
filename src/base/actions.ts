@@ -1,7 +1,8 @@
 import { setDataForToggleOne, setDataForUpdateOneOrAdd } from "../helpers/assignDataPush";
 import { ActionsBaseInterface } from "../types/action";
 import { DataInternal } from "../types/data";
-import { ToggleOneResult, UpdateOneOrAddResult, VQuery } from "../types/query";
+import * as Query from "../types/query";
+
 
 export abstract class ActionsBase implements ActionsBaseInterface {
     _inited: boolean = true;
@@ -9,18 +10,19 @@ export abstract class ActionsBase implements ActionsBaseInterface {
     async init(...args: any[]) { }
 
     abstract getCollections(): Promise<string[]>;
-    abstract ensureCollection(config: VQuery): Promise<boolean>;
-    abstract issetCollection(config: VQuery): Promise<boolean>;
-    abstract add(config: VQuery): Promise<DataInternal>;
-    abstract find(config: VQuery): Promise<DataInternal[]>;
-    abstract findOne(config: VQuery): Promise<DataInternal | null>;
-    abstract update(config: VQuery): Promise<DataInternal[]>;
-    abstract updateOne(config: VQuery): Promise<DataInternal | null>;
-    abstract remove(config: VQuery): Promise<DataInternal[]>;
-    abstract removeOne(config: VQuery): Promise<DataInternal | null>;
-    abstract removeCollection(config: VQuery): Promise<boolean>;
+    abstract ensureCollection(collection: string): Promise<boolean>;
+    abstract issetCollection(collection: string): Promise<boolean>;
+    abstract removeCollection(collection: string): Promise<boolean>;
 
-    async updateOneOrAdd(config: VQuery): Promise<UpdateOneOrAddResult<DataInternal>> {
+    abstract add(config: Query.AddQuery): Promise<DataInternal>;
+    abstract find(config: Query.FindQuery): Promise<DataInternal[]>;
+    abstract findOne(config: Query.FindOneQuery): Promise<DataInternal | null>;
+    abstract update(config: Query.UpdateQuery): Promise<DataInternal[]>;
+    abstract updateOne(config: Query.UpdateQuery): Promise<DataInternal | null>;
+    abstract remove(config: Query.RemoveQuery): Promise<DataInternal[]>;
+    abstract removeOne(config: Query.RemoveQuery): Promise<DataInternal | null>;
+
+    async updateOneOrAdd(config: Query.UpdateOneOrAddQuery): Promise<Query.UpdateOneOrAddResult<DataInternal>> {
         const res = await this.updateOne(config);
 
         if (res)
@@ -29,15 +31,16 @@ export abstract class ActionsBase implements ActionsBaseInterface {
                 type: "updated"
             }
 
+        // transform UpdateOneQuery to AddQuery
         setDataForUpdateOneOrAdd(config);
 
         return {
-            data: await this.add(config),
+            data: await this.add(config as any),
             type: "added"
         }
     }
 
-    async toggleOne(config: VQuery): Promise<ToggleOneResult<DataInternal>> {
+    async toggleOne(config: Query.ToggleOneQuery): Promise<Query.ToggleOneResult<DataInternal>> {
         const res = await this.removeOne(config);
 
         if (res)
@@ -46,10 +49,11 @@ export abstract class ActionsBase implements ActionsBaseInterface {
                 type: "removed"
             }
 
+        // transform ToggleOneQuery to AddQuery
         setDataForToggleOne(config);
 
         return {
-            data: await this.add(config),
+            data: await this.add(config as any),
             type: "added"
         }
     }

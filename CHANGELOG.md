@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.9.0...v0.10.0-alpha.0) (2026-03-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* break file cpu api & actions api
+
+### Features
+
+* break file cpu api & actions api ([9da3e52](https://github.com/wxn0brP/ValtheraDB-core/commit/9da3e52dddf0277fc86ffa457f26317765fd3fb5))
+
 ## [0.9.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.8.2...v0.9.0) (2026-02-17)
 
 

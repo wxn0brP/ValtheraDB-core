@@ -1,9 +1,9 @@
 import { Data } from "../types/data";
 import { FileCpu } from "../types/fileCpu";
-import { VQuery } from "../types/query";
+import { FindQuery } from "../types/query";
 import { compareSafe } from "./compare";
 
-export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[]) {
+export async function findUtil(query: FindQuery, fileCpu: FileCpu, files: string[]) {
     const { dbFindOpts = {} } = query;
     const {
         reverse = false,
@@ -19,7 +19,7 @@ export async function findUtil(query: VQuery, fileCpu: FileCpu, files: string[])
     let skippedEntries = 0;
 
     for (const f of files) {
-        let entries = await fileCpu.find(Object.assign({}, query, { collection: f })) as Data[];
+        let entries = await fileCpu.find(f, query) as Data[];
         if (reverse && !sortBy) entries.reverse();
 
         if (!sortBy) {

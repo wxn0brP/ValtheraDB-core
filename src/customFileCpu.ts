@@ -21,15 +21,15 @@ export class CustomFileCpu implements FileCpu {
         this._writeFile = writeFile;
     }
 
-    async add(config: Query.AddQuery): Promise<void> {
-        const file = pathRepair(config.collection);
+    async add(file: string, config: Query.AddQuery): Promise<void> {
+        file = pathRepair(file);
         let entries = await this._readFile(file);
         entries.push(config.data);
         await this._writeFile(file, entries);
     }
 
-    async find(config: Query.FindQuery): Promise<Data[]> {
-        const file = pathRepair(config.collection);
+    async find(file: string, config: Query.FindQuery): Promise<Data[]> {
+        file = pathRepair(file);
         const entries = await this._readFile(file);
 
         const { search, context = {}, findOpts = {} } = config;
@@ -43,8 +43,8 @@ export class CustomFileCpu implements FileCpu {
             [];
     }
 
-    async findOne(config: Query.FindOneQuery): Promise<Data | false> {
-        const file = pathRepair(config.collection);
+    async findOne(file: string, config: Query.FindOneQuery): Promise<Data | false> {
+        file = pathRepair(file);
         const entries = await this._readFile(file);
 
         const { search, context = {}, findOpts = {} } = config;
@@ -57,8 +57,8 @@ export class CustomFileCpu implements FileCpu {
             false;
     }
 
-    async remove(config: Query.RemoveQuery, one: boolean): Promise<Data[]> {
-        const file = pathRepair(config.collection);
+    async remove(file: string, config: Query.RemoveQuery, one: boolean): Promise<Data[]> {
+        file = pathRepair(file);
         let entries = await this._readFile(file);
         const removed = [];
 
@@ -83,8 +83,8 @@ export class CustomFileCpu implements FileCpu {
         return removed;
     }
 
-    async update(config: Query.UpdateQuery, one: boolean): Promise<Data[]> {
-        const file = pathRepair(config.collection);
+    async update(file: string, config: Query.UpdateQuery, one: boolean): Promise<Data[]> {
+        file = pathRepair(file);
         let entries = await this._readFile(file);
         const updated = [];
 

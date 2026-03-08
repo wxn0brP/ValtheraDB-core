@@ -19,7 +19,7 @@ export abstract class CustomActionsBase extends ActionsBase {
         await this.ensureCollection(query.collection);
         await addId(query, this);
         const { collection, data } = query;
-        await this.fileCpu.add({ collection, data });
+        await this.fileCpu.add(collection, query);
         return data;
     }
 
@@ -37,7 +37,7 @@ export abstract class CustomActionsBase extends ActionsBase {
      */
     async findOne(query: Query.FindOneQuery) {
         await this.ensureCollection(query.collection);
-        let data = await this.fileCpu.findOne(query) as Data;
+        let data = await this.fileCpu.findOne(query.collection, query) as Data;
         return data || null;
     }
 
@@ -46,7 +46,7 @@ export abstract class CustomActionsBase extends ActionsBase {
      */
     async update(query: Query.UpdateQuery) {
         await this.ensureCollection(query.collection);
-        return await this.fileCpu.update(query, false);
+        return await this.fileCpu.update(query.collection, query, false);
     }
 
     /**
@@ -54,7 +54,7 @@ export abstract class CustomActionsBase extends ActionsBase {
      */
     async updateOne(query: Query.UpdateQuery) {
         await this.ensureCollection(query.collection);
-        const res = await this.fileCpu.update(query, true);
+        const res = await this.fileCpu.update(query.collection, query, true);
         return res.length ? res[0] : null;
     }
 
@@ -63,7 +63,7 @@ export abstract class CustomActionsBase extends ActionsBase {
      */
     async remove(query: Query.RemoveQuery) {
         await this.ensureCollection(query.collection);
-        return await this.fileCpu.remove(query, false);
+        return await this.fileCpu.remove(query.collection, query, false);
     }
 
     /**
@@ -71,7 +71,7 @@ export abstract class CustomActionsBase extends ActionsBase {
      */
     async removeOne(query: Query.RemoveQuery) {
         await this.ensureCollection(query.collection);
-        const res = await this.fileCpu.remove(query, true);
+        const res = await this.fileCpu.remove(query.collection, query, true);
         return res.length ? res[0] : null;
     }
 }

@@ -28,21 +28,34 @@ export interface VQuery<T = Data> {
     control?: VQuery_Control;
 }
 
-export type QueryBase<T = Data> = Required<Pick<VQuery<T>, "collection" | "search">> & Pick<VQuery<T>, "control">;
-export type AddQuery<T = Data> = Required<Pick<VQuery<T>, "data" | "collection">> & Pick<VQuery<T>, "id_gen" | "control">;
-export type FindQuery<T = Data> = Omit<QueryBase, "search"> & Pick<VQuery<T>, "search"> & Pick<VQuery<T>, "findOpts" | "dbFindOpts" | "context">;
-export type FindOneQuery<T = Data> = QueryBase & Pick<VQuery<T>, "findOpts" | "context">;
-export type UpdateQuery<T = Data> = QueryBase & Required<Pick<VQuery<T>, "updater">> & Pick<VQuery<T>, "context">;
-export type RemoveQuery<T = Data> = QueryBase & Pick<VQuery<T>, "context">;
-export type UpdateOneOrAddQuery<T = Data> = QueryBase & UpdateQuery & Pick<VQuery<T>, "add_arg" | "id_gen">;
-export type ToggleOneQuery<T = Data> = QueryBase & Pick<VQuery<T>, "data" | "context">;
+export namespace VQueryT {
+    export type QueryBase<T = Data> = Required<Pick<VQuery<T>, "collection" | "search">> & Pick<VQuery<T>, "control">;
+    export type Add<T = Data> = Required<Pick<VQuery<T>, "data" | "collection">> & Pick<VQuery<T>, "id_gen" | "control">;
+    export type Find<T = Data> = Omit<QueryBase, "search"> & Pick<VQuery<T>, "search"> & Pick<VQuery<T>, "findOpts" | "dbFindOpts" | "context">;
+    export type FindOne<T = Data> = QueryBase & Pick<VQuery<T>, "findOpts" | "context">;
+    export type Update<T = Data> = QueryBase & Required<Pick<VQuery<T>, "updater">> & Pick<VQuery<T>, "context">;
+    export type Remove<T = Data> = QueryBase & Pick<VQuery<T>, "context">;
+    export type UpdateOneOrAdd<T = Data> = QueryBase & Update & Pick<VQuery<T>, "add_arg" | "id_gen">;
+    export type ToggleOne<T = Data> = QueryBase & Pick<VQuery<T>, "data" | "context">;
 
-export interface UpdateOneOrAddResult<T> {
-    data: T;
-    type: "added" | "updated";
-};
+    export interface UpdateOneOrAddResult<T> {
+        data: T;
+        type: "added" | "updated";
+    };
 
-export interface ToggleOneResult<T> {
-    data: T;
-    type: "added" | "removed";
-};
+    export interface ToggleOneResult<T> {
+        data: T;
+        type: "added" | "removed";
+    };
+}
+
+export type QueryBase<T = Data> = VQueryT.QueryBase<T>;
+export type AddQuery<T = Data> = VQueryT.Add<T>;
+export type FindQuery<T = Data> = VQueryT.Find<T>;
+export type FindOneQuery<T = Data> = VQueryT.FindOne<T>;
+export type UpdateQuery<T = Data> = VQueryT.Update<T>;
+export type RemoveQuery<T = Data> = VQueryT.Remove<T>;
+export type UpdateOneOrAddQuery<T = Data> = VQueryT.UpdateOneOrAdd<T>;
+export type ToggleOneQuery<T = Data> = VQueryT.ToggleOne<T>;
+export type UpdateOneOrAddResult<T> = VQueryT.UpdateOneOrAddResult<T>;
+export type ToggleOneResult<T> = VQueryT.ToggleOneResult<T>;

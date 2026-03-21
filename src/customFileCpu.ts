@@ -1,6 +1,6 @@
 import { Data } from "./types/data";
 import { FileCpu } from "./types/fileCpu";
-import * as Query from "./types/query";
+import { VQueryT } from "./types/query";
 import { hasFieldsAdvanced } from "./utils/hasFieldsAdvanced";
 import { updateFindObject } from "./utils/updateFindObject";
 import { updateObjectAdvanced } from "./utils/updateObject";
@@ -21,14 +21,14 @@ export class CustomFileCpu implements FileCpu {
         this._writeFile = writeFile;
     }
 
-    async add(file: string, config: Query.AddQuery): Promise<void> {
+    async add(file: string, config: VQueryT.Add): Promise<void> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         entries.push(config.data);
         await this._writeFile(file, entries);
     }
 
-    async find(file: string, config: Query.FindQuery): Promise<Data[]> {
+    async find(file: string, config: VQueryT.Find): Promise<Data[]> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
 
@@ -43,7 +43,7 @@ export class CustomFileCpu implements FileCpu {
             [];
     }
 
-    async findOne(file: string, config: Query.FindOneQuery): Promise<Data | false> {
+    async findOne(file: string, config: VQueryT.FindOne): Promise<Data | false> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
 
@@ -57,7 +57,7 @@ export class CustomFileCpu implements FileCpu {
             false;
     }
 
-    async remove(file: string, config: Query.RemoveQuery, one: boolean): Promise<Data[]> {
+    async remove(file: string, config: VQueryT.Remove, one: boolean): Promise<Data[]> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         const removed = [];
@@ -83,7 +83,7 @@ export class CustomFileCpu implements FileCpu {
         return removed;
     }
 
-    async update(file: string, config: Query.UpdateQuery, one: boolean): Promise<Data[]> {
+    async update(file: string, config: VQueryT.Update, one: boolean): Promise<Data[]> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         const updated = [];

@@ -1,20 +1,20 @@
 import { Collection } from "../helpers/collection";
 import { Data } from "./data";
-import * as Query from "./query";
+import { VQueryT } from "./query";
 
 export interface ValtheraCompatible {
     c<T = Data>(collection: string): Collection<T>;
     getCollections(): Promise<string[]>;
     ensureCollection(collection: string): Promise<boolean>;
     issetCollection(collection: string): Promise<boolean>;
-    add<T = Data>(query: Query.AddQuery<T>): Promise<T>;
-    find<T = Data>(query: Query.FindQuery<T>): Promise<T[]>;
-    findOne<T = Data>(query: Query.FindOneQuery<T>): Promise<T | null>;
-    update<T = Data>(query: Query.UpdateQuery<T>): Promise<T[]>;
-    updateOne<T = Data>(query: Query.UpdateQuery<T>): Promise<T | null>;
-    remove<T = Data>(query: Query.RemoveQuery<T>): Promise<T[]>;
-    removeOne<T = Data>(query: Query.RemoveQuery<T>): Promise<T | null>;
+    add<T = Data>(query: VQueryT.Add<T>): Promise<T>;
+    find<T = Data>(query: VQueryT.Find<T>): Promise<T[]>;
+    findOne<T = Data>(query: VQueryT.FindOne<T>): Promise<T | null>;
+    update<T = Data>(query: VQueryT.Update<T>): Promise<T[]>;
+    updateOne<T = Data>(query: VQueryT.Update<T>): Promise<T | null>;
+    remove<T = Data>(query: VQueryT.Remove<T>): Promise<T[]>;
+    removeOne<T = Data>(query: VQueryT.Remove<T>): Promise<T | null>;
     removeCollection(collection: string): Promise<boolean>;
-    updateOneOrAdd<T = Data>(query: Query.UpdateOneOrAddQuery<T>): Promise<Query.UpdateOneOrAddResult<T>>;
-    toggleOne<T = Data>(query: Query.ToggleOneQuery<T>): Promise<Query.ToggleOneResult<T>>;
+    updateOneOrAdd<T = Data>(query: VQueryT.UpdateOneOrAdd<T>): Promise<VQueryT.UpdateOneOrAddResult<T>>;
+    toggleOne<T = Data>(query: VQueryT.ToggleOne<T>): Promise<VQueryT.ToggleOneResult<T>>;
 }

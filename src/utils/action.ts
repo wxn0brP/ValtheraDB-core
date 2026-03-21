@@ -1,9 +1,9 @@
 import { Data } from "../types/data";
 import { FileCpu } from "../types/fileCpu";
-import { FindQuery } from "../types/query";
+import { VQueryT } from "../types/query";
 import { compareSafe } from "./compare";
 
-export async function findUtil(query: FindQuery, fileCpu: FileCpu, files: string[]) {
+export async function findUtil(query: VQueryT.Find, fileCpu: FileCpu, files: string[]) {
     const { dbFindOpts = {} } = query;
     const {
         reverse = false,

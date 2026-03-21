@@ -1,7 +1,7 @@
 import { ActionsBase } from "../base/actions";
-import * as Query from "../types/query";
+import { VQueryT, VQuery } from "../types/query";
 
-export type MatchRule = string | RegExp | ((config: Query.VQuery) => boolean);
+export type MatchRule = string | RegExp | ((config: VQuery) => boolean);
 
 export interface RouteEntry {
     match: MatchRule;
@@ -18,7 +18,7 @@ export class RoutedStorage extends ActionsBase {
         this.defaultBackend = Array.isArray(defaultBackend) ? defaultBackend : [defaultBackend];
     }
 
-    _matchBackends(config: Query.VQuery): ActionsBase[] {
+    _matchBackends(config: VQuery): ActionsBase[] {
         const matched: ActionsBase[] = [];
         const { collection } = config;
 
@@ -38,7 +38,7 @@ export class RoutedStorage extends ActionsBase {
         return matched;
     }
 
-    async _withAll<T>(config: Query.VQuery | string, fn: (b: ActionsBase) => Promise<T>, gather = false): Promise<T> {
+    async _withAll<T>(config: VQuery | string, fn: (b: ActionsBase) => Promise<T>, gather = false): Promise<T> {
         const backends = this._matchBackends(config);
         if (gather) {
             return await Promise.all(backends.map(fn)).then(res => res[0]);
@@ -48,7 +48,7 @@ export class RoutedStorage extends ActionsBase {
         }
     }
 
-    async _withFirst<T>(config: Query.VQuery | string, fn: (b: ActionsBase) => Promise<T>): Promise<T> {
+    async _withFirst<T>(config: VQuery | string, fn: (b: ActionsBase) => Promise<T>): Promise<T> {
         const [first] = this._matchBackends(config);
         return await fn(first);
     }
@@ -58,33 +58,33 @@ export class RoutedStorage extends ActionsBase {
         await Promise.all(Array.from(all).map(b => b.init?.(...args)));
     }
 
-    async add(config: Query.AddQuery) {
+    async add(config: VQueryT.Add) {
         const res = await this._withFirst(config, b => b.add(config));
         await this._withAll({ ...config, data: res }, b => b.add({ ...config, data: res }));
         return res;
     }
 
-    async find(config: Query.FindQuery) {
+    async find(config: VQueryT.Find) {
         return this._withFirst(config, b => b.find(config));
     }
 
-    async findOne(config: Query.FindOneQuery) {
+    async findOne(config: VQueryT.FindOne) {
         return this._withFirst(config, b => b.findOne(config));
     }
 
-    async update(config: Query.UpdateQuery) {
+    async update(config: VQueryT.Update) {
         return this._withAll(config, b => b.update(config), true);
     }
 
-    async updateOne(config: Query.UpdateQuery) {
+    async updateOne(config: VQueryT.Update) {
         return this._withAll(config, b => b.updateOne(config), true);
     }
 
-    async remove(config: Query.RemoveQuery) {
+    async remove(config: VQueryT.Remove) {
         return this._withAll(config, b => b.remove(config), true);
     }
 
-    async removeOne(config: Query.RemoveQuery) {
+    async removeOne(config: VQueryT.Remove) {
         return this._withAll(config, b => b.removeOne(config), true);
     }
 

@@ -1,5 +1,5 @@
 import { ActionsBase } from "../base/actions";
-import * as Query from "../types/query";
+import { VQueryT } from "../types/query";
 
 export class MultiBackend extends ActionsBase {
     backends: ActionsBase[];
@@ -15,11 +15,11 @@ export class MultiBackend extends ActionsBase {
         await Promise.all(this.backends.map(b => b.init?.(...args)));
     }
 
-    async add(config: Query.AddQuery) {
+    async add(config: VQueryT.Add) {
         return await this.primaryBackend.add({ ...config });
     }
 
-    async find(config: Query.FindQuery) {
+    async find(config: VQueryT.Find) {
         const results = await Promise.all(
             this.backends.map(b => b.find({ ...config }))
         );
@@ -27,7 +27,7 @@ export class MultiBackend extends ActionsBase {
         return results.flat();
     }
 
-    async findOne(config: Query.FindOneQuery) {
+    async findOne(config: VQueryT.FindOne) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.findOne({ ...config });
@@ -41,7 +41,7 @@ export class MultiBackend extends ActionsBase {
         return null;
     }
 
-    async update(config: Query.UpdateQuery) {
+    async update(config: VQueryT.Update) {
         const results = await Promise.all(
             this.backends.map(b => b.update({ ...config }))
         );
@@ -49,7 +49,7 @@ export class MultiBackend extends ActionsBase {
         return results.flat();
     }
 
-    async updateOne(config: Query.UpdateQuery) {
+    async updateOne(config: VQueryT.Update) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.updateOne({ ...config });
@@ -61,7 +61,7 @@ export class MultiBackend extends ActionsBase {
         return null;
     }
 
-    async remove(config: Query.RemoveQuery) {
+    async remove(config: VQueryT.Remove) {
         const results = await Promise.all(
             this.backends.map(b => b.remove({ ...config }))
         );
@@ -69,7 +69,7 @@ export class MultiBackend extends ActionsBase {
         return results.flat();
     }
 
-    async removeOne(config: Query.RemoveQuery) {
+    async removeOne(config: VQueryT.Remove) {
         for (const backend of this.backends) {
             try {
                 const result = await backend.removeOne({ ...config });

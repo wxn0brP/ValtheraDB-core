@@ -22,7 +22,7 @@
         "@types/bun": "*",
         "@types/node": "*",
         "tsc-alias": "*",
-        "typescript": "*"
+        "typescript": "^6"
     },
     "files": [
         "dist"

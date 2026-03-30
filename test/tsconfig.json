@@ -10,7 +10,11 @@
         },
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "noEmit": true
+        "noEmit": true,
+        "strict": false,
+        "types": [
+            "bun-types"
+        ]
     },
     "include": [
         "."

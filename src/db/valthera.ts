@@ -46,7 +46,7 @@ export class ValtheraClass implements ValtheraCompatible {
         });
     }
 
-    async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any>) {
+    async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any> | string) {
         await this.init();
         const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
         this.emiter.emit(name, query, result);
@@ -71,14 +71,14 @@ export class ValtheraClass implements ValtheraCompatible {
      * Check and create the specified collection if it doesn't exist.
      */
     async ensureCollection(collection: string) {
-        return await this.execute<boolean>("ensureCollection", { collection });
+        return await this.execute<boolean>("ensureCollection", collection);
     }
 
     /**
      * Check if a collection exists.
      */
     async issetCollection(collection: string) {
-        return await this.execute<boolean>("issetCollection", { collection });
+        return await this.execute<boolean>("issetCollection", collection);
     }
 
     /**

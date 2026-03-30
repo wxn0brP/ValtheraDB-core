@@ -30,7 +30,7 @@ export class MemoryAction extends CustomActionsBase {
     }
 
     async ensureCollection(collection: string) {
-        if (this.issetCollection(collection)) return;
+        if (this.memory.has(collection)) return false;
         this.memory.set(collection, []);
         return true;
     }
@@ -40,6 +40,7 @@ export class MemoryAction extends CustomActionsBase {
     }
 
     async removeCollection(collection: string) {
+        if (!this.memory.has(collection)) return false;
         this.memory.delete(collection);
         return true;
     }

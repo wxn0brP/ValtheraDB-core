@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.10.1...v0.10.2) (2026-03-30)
+
+
+### Bug Fixes
+
+* ValtheraClass.ensure/isset collection runtime parametrs ([d9f1db8](https://github.com/wxn0brP/ValtheraDB-core/commit/d9f1db80e1eb2172a5192e45bafecaadd31ee65d))
+* ValtheraClass.removeCollection & ValtheraMemory ([4f18965](https://github.com/wxn0brP/ValtheraDB-core/commit/4f189654492cfec0a293faf24e681b3cddd49442))
+
 ### [0.10.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.10.0...v0.10.1) (2026-03-21)
 
 ## [0.10.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.10.0-alpha.1...v0.10.0) (2026-03-20)

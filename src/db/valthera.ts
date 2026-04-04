@@ -54,7 +54,7 @@ export class ValtheraClass implements ValtheraCompatible {
     }
 
     /**
-     * Create a new instance of a CollectionManager class.
+     * Create a new instance of a Collection class.
      */
     c<T = Data>(collection: string): Collection<T> {
         return new Collection<T>(this, collection);

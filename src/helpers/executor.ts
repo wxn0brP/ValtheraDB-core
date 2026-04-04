@@ -7,25 +7,15 @@ export interface Task {
 
 /**
  * A simple executor for queuing and executing asynchronous operations sequentially.
- * @class
  */
 export class Executor {
-    quote: Task[];
-    isExecuting: boolean;
-
-    /**
-     * Create a new executor instance.
-     * @constructor
-     */
-    constructor() {
-        this.quote = [];
-        this.isExecuting = false;
-    }
+    quote: Task[] = [];
+    isExecuting: boolean = false;
 
     /**
      * Add an asynchronous operation to the execution queue.
      */
-    async addOp(func: Function, ...param) {
+    async addOp(func: Function, ...param: any[]) {
         return await new Promise((resolve, reject) => {
             this.quote.push({
                 func,
@@ -46,7 +36,7 @@ export class Executor {
         while (this.quote.length > 0) {
             let q = this.quote.shift();
             let res = await q.func(...q.param);
-            q.resolve(res)
+            q.resolve(res);
         }
         this.isExecuting = false;
     }

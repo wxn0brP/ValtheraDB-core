@@ -42,9 +42,9 @@ export type ComparisonOperators<T = any> = {
 	/** 5 between [min, max] */
 	$between?: NestedValue<T, [number, number], number>;
 	/** 2 in [1, 2, 3] */
-	$in?: DeepPartial<T> & { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
+	$in?: { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
 	/** 5 not in [1, 2, 3] */
-	$nin?: DeepPartial<T> & { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
+	$nin?: { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
 	/** id > 4 */
 	$idGt?: NestedValue<T, string | number, string | number>;
 	/** id < 4 */
@@ -66,9 +66,9 @@ export type TypeAndExistenceOperators<T = any> = {
 /** Array Operators with nested support */
 export type ArrayOperators<T = any> = {
 	/** [1, 2, 3] includes 2 */
-	$arrinc?: DeepPartial<T>;
+	$arrinc?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
 	/** [1, 2, 3] array includes all elements e.g. [1, 2] */
-	$arrincall?: DeepPartial<T>;
+	$arrincall?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
 	/** [1, 2, 3] has size 3 */
 	$size?: NestedValue<T, number>;
 };

@@ -14,6 +14,11 @@ export interface DbFindOpts<T = any> {
     offset?: number;
     sortBy?: KeysMatching<T, any>;
     sortAsc?: boolean;
+    min?: Record<string, KeysMatching<T, number>>;
+    max?: Record<string, KeysMatching<T, number>>;
+    avg?: Record<string, KeysMatching<T, number>>;
+    groupBy?: KeysMatching<T, any> | KeysMatching<T, any>[];
+    count?: Record<string, string>;
 }
 
 export interface FindOpts<T = any> {

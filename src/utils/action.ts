@@ -3,52 +3,118 @@ import { FileCpu } from "../types/fileCpu";
 import { VQueryT } from "../types/query";
 import { compareSafe } from "./compare";
 
-export async function findUtil(query: VQueryT.Find, fileCpu: FileCpu, files: string[]) {
+export async function findUtil(
+    query: VQueryT.Find,
+    fileCpuOrData: FileCpu | Object[],
+    files: string[]
+): Promise<Data[]> {
     const { dbFindOpts = {} } = query;
     const {
         reverse = false,
         offset = 0,
         limit = -1,
         sortBy,
-        sortAsc = true
+        sortAsc = true,
+        min,
+        max,
+        avg,
+        groupBy,
+        count,
     } = dbFindOpts;
-    if (reverse && !sortBy) files.reverse();
+
+    const needsAllData = min || max || avg || groupBy || count || sortBy;
 
     let datas: Data[] = [];
-    let totalEntries = 0;
     let skippedEntries = 0;
 
-    for (const f of files) {
-        let entries = await fileCpu.find(f, query) as Data[];
-        if (reverse && !sortBy) entries.reverse();
+    if (Array.isArray(fileCpuOrData)) {
+        datas = [...fileCpuOrData];
+    } else {
+        const filesToProcess = reverse && !sortBy ? [...files].reverse() : files;
 
-        if (!sortBy) {
+        for (const f of filesToProcess) {
+            let entries = await fileCpuOrData.find(f, query) as Data[];
+            if (reverse && !sortBy) entries.reverse();
+
+            if (needsAllData) {
+                datas.push(...entries);
+                continue;
+            }
+
             if (offset > skippedEntries) {
-                const remainingSkip = offset - skippedEntries;
-                if (entries.length <= remainingSkip) {
+                const toSkip = offset - skippedEntries;
+                if (entries.length <= toSkip) {
                     skippedEntries += entries.length;
                     continue;
                 }
-                entries = entries.slice(remainingSkip);
+                entries = entries.slice(toSkip);
                 skippedEntries = offset;
             }
 
             if (limit !== -1) {
-                if (totalEntries + entries.length > limit) {
-                    const remaining = limit - totalEntries;
+                const remaining = limit - datas.length;
+                if (entries.length > remaining)
                     entries = entries.slice(0, remaining);
-                    totalEntries = limit;
-                } else {
-                    totalEntries += entries.length;
-                }
             }
 
             datas.push(...entries);
 
-            if (limit !== -1 && totalEntries >= limit) break;
-        } else {
-            datas.push(...entries);
+            if (limit !== -1 && datas.length >= limit)
+                return datas;
         }
+    }
+
+    if (!needsAllData)
+        return datas;
+
+    if (min || max || avg || groupBy || count) {
+        const groups: Map<string, Data[]> = new Map();
+        const groupKeys = Array.isArray(groupBy) ? groupBy : groupBy ? [groupBy] : [];
+
+        if (groupKeys.length) {
+            for (const data of datas) {
+                const key = groupKeys.map(k => String((data as any)[k] ?? "")).join("|");
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key)!.push(data);
+            }
+        } else {
+            groups.set("all", [...datas]);
+        }
+
+        const aggregated: Data[] = [];
+        for (const [, groupItems] of groups) {
+            const result: Data = {};
+
+            if (groupKeys.length) {
+                const sample = groupItems[0];
+                for (const k of groupKeys) result[k] = sample[k];
+            }
+
+            if (count) {
+                for (const [outKey, srcKey] of Object.entries(count)) {
+                    result[outKey] = groupItems.filter(d => (d as any)[srcKey] !== undefined && (d as any)[srcKey] !== null).length;
+                }
+            }
+
+            for (const [outKey, srcField] of Object.entries(min ?? {})) {
+                const nums = groupItems.map(d => Number((d as any)[srcField])).filter(n => !isNaN(n));
+                result[outKey] = nums.length ? Math.min(...nums) : null;
+            }
+
+            for (const [outKey, srcField] of Object.entries(max ?? {})) {
+                const nums = groupItems.map(d => Number((d as any)[srcField])).filter(n => !isNaN(n));
+                result[outKey] = nums.length ? Math.max(...nums) : null;
+            }
+
+            for (const [outKey, srcField] of Object.entries(avg ?? {})) {
+                const nums = groupItems.map(d => Number((d as any)[srcField])).filter(n => !isNaN(n));
+                result[outKey] = nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null;
+            }
+
+            aggregated.push(result);
+        }
+
+        datas = aggregated;
     }
 
     if (sortBy) {
@@ -56,9 +122,11 @@ export async function findUtil(query: VQueryT.Find, fileCpu: FileCpu, files: str
             datas.sort(() => Math.random() - 0.5);
         } else {
             const dir = sortAsc ? 1 : -1;
-            datas.sort((a, b) => compareSafe(a[sortBy], b[sortBy]) * dir);
+            datas.sort((a, b) => compareSafe((a as any)[sortBy], (b as any)[sortBy]) * dir);
         }
+    }
 
+    if (offset > 0 || limit !== -1) {
         const start = offset;
         const end = limit !== -1 ? offset + limit : undefined;
         datas = datas.slice(start, end);

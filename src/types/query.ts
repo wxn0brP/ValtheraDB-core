@@ -48,24 +48,3 @@ export namespace VQueryT {
         type: "added" | "removed";
     };
 }
-
-/** @deprecated */
-export type QueryBase<T = Data> = VQueryT.QueryBase<T>;
-/** @deprecated */
-export type AddQuery<T = Data> = VQueryT.Add<T>;
-/** @deprecated */
-export type FindQuery<T = Data> = VQueryT.Find<T>;
-/** @deprecated */
-export type FindOneQuery<T = Data> = VQueryT.FindOne<T>;
-/** @deprecated */
-export type UpdateQuery<T = Data> = VQueryT.Update<T>;
-/** @deprecated */
-export type RemoveQuery<T = Data> = VQueryT.Remove<T>;
-/** @deprecated */
-export type UpdateOneOrAddQuery<T = Data> = VQueryT.UpdateOneOrAdd<T>;
-/** @deprecated */
-export type ToggleOneQuery<T = Data> = VQueryT.ToggleOne<T>;
-/** @deprecated */
-export type UpdateOneOrAddResult<T> = VQueryT.UpdateOneOrAddResult<T>;
-/** @deprecated */
-export type ToggleOneResult<T> = VQueryT.ToggleOneResult<T>;

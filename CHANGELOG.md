@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.10.4...v0.11.0-alpha.0) (2026-05-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove deprecated code
+
+### Features
+
+* add aggregation and improve findUtil ([9d12c9f](https://github.com/wxn0brP/ValtheraDB-core/commit/9d12c9f8ea825eb08c690dc6b0e561d0c1b8d9dd))
+
+
+* remove deprecated code ([fce21c8](https://github.com/wxn0brP/ValtheraDB-core/commit/fce21c84e2a2163869e88af36af73ac4adca566a))
+
 ### [0.10.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.10.3...v0.10.4) (2026-04-15)
 
 

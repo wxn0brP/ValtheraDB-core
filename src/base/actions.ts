@@ -6,6 +6,7 @@ import { VQueryT } from "../types/query";
 export abstract class ActionsBase implements ActionsBaseInterface {
     _inited: boolean = true;
     numberId: boolean = false;
+    smartExecutor: boolean = false;
     async init(...args: any[]) { }
 
     abstract getCollections(): Promise<string[]>;

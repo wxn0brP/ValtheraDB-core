@@ -1,10 +1,10 @@
 import { VEE } from "@wxn0brp/event-emitter";
 import { ActionsBase } from "../base/actions";
 import { Collection } from "../helpers/collection";
-import { Executor } from "../helpers/executor";
+import { Executor, ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
-import { VQueryT, VQuery } from "../types/query";
+import { VQuery, VQueryT } from "../types/query";
 import { ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
 
@@ -14,7 +14,7 @@ import { version } from "../version";
  */
 export class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
-    executor: Executor;
+    executor: ExecutorInterface;
     emiter: VEE<{
         [K in keyof ValtheraCompatible]:
         (
@@ -32,7 +32,7 @@ export class ValtheraClass implements ValtheraCompatible {
 
     constructor(options: DbOpts) {
         this.dbAction = options.dbAction;
-        this.executor = options.executor || new Executor();
+        this.executor = options.executor || new (this.dbAction.smartExecutor ? SmartExecutor : Executor)();
         if (options.numberId) this.dbAction.numberId = true;
     }
 
@@ -48,7 +48,11 @@ export class ValtheraClass implements ValtheraCompatible {
 
     async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any> | string) {
         await this.init();
-        const result = await this.executor.addOp(this.dbAction[name].bind(this.dbAction), query) as T;
+        const result = await this.executor.addOp(
+            this.dbAction[name].bind(this.dbAction),
+            query,
+            typeof query === "string" ? query : query.collection
+        ) as T;
         this.emiter.emit(name, query, result);
         return result;
     }

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0-alpha.0...v0.11.0-alpha.1) (2026-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* smart executor & fix executor
+
+### Features
+
+* smart executor & fix executor ([8abe10d](https://github.com/wxn0brP/ValtheraDB-core/commit/8abe10d83d4fcc0b8a22e35ac490730c258ff878))
+
 ## [0.11.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.10.4...v0.11.0-alpha.0) (2026-05-05)
 
 

@@ -1,9 +1,7 @@
 import { Data } from "./types/data";
 import { FileCpu } from "./types/fileCpu";
 import { VQueryT } from "./types/query";
-import { hasFieldsAdvanced } from "./utils/hasFieldsAdvanced";
-import { updateFindObject } from "./utils/updateFindObject";
-import { updateObjectAdvanced } from "./utils/updateObject";
+import { match, findProcessLine, update } from "./utils/process";
 
 export type WriteFile = (file: string, data: any[]) => Promise<void>;
 export type ReadFile = (file: string) => Promise<any[]>;
@@ -32,17 +30,9 @@ export class CustomFileCpu implements FileCpu {
         file = pathRepair(file);
         const entries = await this._readFile(file);
 
-        const { search, context = {}, findOpts = {} } = config;
-
-        const results = entries.filter((entry) =>
-            typeof search === "function"
-                ? search(entry, context)
-                : hasFieldsAdvanced(entry, search),
-        );
-
-        return results.length
-            ? results.map((res) => updateFindObject(res, findOpts))
-            : [];
+        return entries
+            .map((entry) => findProcessLine(config, entry))
+            .filter(Boolean);
     }
 
     async findOne(
@@ -52,14 +42,11 @@ export class CustomFileCpu implements FileCpu {
         file = pathRepair(file);
         const entries = await this._readFile(file);
 
-        const { search, context = {}, findOpts = {} } = config;
-
-        const result = entries.find((entry) =>
-            typeof search === "function"
-                ? search(entry, context)
-                : hasFieldsAdvanced(entry, search),
-        );
-        return result ? updateFindObject(result, findOpts) : false;
+        for (const entry of entries) {
+            const result = findProcessLine(config, entry);
+            if (result) return result;
+        }
+        return false;
     }
 
     async remove(
@@ -71,17 +58,10 @@ export class CustomFileCpu implements FileCpu {
         let entries = await this._readFile(file);
         const removed = [];
 
-        const { search, context = {} } = config;
-
         entries = entries.filter((entry) => {
             if (removed.length && one) return true;
 
-            let match =
-                typeof search === "function"
-                    ? search(entry, context)
-                    : hasFieldsAdvanced(entry, search);
-
-            if (match) {
+            if (match(config, entry)) {
                 removed.push(entry);
                 return false;
             }
@@ -103,21 +83,11 @@ export class CustomFileCpu implements FileCpu {
         let entries = await this._readFile(file);
         const updated = [];
 
-        const { search, updater, context = {} } = config;
-
         entries = entries.map((entry) => {
             if (updated.length && one) return entry;
 
-            let match =
-                typeof search === "function"
-                    ? search(entry, context)
-                    : hasFieldsAdvanced(entry, search);
-
-            if (match) {
-                const updatedEntry =
-                    typeof updater === "function"
-                        ? updater(entry, context)
-                        : updateObjectAdvanced(entry, updater);
+            if (match(config, entry)) {
+                const updatedEntry = update(config, entry);
                 updated.push(updatedEntry);
                 return updatedEntry;
             }

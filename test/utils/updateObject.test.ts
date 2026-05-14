@@ -4,11 +4,11 @@ import { Data } from "#types/data";
 
 describe("updateObjectAdvanced", () => {
     test("1. should throw error for non-object fields", () => {
-        expect(() => updateObjectAdvanced({}, null)).toThrow("Fields must be an object or object array");
+        expect(() => updateObjectAdvanced({}, null)).toThrow("Fields must be an object");
         // @ts-expect-error
-        expect(() => updateObjectAdvanced({}, "string")).toThrow("Fields must be an object or object array");
+        expect(() => updateObjectAdvanced({}, "string")).toThrow("Fields must be an object");
         // @ts-expect-error
-        expect(() => updateObjectAdvanced({}, 123)).toThrow("Fields must be an object or object array");
+        expect(() => updateObjectAdvanced({}, 123)).toThrow("Fields must be an object");
     });
 
     test("2. should handle single field object", () => {

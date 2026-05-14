@@ -7,13 +7,11 @@ import { _deepMerge } from "./merge";
  * @param field - An object containing new values to update in the target object.
  */
 export function updateObjectAdvanced(obj: Record<string, any>, field: UpdaterArg): Record<string, any> {
-    if (typeof field !== "object" || field === null) {
-        throw new Error("Fields must be an object or object array");
-    }
+    if (typeof field !== "object" || Array.isArray(field) || field === null)
+        throw new Error("Fields must be an object");
 
-    if (Object.keys(field).length === 0) {
+    if (Object.keys(field).length === 0)
         return obj;
-    }
 
     const newObj = structuredClone(obj);
 
@@ -117,11 +115,10 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
  * @param newVal - An object containing new values to update in the target object.
  */
 function updateObject(obj: Object, newVal: UpdaterArg) {
-    for (let key in newVal) {
-        if (newVal.hasOwnProperty(key)) {
+    for (let key in newVal)
+        if (newVal.hasOwnProperty(key))
             obj[key] = newVal[key];
-        }
-    }
+
     return obj;
 }
 
@@ -153,7 +150,6 @@ function deepUpdateCheck(
     targetObj: any,
     fieldFn: (data: any, value: any, key: string, deepObj: Record<string, any>) => any
 ) {
-
     for (const [k, v] of Object.entries(valueObj)) {
         if (typeof v === "object" && v !== null && !Array.isArray(v)) {
             if (!targetObj[k]) targetObj[k] = {};

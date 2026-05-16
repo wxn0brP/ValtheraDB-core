@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0-alpha.3](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0-alpha.2...v0.11.0-alpha.3) (2026-05-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* process entry functions
+
+* process entry functions ([58e3c86](https://github.com/wxn0brP/ValtheraDB-core/commit/58e3c8681e1f772b452c9af96762501912372066))
+
 ## [0.11.0-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0-alpha.1...v0.11.0-alpha.2) (2026-05-14)
 
 

@@ -29,6 +29,13 @@ export async function findUtil(
 
     if (Array.isArray(fileCpuOrData)) {
         datas = [...fileCpuOrData];
+        if (!needsAllData) {
+            if (offset > 0 || limit !== -1) {
+                const start = offset;
+                const end = limit !== -1 ? offset + limit : undefined;
+                datas = datas.slice(start, end);
+            }
+        }
     } else {
         const filesToProcess = reverse && !sortBy ? [...files].reverse() : files;
 

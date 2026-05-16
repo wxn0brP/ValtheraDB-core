@@ -1,7 +1,7 @@
-import { Data } from "./types/data";
+import { Data, DataInternal } from "./types/data";
 import { FileCpu } from "./types/fileCpu";
 import { VQueryT } from "./types/query";
-import { match, findProcessLine, update } from "./utils/process";
+import { matchObj, findObj, updateObj } from "./utils/process";
 
 export type WriteFile = (file: string, data: any[]) => Promise<void>;
 export type ReadFile = (file: string) => Promise<any[]>;
@@ -31,19 +31,19 @@ export class CustomFileCpu implements FileCpu {
         const entries = await this._readFile(file);
 
         return entries
-            .map((entry) => findProcessLine(config, entry))
+            .map((entry) => findObj(config, entry))
             .filter(Boolean);
     }
 
     async findOne(
         file: string,
         config: VQueryT.FindOne,
-    ): Promise<Data | false> {
+    ): Promise<DataInternal | false> {
         file = pathRepair(file);
         const entries = await this._readFile(file);
 
         for (const entry of entries) {
-            const result = findProcessLine(config, entry);
+            const result = findObj(config, entry);
             if (result) return result;
         }
         return false;
@@ -53,7 +53,7 @@ export class CustomFileCpu implements FileCpu {
         file: string,
         config: VQueryT.Remove,
         one: boolean,
-    ): Promise<Data[]> {
+    ): Promise<DataInternal[]> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         const removed = [];
@@ -61,7 +61,7 @@ export class CustomFileCpu implements FileCpu {
         entries = entries.filter((entry) => {
             if (removed.length && one) return true;
 
-            if (match(config, entry)) {
+            if (matchObj(config, entry)) {
                 removed.push(entry);
                 return false;
             }
@@ -78,7 +78,7 @@ export class CustomFileCpu implements FileCpu {
         file: string,
         config: VQueryT.Update,
         one: boolean,
-    ): Promise<Data[]> {
+    ): Promise<DataInternal[]> {
         file = pathRepair(file);
         let entries = await this._readFile(file);
         const updated = [];
@@ -86,8 +86,8 @@ export class CustomFileCpu implements FileCpu {
         entries = entries.map((entry) => {
             if (updated.length && one) return entry;
 
-            if (match(config, entry)) {
-                const updatedEntry = update(config, entry);
+            if (matchObj(config, entry)) {
+                const updatedEntry = updateObj(config, entry);
                 updated.push(updatedEntry);
                 return updatedEntry;
             }

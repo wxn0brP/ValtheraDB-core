@@ -10,5 +10,10 @@ export type Arg<T = any> = {
 export type SearchFunc<T = any> = (data: T, context: VContext) => boolean;
 export type UpdaterFunc<T = any> = (data: T, context: VContext) => Data | void;
 
-export type Search<T = any> = SearchOptions<T> | SearchFunc<T>;
-export type Updater<T = any> = UpdaterArg<T> | UpdaterFunc<T>;
+export type Search<T = any, AllowFn extends boolean = true> = AllowFn extends true ?
+    SearchOptions<T> | SearchFunc<T> :
+    SearchOptions<T>;
+
+export type Updater<T = any, AllowFn extends boolean = true> = AllowFn extends true ?
+    UpdaterArg<T> | UpdaterFunc<T> :
+    UpdaterArg<T>;

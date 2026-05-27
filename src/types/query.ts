@@ -14,29 +14,68 @@ import { VContext } from "./types";
  */
 export interface VQuery_Control { }
 
-export interface VQuery<T = Data> {
+export interface VQuery<T = Data, AllowFn extends boolean = true> {
     /** logic path, dir or file, depends on context */
     collection?: string;
-    search?: Search<T>;
+    search?: Search<T, AllowFn>;
     context?: VContext;
     dbFindOpts?: DbFindOpts<T>;
     findOpts?: FindOpts<T>;
     data?: Arg<T>;
     id_gen?: boolean;
     add_arg?: Arg<T>;
-    updater?: Updater<T>;
+    updater?: Updater<T, AllowFn>;
     control?: VQuery_Control;
 }
 
 export namespace VQueryT {
-    export type QueryBase<T = Data> = Required<Pick<VQuery<T>, "collection" | "search">> & Pick<VQuery<T>, "control">;
-    export type Add<T = Data> = Required<Pick<VQuery<T>, "data" | "collection">> & Pick<VQuery<T>, "id_gen" | "control">;
-    export type Find<T = Data> = Omit<QueryBase, "search"> & Pick<VQuery<T>, "search"> & Pick<VQuery<T>, "findOpts" | "dbFindOpts" | "context">;
-    export type FindOne<T = Data> = QueryBase & Pick<VQuery<T>, "findOpts" | "context">;
-    export type Update<T = Data> = QueryBase & Required<Pick<VQuery<T>, "updater">> & Pick<VQuery<T>, "context">;
-    export type Remove<T = Data> = QueryBase & Pick<VQuery<T>, "context">;
-    export type UpdateOneOrAdd<T = Data> = QueryBase & Update & Pick<VQuery<T>, "add_arg" | "id_gen">;
-    export type ToggleOne<T = Data> = QueryBase & Pick<VQuery<T>, "data" | "context">;
+    export type QueryBase<T = Data> = {
+        collection: string;
+        control?: VQuery_Control;
+    }
+
+    export type Add<T = Data> = QueryBase<T> & {
+        data: Arg<T>;
+        id_gen?: boolean;
+    }
+
+    export type Find<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
+        search?: Search<T, AllowFn>;
+        findOpts?: FindOpts<T>;
+        dbFindOpts?: DbFindOpts<T>;
+        context?: VContext;
+    };
+
+    export type FindOne<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
+        search: Search<T, AllowFn>;
+        findOpts?: FindOpts<T>;
+        context?: VContext;
+    };
+
+    export type Update<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
+        search: Search<T, AllowFn>;
+        updater: Updater<T, AllowFn>;
+        context?: VContext;
+    };
+
+    export type Remove<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
+        search: Search<T, AllowFn>;
+        context?: VContext;
+    };
+
+    export type UpdateOneOrAdd<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
+        search: Search<T, AllowFn>;
+        updater: Updater<T, AllowFn>;
+        add_arg?: Arg<T>;
+        id_gen?: boolean;
+        context?: VContext;
+    };
+
+    export type ToggleOne<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
+        search: Search<T, AllowFn>;
+        data: Arg<T>;
+        context?: VContext;
+    };
 
     export interface UpdateOneOrAddResult<T> {
         data: T;

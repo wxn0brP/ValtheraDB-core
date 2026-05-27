@@ -15,7 +15,7 @@ import { version } from "../version";
 export class ValtheraClass implements ValtheraCompatible {
     dbAction: ActionsBase;
     executor: ExecutorInterface;
-    emiter: VEE<{
+    emitter: VEE<{
         [K in keyof ValtheraCompatible]:
         (
             query: VQuery,
@@ -28,6 +28,8 @@ export class ValtheraClass implements ValtheraCompatible {
             result: any
         ) => void;
     }> = new VEE();
+    /** @deprecated typo */
+    emiter = this.emitter;
     version = version;
 
     constructor(options: DbOpts) {
@@ -53,7 +55,7 @@ export class ValtheraClass implements ValtheraCompatible {
             query,
             typeof query === "string" ? query : query.collection
         ) as T;
-        this.emiter.emit(name, query, result);
+        this.emitter.emit(name, query, result);
         return result;
     }
 

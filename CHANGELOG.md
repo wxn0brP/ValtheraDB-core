@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.1-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0...v0.11.1-alpha.0) (2026-05-27)
+
+
+### Features
+
+* improve VQuery ([203947a](https://github.com/wxn0brP/ValtheraDB-core/commit/203947aa4f8bd0a056eab47393a275685e7dec96))
+
 ## [0.11.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0-alpha.4...v0.11.0) (2026-05-17)
 
 ## [0.11.0-alpha.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0-alpha.3...v0.11.0-alpha.4) (2026-05-16)

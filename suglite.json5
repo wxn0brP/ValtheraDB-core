@@ -3,9 +3,5 @@
     watch: [
         "src",
         "test",
-    ],
-    restart_cmd: "clear",
-    events: {
-        rs: "clear",
-    },
+    ]
 }

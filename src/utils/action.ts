@@ -6,7 +6,8 @@ import { compareSafe } from "./compare";
 export async function findUtil(
     query: VQueryT.Find,
     fileCpuOrData: FileCpu | Object[],
-    files: string[]
+    files: string[],
+    fileCpuOpts?: any
 ): Promise<Data[]> {
     const { dbFindOpts = {} } = query;
     const {
@@ -40,7 +41,7 @@ export async function findUtil(
         const filesToProcess = reverse && !sortBy ? [...files].reverse() : files;
 
         for (const f of filesToProcess) {
-            let entries = await fileCpuOrData.find(f, query) as Data[];
+            let entries = await fileCpuOrData.find(f, query, fileCpuOpts) as Data[];
             if (reverse && !sortBy) entries.reverse();
 
             if (needsAllData) {

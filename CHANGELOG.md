@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.1-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.1-alpha.0...v0.11.1-alpha.1) (2026-06-03)
+
+
+### Features
+
+* add fileCpuOpts to findUtil ([fda146a](https://github.com/wxn0brP/ValtheraDB-core/commit/fda146aed8333845f23fad6a566c36b59091214c))
+* add opts to FileCpu ([390e6ee](https://github.com/wxn0brP/ValtheraDB-core/commit/390e6ee993a2d7a2d5263782fbe119255798376a))
+
 ### [0.11.1-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.0...v0.11.1-alpha.0) (2026-05-27)
 
 

@@ -1,16 +1,29 @@
 # @wxn0brp/db-core
 
-Core library for [ValtheraDB](https://github.com/wxn0brp/ValtheraDB).
+Core runtime for [ValtheraDB](https://github.com/wxn0brP/ValtheraDB). This package contains the shared database logic that the higher-level Valthera packages build on.
 
-## ⚠️ Disclaimer
+It is usually not something you install directly unless you are:
 
-It is **not recommended** to install this module separately unless you plan to create your own ValtheraDB adapter.
+- building a custom storage adapter
+- extending the lower-level database runtime
+- working on Valthera itself
 
-## Installation
+## Install
 
 ```bash
 npm install @wxn0brp/db-core
 ```
+
+## What It Provides
+
+- collection and document primitives
+- query and update operators
+- relation handling
+- shared types used by the Valthera packages
+
+## Package Note
+
+If you are building an application, you probably want `@wxn0brp/db` instead of this package. `db-core` is the internal foundation.
 
 ## Documentation
 
@@ -22,4 +35,4 @@ Contributions are welcome! Please submit pull requests or open issues on GitHub.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT. See [LICENSE](LICENSE).

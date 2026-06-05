@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.1-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.1-alpha.1...v0.11.1-alpha.2) (2026-06-05)
+
+
+### Features
+
+* add close to ValtheraClass & ActionsBase ([3091c55](https://github.com/wxn0brP/ValtheraDB-core/commit/3091c5525f612e3dae41ee9b1bb6d6d9f7a4749d))
+
 ### [0.11.1-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.1-alpha.0...v0.11.1-alpha.1) (2026-06-03)
 
 

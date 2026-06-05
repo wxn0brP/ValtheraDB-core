@@ -5,6 +5,7 @@ export interface ActionsBaseInterface {
     _inited: boolean;
     numberId: boolean;
     init(...args: any[]): Promise<void>;
+    close(...args: any[]): Promise<void>;
 
     getCollections(): Promise<string[]>;
     ensureCollection(collection: string): Promise<boolean>;

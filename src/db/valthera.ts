@@ -48,6 +48,16 @@ export class ValtheraClass implements ValtheraCompatible {
         });
     }
 
+    async close(...args: any[]) {
+        if (!this.dbAction._inited) return;
+        const self = this;
+        return await this.executor.addOp(async () => {
+            if (!self.dbAction._inited) return;
+            await self.dbAction.close(...args);
+            self.dbAction._inited = false;
+        });
+    }
+
     async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any> | string) {
         await this.init();
         const result = await this.executor.addOp(

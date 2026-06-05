@@ -58,6 +58,14 @@ export class RoutedStorage extends ActionsBase {
         await Promise.all(Array.from(all).map(b => b.init?.(...args)));
     }
 
+    async close(...args: any[]) {
+        const all = new Set([
+            ...this.rules.flatMap(r => r.backends),
+            ...this.defaultBackend
+        ]);
+        await Promise.all(Array.from(all).map(b => b.close(...args)));
+    }
+
     async add(config: VQueryT.Add) {
         const res = await this._withFirst(config, b => b.add(config));
         await this._withAll({ ...config, data: res }, b => b.add({ ...config, data: res }));

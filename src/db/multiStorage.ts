@@ -15,6 +15,10 @@ export class MultiBackend extends ActionsBase {
         await Promise.all(this.backends.map(b => b.init?.(...args)));
     }
 
+    async close(...args: any[]) {
+        await Promise.all(this.backends.map(b => b.close(...args)));
+    }
+
     async add(config: VQueryT.Add) {
         return await this.primaryBackend.add({ ...config });
     }

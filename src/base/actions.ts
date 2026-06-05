@@ -8,6 +8,7 @@ export abstract class ActionsBase implements ActionsBaseInterface {
     numberId: boolean = false;
     smartExecutor: boolean = false;
     async init(...args: any[]) { }
+    async close(...args: any[]) { }
 
     abstract getCollections(): Promise<string[]>;
     abstract ensureCollection(collection: string): Promise<boolean>;

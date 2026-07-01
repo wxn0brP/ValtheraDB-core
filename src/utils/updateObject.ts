@@ -127,19 +127,18 @@ function _for(
     obj: Record<string, any>,
     opts: Record<string, (data: any, value: any, key: string, deepObj: Record<string, any>) => any>
 ) {
-    for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
-        const field = "$" + fieldRaw;
+    for (const [field, value] of Object.entries(fields)) {
+        const fieldRaw = field.slice(1);
+        const fieldFn = opts[fieldRaw];
+        if (!fieldFn) continue;
 
-        if (field in fields) {
-            for (const [key, value] of Object.entries(fields[field])) {
-
-                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-                    if (!obj[key]) obj[key] = {};
-                    deepUpdateCheck(value, obj[key], fieldFn);
-                } else {
-                    const res = fieldFn(obj?.[key], value, key, obj);
-                    if (res !== undefined) obj[key] = res;
-                }
+        for (const [key, val] of Object.entries(value as Record<string, any>)) {
+            if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+                if (!obj[key]) obj[key] = {};
+                deepUpdateCheck(val, obj[key], fieldFn);
+            } else {
+                const res = fieldFn(obj?.[key], val, key, obj);
+                if (res !== undefined) obj[key] = res;
             }
         }
     }

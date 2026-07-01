@@ -95,18 +95,17 @@ function checkNot(obj: Object, fields: Object) {
 }
 
 function _for(fields: Record<string, any>, obj: Record<string, any>, opts: Record<string, (data: any, value: any, key: string) => boolean>): boolean {
-    for (const [fieldRaw, fieldFn] of Object.entries(opts)) {
-        const field = "$" + fieldRaw;
+    for (const [field, value] of Object.entries(fields)) {
+        const fieldRaw = field.slice(1);
+        const fieldFn = opts[fieldRaw];
+        if (!fieldFn) continue;
 
-        if (field in fields) {
-            for (const [key, value] of Object.entries(fields[field])) {
-                const targetValue = obj?.[key];
-
-                if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-                    if (!deepCheck(value, targetValue, fieldFn)) return false;
-                } else {
-                    if (!fieldFn(targetValue, value, key)) return false;
-                }
+        for (const [key, val] of Object.entries(value as Record<string, any>)) {
+            const targetValue = obj?.[key];
+            if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+                if (!deepCheck(val, targetValue, fieldFn)) return false;
+            } else {
+                if (!fieldFn(targetValue, val, key)) return false;
             }
         }
     }

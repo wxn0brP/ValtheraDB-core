@@ -1,4 +1,3 @@
-
 import { CustomActionsBase } from "../base/custom";
 import { CustomFileCpu } from "../customFileCpu";
 import { Collection } from "../helpers/collection";

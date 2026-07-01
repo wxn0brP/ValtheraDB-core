@@ -4,11 +4,25 @@ import { DeepPartial, NestedValue } from "./utils";
 export type ArrayUpdater<T = any> = {
     /** [1,2] -> $push 3 -> [1,2,3] */
     $push?: NestedValue<T, any>,
-    /** [1,2] -> $pushset 2,3 -> [1,2,3] */
+    /** [1,2] -> $pushSet 2,3 -> [1,2,3] */
+    $pushSet?: NestedValue<T, any>,
+    /**
+     * @deprecated Use $pushSet instead.
+     */
     $pushset?: NestedValue<T, any>,
+    /** [1,2,3] -> $pushAll [2,3] -> [1,2,3] */
+    $pushAll?: NestedValue<T, any>,
+    /**
+     * @deprecated Use $pushAll instead.
+     */
+    $pushall?: NestedValue<T, any>,
     /** [1,2,3] -> $pull 2 -> [1,3] */
     $pull?: NestedValue<T, any>,
-    /** [1,2,2,3] -> $pullall [2] -> [1,3] */
+    /** [1,2,2,3] -> $pullAll [2] -> [1,3] */
+    $pullAll?: NestedValue<T, any>,
+    /**
+     * @deprecated Use $pullAll instead.
+     */
     $pullall?: NestedValue<T, any>,
 }
 

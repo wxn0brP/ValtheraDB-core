@@ -12,34 +12,39 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 
     if (Object.keys(fields).length === 0) return true;
 
-    if ("$and" in fields) {
-        return fields["$and"].every((subFields: Object) => hasFieldsAdvanced(obj, subFields));
-    }
-
-    if ("$or" in fields) {
-        return fields["$or"].some((subFields: Object) => hasFieldsAdvanced(obj, subFields));
-    }
-
-    const $fields = {};
-    const subsetFields = {};
+    const $fields: Record<string, any> = {};
+    const subsetFields: Record<string, any> = {};
 
     Object.keys(fields).forEach(key => {
         if (key.startsWith("$")) $fields[key.toLowerCase()] = fields[key];
         else subsetFields[key] = fields[key];
     });
 
-    if (!checkConditions(obj, $fields)) return false;
+    // Shallow fields first
+    if (Object.keys(subsetFields).length && !hasFields(obj, subsetFields))
+        return false;
 
-    if (!Object.keys(subsetFields).length) return true;
-    return hasFields(obj, subsetFields);
-}
+    // Direct fields only
+    if (Object.keys($fields).length === 0)
+        return true;
 
-function checkConditions(obj: Object, fields: Object) {
-    return (
-        mainCheck(obj, fields) &&
-        checkNot(obj, fields) &&
-        checkSubset(obj, fields)
-    );
+    // Subset check
+    if ("$subset" in $fields && !hasFields(obj, $fields["$subset"]))
+        return false;
+
+    // Advanced operators
+    if (!mainCheck(obj, $fields)) return false;
+    if (!checkNot(obj, $fields)) return false;
+
+    if ("$and" in $fields) {
+        return $fields["$and"].every((subFields: Object) => hasFieldsAdvanced(obj, subFields));
+    }
+
+    if ("$or" in $fields) {
+        return $fields["$or"].some((subFields: Object) => hasFieldsAdvanced(obj, subFields));
+    }
+
+    return true;
 }
 
 function mainCheck(obj: Object, fields: Object) {
@@ -85,14 +90,6 @@ function mainCheck(obj: Object, fields: Object) {
 function checkNot(obj: Object, fields: Object) {
     if ("$not" in fields) {
         return !hasFieldsAdvanced(obj, fields["$not"]);
-    }
-    return true;
-}
-
-function checkSubset(obj: Object, fields: Object) {
-    if ("$subset" in fields) {
-        const setFields = fields["$subset"];
-        return hasFields(obj, setFields);
     }
     return true;
 }

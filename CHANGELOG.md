@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.3](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.2...v0.11.3) (2026-07-02)
+
+
+### Bug Fixes
+
+* findUtil reverse array data ([f525a08](https://github.com/wxn0brP/ValtheraDB-core/commit/f525a081a74408460be98501fc423382af43448e))
+
 ### [0.11.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.1...v0.11.2) (2026-07-02)
 
 ### [0.11.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.1-alpha.2...v0.11.1) (2026-06-11)

@@ -30,6 +30,7 @@ export async function findUtil(
 
     if (Array.isArray(fileCpuOrData)) {
         datas = [...fileCpuOrData];
+        if (reverse && !sortBy) datas.reverse();
         if (!needsAllData) {
             if (offset > 0 || limit !== -1) {
                 const start = offset;

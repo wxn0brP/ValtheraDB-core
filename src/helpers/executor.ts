@@ -14,6 +14,8 @@ export interface SmartExecutorEntry {
     interval: ReturnType<typeof setTimeout> | null;
 }
 
+const defaultCollection = "__default__";
+
 /**
  * A simple executor for queuing and executing asynchronous operations sequentially.
  */
@@ -57,10 +59,15 @@ export class Executor implements ExecutorInterface {
 export class SmartExecutor implements ExecutorInterface {
     collections: Map<string, SmartExecutorEntry> = new Map();
 
-    constructor(public ttl = 5 * 60 * 1000) { }
+    constructor(
+        public ttl = 5 * 60 * 1000,
+        public aware = true
+    ) { }
 
     async addOp(func: Function, query: any, collection: string) {
-        const key = collection ?? "__default__";
+        const key = this.aware ?
+            collection ?? defaultCollection :
+            defaultCollection;
 
         let entry = this.collections.get(key);
 

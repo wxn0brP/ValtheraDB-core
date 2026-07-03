@@ -1,7 +1,7 @@
 import { VEE } from "@wxn0brp/event-emitter";
 import { ActionsBase } from "../base/actions";
 import { Collection } from "../helpers/collection";
-import { Executor, ExecutorInterface, SmartExecutor } from "../helpers/executor";
+import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
 import { VQuery, VQueryT } from "../types/query";
@@ -32,17 +32,32 @@ export class ValtheraClass implements ValtheraCompatible {
     emiter = this.emitter;
     version = version;
 
-    constructor(options: DbOpts) {
-        this.dbAction = options.dbAction;
-        this.executor = options.executor || new (this.dbAction.smartExecutor ? SmartExecutor : Executor)();
-        if (options.numberId) this.dbAction.numberId = true;
+    constructor(public options: DbOpts) {
+        this.executor = options.executor || new SmartExecutor(undefined, false);
+
+        if (typeof options.dbAction === "function")
+            return;
+        else
+            this.dbAction = options.dbAction as ActionsBase;
     }
 
     async init(...args: any[]) {
-        if (this.dbAction._inited) return;
+        if (this.dbAction?._inited) return;
+
         const self = this;
         return await this.executor.addOp(async () => {
             if (self.dbAction._inited) return;
+
+            if (typeof self.options.dbAction === "function")
+                self.dbAction = await (self.options.dbAction as any)();
+
+            // if the executor is not set, and the action wants a smart executor
+            if (!self.options.executor && self.dbAction.smartExecutor && self.executor instanceof SmartExecutor)
+                self.executor.aware = true;
+
+            if (self.options.numberId)
+                self.dbAction.numberId = true;
+
             await self.dbAction.init(...args);
             self.dbAction._inited = true;
         });

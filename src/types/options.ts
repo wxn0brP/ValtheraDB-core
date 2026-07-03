@@ -3,7 +3,7 @@ import { Executor } from "../helpers/executor";
 import { KeysMatching } from "./utils";
 
 export interface DbOpts {
-    dbAction: ActionsBase;
+    dbAction: ActionsBase | (() => Promise<ActionsBase>);
     executor?: Executor;
     numberId?: boolean;
 }

@@ -46,7 +46,7 @@ export class ValtheraClass implements ValtheraCompatible {
 
         const self = this;
         return await this.executor.addOp(async () => {
-            if (self.dbAction._inited) return;
+            if (self.dbAction?._inited) return;
 
             if (typeof self.options.dbAction === "function")
                 self.dbAction = await (self.options.dbAction as any)();

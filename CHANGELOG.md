@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.4-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.3...v0.11.4-alpha.0) (2026-07-03)
+
+
+### Features
+
+* lazy load adapters ([b2d5901](https://github.com/wxn0brP/ValtheraDB-core/commit/b2d590130baa6f7d3bd70750108012fe15730311))
+
 ### [0.11.3](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.2...v0.11.3) (2026-07-02)
 
 

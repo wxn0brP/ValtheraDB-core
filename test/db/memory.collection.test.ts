@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test";
 import { createMemoryValthera } from "#db/memory";
+import { describe, expect, test } from "bun:test";
 
 describe("createMemoryValthera - collection operations", () => {
     test("11. should allow updateOne to update a single document", async () => {
@@ -73,7 +73,7 @@ describe("createMemoryValthera - collection operations", () => {
         expect(allUsers).toHaveLength(1);
     });
 
-    test("15. should updateOneOrAdd update existing document", async () => {
+    test("15. should update an existing document with updateOneOrAdd", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com", age: 25 }
@@ -87,7 +87,7 @@ describe("createMemoryValthera - collection operations", () => {
         expect(result.data).toEqual(expect.objectContaining({ _id: "1", name: "John", age: 30 }));
     });
 
-    test("16. should updateOneOrAdd add new document when not found", async () => {
+    test("16. should add a new document with updateOneOrAdd when not found", async () => {
         const db = createMemoryValthera();
 
         const result = await db.users.updateOneOrAdd({ name: "John" }, { age: 25 });
@@ -102,7 +102,7 @@ describe("createMemoryValthera - collection operations", () => {
         expect(allUsers[0].age).toBe(25);
     });
 
-    test("17. should toggleOne remove existing document", async () => {
+    test("17. should remove an existing document with toggleOne", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com" }
@@ -119,7 +119,7 @@ describe("createMemoryValthera - collection operations", () => {
         expect(allUsers).toHaveLength(0);
     });
 
-    test("18. should toggleOne add new document when not found", async () => {
+    test("18. should add a new document with toggleOne when not found", async () => {
         const db = createMemoryValthera();
 
         const result = await db.users.toggleOne({ name: "John" }, { email: "john@example.com" });

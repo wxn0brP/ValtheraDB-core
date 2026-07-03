@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test";
 import { deepMerge } from "#utils/merge";
+import { describe, expect, test } from "bun:test";
 
 describe("deepMerge", () => {
     test("1. should merge two simple objects", () => {

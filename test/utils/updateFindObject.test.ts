@@ -1,6 +1,6 @@
-import { describe, test, expect } from "bun:test";
-import { updateFindObject } from "#utils/updateFindObject";
 import { FindOpts } from "#types/options";
+import { updateFindObject } from "#utils/updateFindObject";
+import { describe, expect, test } from "bun:test";
 
 describe("updateFindObject", () => {
     test("1. should return the object unchanged if no find options are provided", () => {

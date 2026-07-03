@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test";
-import { convertIdToUnix, sortByIds, compareIds } from "#utils/id";
+import { compareIds, convertIdToUnix, sortByIds } from "#utils/id";
+import { describe, expect, test } from "bun:test";
 
 describe("convertIdToUnix", () => {
     test("1. should convert base36 timestamp to unix timestamp", () => {

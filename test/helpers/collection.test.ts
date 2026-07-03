@@ -1,6 +1,6 @@
-import { describe, test, expect } from "bun:test";
-import { Collection } from "#helpers/collection";
 import { createMemoryValthera } from "#db/memory";
+import { Collection } from "#helpers/collection";
+import { describe, expect, test } from "bun:test";
 
 describe("Collection", () => {
     test("1. should initialize with db and collection name", () => {

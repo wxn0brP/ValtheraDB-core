@@ -1,5 +1,5 @@
-import { describe, test, expect } from "bun:test";
 import { compareSafe } from "#utils/compare";
+import { describe, expect, test } from "bun:test";
 
 describe("compareSafe", () => {
     test("1. should handle null and undefined values correctly", () => {

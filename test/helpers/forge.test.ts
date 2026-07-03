@@ -1,7 +1,7 @@
-import { describe, test, expect } from "bun:test";
-import { forgeValthera, forgeTypedValthera } from "#helpers/forge";
-import { Collection } from "#helpers/collection";
 import { createMemoryValthera } from "#db/memory";
+import { Collection } from "#helpers/collection";
+import { forgeTypedValthera, forgeValthera } from "#helpers/forge";
+import { describe, expect, test } from "bun:test";
 
 describe("forgeValthera", () => {
     test("1. should create a proxy that returns Collection for unknown properties", () => {

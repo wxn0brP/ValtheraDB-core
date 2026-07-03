@@ -1,9 +1,9 @@
-import { describe, test, expect } from "bun:test";
 import { createMemoryValthera } from "#db/memory";
 import { Data } from "#types/data";
+import { describe, expect, test } from "bun:test";
 
 describe("createMemoryValthera - db interface", () => {
-    test("19. should db.updateOne update a single document", async () => {
+    test("19. should update a single document via db.updateOne", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com", age: 25 },
@@ -23,7 +23,7 @@ describe("createMemoryValthera - db interface", () => {
         expect(result?.name).toBe("John");
     });
 
-    test("20. should db.updateOne return null when no document matches", async () => {
+    test("20. should return null from db.updateOne when no document matches", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com" }
@@ -40,7 +40,7 @@ describe("createMemoryValthera - db interface", () => {
         expect(result).toBeNull();
     });
 
-    test("21. should db.removeOne remove a single document", async () => {
+    test("21. should remove a single document via db.removeOne", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com" },
@@ -59,7 +59,7 @@ describe("createMemoryValthera - db interface", () => {
         expect(allUsers).toHaveLength(2);
     });
 
-    test("22. should db.removeOne return null when no document matches", async () => {
+    test("22. should return null from db.removeOne when no document matches", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com" }
@@ -72,7 +72,7 @@ describe("createMemoryValthera - db interface", () => {
         expect(result).toBeNull();
     });
 
-    test("23. should db.updateOneOrAdd update existing document", async () => {
+    test("23. should update existing document via db.updateOneOrAdd", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com", age: 25 }
@@ -90,10 +90,10 @@ describe("createMemoryValthera - db interface", () => {
         expect(result.data).toEqual(expect.objectContaining({ _id: "1", name: "John", age: 30 }));
     });
 
-    test("24. should db.updateOneOrAdd add new document when not found", async () => {
+    test("24. should add new document via db.updateOneOrAdd when not found", async () => {
         const db = createMemoryValthera();
 
-        const result = await db.updateOneOrAdd({
+        const result = await db.updateOneOrAdd<{ name: string; age: number; _id: string }>({
             collection: "users",
             search: { name: "John" },
             updater: { age: 25 }
@@ -104,7 +104,7 @@ describe("createMemoryValthera - db interface", () => {
         expect(result.data._id).toBeDefined();
     });
 
-    test("25. should db.toggleOne remove existing document", async () => {
+    test("25. should remove existing document via db.toggleOne", async () => {
         const initialData = {
             users: [
                 { _id: "1", name: "John", email: "john@example.com" }
@@ -118,7 +118,7 @@ describe("createMemoryValthera - db interface", () => {
         expect(result.data).toEqual(expect.objectContaining({ _id: "1", name: "John" }));
     });
 
-    test("26. should db.toggleOne add new document when not found", async () => {
+    test("26. should add new document via db.toggleOne when not found", async () => {
         const db = createMemoryValthera();
 
         const result = await db.toggleOne({

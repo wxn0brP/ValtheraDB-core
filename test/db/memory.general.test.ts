@@ -1,6 +1,6 @@
-import { describe, test, expect } from "bun:test";
 import { createMemoryValthera, ValtheraMemory } from "#db/memory";
 import { Collection } from "#helpers/collection";
+import { describe, expect, test } from "bun:test";
 
 describe("createMemoryValthera - general", () => {
     test("1. should create a ValtheraMemory instance without initial data", () => {
@@ -107,7 +107,7 @@ describe("createMemoryValthera - general", () => {
 
     test("8. should create empty collections when accessed dynamically", () => {
         const db = createMemoryValthera();
-        const productsCollection = db.products as Collection<{ _id: string; name: string }>;
+        const productsCollection = db.products as any as Collection<{ _id: string; name: string }>;
 
         expect(productsCollection).toBeInstanceOf(Collection);
         expect(productsCollection.collection).toBe("products");

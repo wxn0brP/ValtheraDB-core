@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test";
 import { MemoryAction } from "#db/memory";
 import { ValtheraClass } from "#db/valthera";
+import { describe, expect, test } from "bun:test";
 
 class LifecycleMemoryAction extends MemoryAction {
     initCalls = 0;
@@ -21,7 +21,7 @@ class LifecycleMemoryAction extends MemoryAction {
 }
 
 describe("ValtheraClass.close", () => {
-    test("skips close when the action is not initialized", async () => {
+    test("1. should skip close when the action is not initialized", async () => {
         const action = new LifecycleMemoryAction();
         const db = new ValtheraClass({ dbAction: action });
 
@@ -31,7 +31,7 @@ describe("ValtheraClass.close", () => {
         expect(action._inited).toBe(false);
     });
 
-    test("closes once and lets the next operation initialize again", async () => {
+    test("2. should close once and let the next operation initialize again", async () => {
         const action = new LifecycleMemoryAction();
         const db = new ValtheraClass({ dbAction: action });
 
@@ -45,7 +45,7 @@ describe("ValtheraClass.close", () => {
         expect(action._inited).toBe(true);
     });
 
-    test("supports actions that use the default ActionsBase close", async () => {
+    test("3. should support actions that use the default ActionsBase close", async () => {
         const action = new MemoryAction();
         const db = new ValtheraClass({ dbAction: action });
 

@@ -7,7 +7,7 @@ export type WriteFile = (file: string, data: any[]) => Promise<void>;
 export type ReadFile = (file: string) => Promise<any[]>;
 
 export function pathRepair(path: string) {
-    return path.replaceAll("//", "/");
+    return path.replace(/\/+/g, "/");
 }
 
 export class CustomFileCpu implements FileCpu {

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.4-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.4-alpha.1...v0.11.4-alpha.2) (2026-07-05)
+
+
+### Bug Fixes
+
+* rejection by executor in case of error ([c798b35](https://github.com/wxn0brP/ValtheraDB-core/commit/c798b351447a49084418a10e638c2b8b3f316dbc))
+
 ### [0.11.4-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.4-alpha.0...v0.11.4-alpha.1) (2026-07-03)
 
 

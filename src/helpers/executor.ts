@@ -45,9 +45,8 @@ export class Executor implements ExecutorInterface {
         if (this.isExecuting) return;
         this.isExecuting = true;
         while (this.queue.length > 0) {
-            let q = this.queue.shift();
-            let res = await q.func(...q.param);
-            q.resolve(res);
+            const q = this.queue.shift();
+            await q.func(...q.param).then(q.resolve).catch(q.reject);
         }
         this.isExecuting = false;
     }

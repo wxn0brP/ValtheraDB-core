@@ -48,7 +48,7 @@ export class MemoryAction extends CustomActionsBase {
 
 export class ValtheraMemory extends ValtheraClass {
     constructor(...args: any[]) {
-        super({ dbAction: new MemoryAction() });
+        super({ adapter: new MemoryAction() });
     }
 }
 
@@ -59,7 +59,7 @@ export function createMemoryValthera<T extends Record<string, Data[]>>
     if (!data) return forgeValthera(db) as any;
 
     for (const collection of Object.keys(data)) {
-        (db.dbAction as MemoryAction).memory.set(collection, data[collection]);
+        (db.adapter as MemoryAction).memory.set(collection, data[collection]);
     }
 
     return forgeValthera(db) as any;

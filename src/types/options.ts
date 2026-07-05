@@ -2,8 +2,19 @@ import { ActionsBase } from "../base/actions";
 import { Executor } from "../helpers/executor";
 import { KeysMatching } from "./utils";
 
-export interface DbOpts {
-    dbAction: ActionsBase | (() => Promise<ActionsBase>);
+export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
+
+type AdapterOption = {
+    adapter: AdapterValue;
+    /** @deprecated use `adapter` */
+    dbAction?: AdapterValue;
+} | {
+    adapter?: AdapterValue;
+    /** @deprecated use `adapter` */
+    dbAction: AdapterValue;
+}
+
+export type DbOpts = AdapterOption & {
     executor?: Executor;
     numberId?: boolean;
 }

@@ -13,7 +13,7 @@ import { version } from "../version";
  * @class
  */
 export class ValtheraClass implements ValtheraCompatible {
-    dbAction: ActionsBase;
+    adapter: ActionsBase;
     executor: ExecutorInterface;
     emitter: VEE<{
         [K in keyof ValtheraCompatible]:
@@ -32,51 +32,64 @@ export class ValtheraClass implements ValtheraCompatible {
     emiter = this.emitter;
     version = version;
 
+    /** @deprecated use `adapter` */
+    get dbAction() {
+        return this.adapter;
+    }
+
+    /** @deprecated use `adapter` */
+    set dbAction(action: ActionsBase) {
+        this.adapter = action;
+    }
+
     constructor(public options: DbOpts) {
         this.executor = options.executor || new SmartExecutor(undefined, false);
 
-        if (typeof options.dbAction === "function")
+        options.adapter ??= options.dbAction!;
+        options.dbAction ??= options.adapter!;
+
+        if (typeof options.adapter === "function")
             return;
         else
-            this.dbAction = options.dbAction as ActionsBase;
+            this.adapter = options.adapter as ActionsBase;
     }
 
     async init(...args: any[]) {
-        if (this.dbAction?._inited) return;
+        if (this.adapter?._inited) return;
 
         const self = this;
         return await this.executor.addOp(async () => {
-            if (self.dbAction?._inited) return;
+            if (self.adapter?._inited) return;
 
-            if (typeof self.options.dbAction === "function")
-                self.dbAction = await (self.options.dbAction as any)();
+            if (typeof self.options.adapter === "function")
+                self.adapter = await (self.options.adapter as any)();
 
             // if the executor is not set, and the action wants a smart executor
-            if (!self.options.executor && self.dbAction.smartExecutor && self.executor instanceof SmartExecutor)
+            if (!self.options.executor && self.adapter.smartExecutor && self.executor instanceof SmartExecutor)
                 self.executor.aware = true;
 
             if (self.options.numberId)
-                self.dbAction.numberId = true;
+                self.adapter.numberId = true;
 
-            await self.dbAction.init(...args);
-            self.dbAction._inited = true;
+            await self.adapter.init(...args);
+            self.adapter._inited = true;
         });
     }
 
     async close(...args: any[]) {
-        if (!this.dbAction._inited) return;
+        if (!this.adapter._inited) return;
         const self = this;
         return await this.executor.addOp(async () => {
-            if (!self.dbAction._inited) return;
-            await self.dbAction.close(...args);
-            self.dbAction._inited = false;
+            if (!self.adapter._inited) return;
+            await self.adapter.close(...args);
+            self.adapter._inited = false;
         });
     }
 
     async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any> | string) {
         await this.init();
         const result = await this.executor.addOp(
-            this.dbAction[name].bind(this.dbAction),
+            this.adapter[name].bind(this.adapter),
             query,
             typeof query === "string" ? query : query.collection
         ) as T;

@@ -23,7 +23,7 @@ class LifecycleMemoryAction extends MemoryAction {
 describe("ValtheraClass.close", () => {
     test("1. should skip close when the action is not initialized", async () => {
         const action = new LifecycleMemoryAction();
-        const db = new ValtheraClass({ dbAction: action });
+        const db = new ValtheraClass({ adapter: action });
 
         await db.close();
 
@@ -33,7 +33,7 @@ describe("ValtheraClass.close", () => {
 
     test("2. should close once and let the next operation initialize again", async () => {
         const action = new LifecycleMemoryAction();
-        const db = new ValtheraClass({ dbAction: action });
+        const db = new ValtheraClass({ adapter: action });
 
         await db.find({ collection: "users" });
         await db.close();
@@ -47,7 +47,7 @@ describe("ValtheraClass.close", () => {
 
     test("3. should support actions that use the default ActionsBase close", async () => {
         const action = new MemoryAction();
-        const db = new ValtheraClass({ dbAction: action });
+        const db = new ValtheraClass({ adapter: action });
 
         await db.close();
 

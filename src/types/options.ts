@@ -19,6 +19,8 @@ export type DbOpts = AdapterOption & {
     numberId?: boolean;
 }
 
+export type FieldPath<T = any> = KeysMatching<T, any> | (string & {}) | string[];
+
 export interface DbFindOpts<T = any> {
     reverse?: boolean;
     limit?: number;
@@ -33,7 +35,7 @@ export interface DbFindOpts<T = any> {
 }
 
 export interface FindOpts<T = any> {
-    select?: KeysMatching<T, any>[];
-    exclude?: KeysMatching<T, any>[];
+    select?: FieldPath<T>[];
+    exclude?: FieldPath<T>[];
     transform?: Function;
 }

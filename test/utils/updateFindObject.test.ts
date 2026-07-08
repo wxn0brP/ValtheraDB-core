@@ -133,4 +133,92 @@ describe("updateFindObject", () => {
             nested: { x: 10, y: 20 }
         });
     });
+
+    test("13. select with dotted path should extract nested field", () => {
+        const obj = { a: 1, nested: { x: 10, y: 20 } };
+        const findOpts: FindOpts = { select: ["a", "nested.x"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, nested: { x: 10 } });
+    });
+
+    test("14. select with array path should extract nested field", () => {
+        const obj = { a: 1, nested: { x: 10, y: 20 } };
+        const findOpts: FindOpts = { select: [["nested", "y"]] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ nested: { y: 20 } });
+    });
+
+    test("15. select with mixed paths (flat, dotted, array)", () => {
+        const obj = { a: 1, b: { c: 2 }, d: { e: 3 } };
+        const findOpts: FindOpts = { select: ["a", "b.c", ["d", "e"]] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, b: { c: 2 }, d: { e: 3 } });
+    });
+
+    test("16. exclude with dotted path should remove nested field", () => {
+        const obj = { a: 1, nested: { x: 10, y: 20 } };
+        const findOpts: FindOpts = { exclude: ["nested.x"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, nested: { y: 20 } });
+    });
+
+    test("17. exclude with array path should remove nested field", () => {
+        const obj = { a: 1, nested: { x: 10, y: 20 } };
+        const findOpts: FindOpts = { exclude: [["nested", "y"]] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, nested: { x: 10 } });
+    });
+
+    test("18. non-existent nested path in select should be silently skipped", () => {
+        const obj = { a: 1, b: 2 };
+        const findOpts: FindOpts = { select: ["a", "nested.z", "b"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, b: 2 });
+    });
+
+    test("19. path through a primitive value should be skipped", () => {
+        const obj = { a: 5, b: { c: 3 } };
+        const findOpts: FindOpts = { select: ["a.b", "b.c"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ b: { c: 3 } });
+    });
+
+    test("20. deeply nested path (3+ levels)", () => {
+        const obj = { a: { b: { c: { d: 42 } } }, e: 1 };
+        const findOpts: FindOpts = { select: ["a.b.c.d", "e"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: { b: { c: { d: 42 } } }, e: 1 });
+    });
+
+    test("21. select then exclude with nested paths", () => {
+        const obj = { a: 1, nested: { x: 10, y: 20, z: 30 }, b: 2 };
+        const findOpts: FindOpts = { select: ["a", "nested", "b"], exclude: ["nested.z"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, nested: { x: 10, y: 20 }, b: 2 });
+    });
+
+    test("22. empty array path should be skipped", () => {
+        const obj = { a: 1, b: 2 };
+        const findOpts: FindOpts = { select: ["a", [], "b"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ a: 1, b: 2 });
+    });
+
+    test("23. array path with literal dot in key", () => {
+        const obj = { "my.field": 42, a: 1 };
+        const findOpts: FindOpts = { select: [["my.field"], "a"] };
+        const result = updateFindObject(obj, findOpts);
+
+        expect(result).toEqual({ "my.field": 42, a: 1 });
+    });
 });

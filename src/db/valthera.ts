@@ -4,6 +4,7 @@ import { Collection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
+import { ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
 import { ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
@@ -31,6 +32,16 @@ export class ValtheraClass implements ValtheraCompatible {
     /** @deprecated typo */
     emiter = this.emitter;
     version = version;
+
+    _plugins: ValtheraPlugin[] = [];
+
+    plugin(p: ValtheraPlugin) {
+        this._plugins.push(p);
+        return () => {
+            const i = this._plugins.indexOf(p);
+            if (i !== -1) this._plugins.splice(i, 1);
+        };
+    }
 
     /** @deprecated use `adapter` */
     get dbAction() {
@@ -88,13 +99,38 @@ export class ValtheraClass implements ValtheraCompatible {
 
     async execute<T>(name: keyof ValtheraCompatible, query: VQuery<any> | string) {
         await this.init();
-        const result = await this.executor.addOp(
-            this.adapter[name].bind(this.adapter),
+
+        const plugins = this._plugins;
+        const self = this;
+
+        const exe = () => self.executor.addOp(
+            self.adapter[name].bind(self.adapter),
             query,
             typeof query === "string" ? query : query.collection
-        ) as T;
-        this.emitter.emit(name, query, result);
-        return result;
+        )
+
+        if (plugins.length === 0) {
+            const result = await exe() as T;
+            this.emitter.emit(name, query, result);
+            return result;
+        }
+
+        let q: any = query;
+        let idx = 0;
+        const op = name as string;
+
+        const next = async (modifiedQuery?: any) => {
+            if (modifiedQuery !== undefined) q = modifiedQuery;
+
+            if (idx < plugins.length)
+                return plugins[idx++].execute(op, q, next);
+
+            return exe();
+        };
+
+        const r = await next();
+        this.emitter.emit(name, q, r);
+        return r as T;
     }
 
     /**

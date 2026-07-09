@@ -36,6 +36,7 @@ export class ValtheraClass implements ValtheraCompatible {
     _plugins: ValtheraPlugin[] = [];
 
     plugin(p: ValtheraPlugin) {
+        p.init?.(this);
         this._plugins.push(p);
         return () => {
             const i = this._plugins.indexOf(p);

@@ -8,6 +8,5 @@ export { convertIdToUnix, sortByIds } from "./utils/id";
 
 export type { ValtheraTypes } from "./types/export";
 export type { Id } from "./types/Id";
-export type { ValtheraPlugin } from "./types/plugin";
 export type { RelationTypes } from "./types/relation";
 export type { ValtheraCompatible } from "./types/valthera";

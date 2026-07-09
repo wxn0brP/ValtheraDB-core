@@ -1,7 +1,13 @@
 import type { ValtheraClass } from "../db/valthera";
 
+export interface PluginContext {
+    op: string;
+    query: any;
+    next: () => Promise<any>;
+}
+
 export interface ValtheraPlugin {
     name: string;
-    execute(op: string, query: any, next: (q?: any) => Promise<any>): Promise<any>;
+    execute(ctx: PluginContext): Promise<any>;
     init?: (db: ValtheraClass) => void;
 }

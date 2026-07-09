@@ -4,7 +4,7 @@ import { Collection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
-import { ValtheraPlugin } from "../types/plugin";
+import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
 import { ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
@@ -103,35 +103,26 @@ export class ValtheraClass implements ValtheraCompatible {
 
         const plugins = this._plugins;
         const self = this;
-
-        const exe = () => self.executor.addOp(
-            self.adapter[name].bind(self.adapter),
-            query,
-            typeof query === "string" ? query : query.collection
-        )
-
-        if (plugins.length === 0) {
-            const result = await exe() as T;
-            this.emitter.emit(name, query, result);
-            return result;
-        }
-
-        let q: any = query;
         let idx = 0;
-        const op = name as string;
 
-        const next = async (modifiedQuery?: any) => {
-            if (modifiedQuery !== undefined) q = modifiedQuery;
+        const ctx: PluginContext = {
+            op: name as string,
+            query,
+            next: async () => {
+                if (idx < plugins.length)
+                    return plugins[idx++].execute(ctx);
 
-            if (idx < plugins.length)
-                return plugins[idx++].execute(op, q, next);
-
-            return exe();
+                return self.executor.addOp(
+                    (self.adapter as any)[ctx.op].bind(self.adapter),
+                    ctx.query,
+                    typeof ctx.query === "string" ? ctx.query : ctx.query.collection
+                );
+            }
         };
 
-        const r = await next();
-        this.emitter.emit(name, q, r);
-        return r as T;
+        const result = await ctx.next();
+        this.emitter.emit(ctx.op, ctx.query, result);
+        return result as T;
     }
 
     /**

@@ -6,7 +6,7 @@ describe("ValtheraClass.plugin", () => {
         const db = createMemoryValthera();
         const unsub = db.plugin({
             name: "test",
-            execute(_op, _q, next) { return next() },
+            execute(ctx) { return ctx.next() },
         });
         expect(typeof unsub).toBe("function");
     });
@@ -16,7 +16,7 @@ describe("ValtheraClass.plugin", () => {
         let called = false;
         db.plugin({
             name: "test",
-            execute(_op, _q, next) { called = true; return next() },
+            execute(ctx) { called = true; return ctx.next() },
         });
         await db.add({ collection: "users", data: { name: "John" } });
         expect(called).toBe(true);
@@ -27,21 +27,21 @@ describe("ValtheraClass.plugin", () => {
         let count = 0;
         const unsub = db.plugin({
             name: "test",
-            execute(_op, _q, next) { count++; return next() },
+            execute(ctx) { count++; return ctx.next() },
         });
         unsub();
         await db.add({ collection: "users", data: { name: "John" } });
         expect(count).toBe(0);
     });
 
-    test("4. should receive op and query params", async () => {
+    test("4. should receive op and query via ctx", async () => {
         const db = createMemoryValthera();
         let captured: any;
         db.plugin({
             name: "test",
-            execute(op, query, next) {
-                captured = { op, query };
-                return next();
+            execute(ctx) {
+                captured = { op: ctx.op, query: ctx.query };
+                return ctx.next();
             },
         });
         await db.add({ collection: "users", data: { name: "John" } });
@@ -56,8 +56,8 @@ describe("ValtheraClass.plugin", () => {
         let adapterReached = false;
         db.plugin({
             name: "test",
-            async execute(_op, _q, next) {
-                const result = await next();
+            async execute(ctx) {
+                const result = await ctx.next();
                 adapterReached = true;
                 return result;
             },
@@ -67,17 +67,18 @@ describe("ValtheraClass.plugin", () => {
         expect(results).toHaveLength(1);
     });
 
-    test("6. can modify query via next(modifiedQuery)", async () => {
+    test("6. can modify query via ctx.query", async () => {
         const db = createMemoryValthera({
             users: [{ _id: "1", name: "John", tenant: "default" }],
         });
         db.plugin({
             name: "tenant",
-            execute(_op, query, next) {
-                return next({
-                    ...query,
-                    search: { ...query.search, tenant: "default" },
-                });
+            execute(ctx) {
+                ctx.query = {
+                    ...ctx.query,
+                    search: { ...ctx.query.search, tenant: "default" },
+                };
+                return ctx.next();
             },
         });
         const result: any = await db.findOne({
@@ -93,8 +94,8 @@ describe("ValtheraClass.plugin", () => {
         });
         db.plugin({
             name: "transform",
-            async execute(_op, _query, next) {
-                const result = await next();
+            async execute(ctx) {
+                const result = await ctx.next();
                 return result.map((doc: any) => ({ ...doc, _tagged: true }));
             },
         });
@@ -115,7 +116,7 @@ describe("ValtheraClass.plugin", () => {
 
         db.plugin({
             name: "cache",
-            async execute(_op, _query, _next) {
+            async execute(_ctx) {
                 return { fromCache: true, name: "John" };
             },
         });
@@ -133,16 +134,16 @@ describe("ValtheraClass.plugin", () => {
         const order: string[] = [];
         db.plugin({
             name: "a",
-            execute(_op, _q, next) {
+            execute(ctx) {
                 order.push("a");
-                return next();
+                return ctx.next();
             },
         });
         db.plugin({
             name: "b",
-            execute(_op, _q, next) {
+            execute(ctx) {
                 order.push("b");
-                return next();
+                return ctx.next();
             },
         });
         await db.add({ collection: "users", data: { name: "John" } });
@@ -154,16 +155,16 @@ describe("ValtheraClass.plugin", () => {
         const order: string[] = [];
         db.plugin({
             name: "a",
-            async execute(_op, _q, next) {
-                const r = await next();
+            async execute(ctx) {
+                const r = await ctx.next();
                 order.push("a:after");
                 return r;
             },
         });
         db.plugin({
             name: "b",
-            async execute(_op, _q, next) {
-                const r = await next();
+            async execute(ctx) {
+                const r = await ctx.next();
                 order.push("b:after");
                 return r;
             },
@@ -177,9 +178,9 @@ describe("ValtheraClass.plugin", () => {
         let caught: Error | undefined;
         db.plugin({
             name: "test",
-            async execute(_op, _q, next) {
+            async execute(ctx) {
                 try {
-                    return await next();
+                    return await ctx.next();
                 } catch (e: any) {
                     caught = e;
                     return { recovered: true };
@@ -204,8 +205,8 @@ describe("ValtheraClass.plugin", () => {
         });
         db.plugin({
             name: "test",
-            async execute(_op, _query, next) {
-                const r = await next();
+            async execute(ctx) {
+                const r = await ctx.next();
                 return { ...r, _tagged: true };
             },
         });
@@ -224,9 +225,9 @@ describe("ValtheraClass.plugin", () => {
         let called = false;
         db.plugin({
             name: "test",
-            execute(_op, _q, next) {
+            execute(ctx) {
                 called = true;
-                return next();
+                return ctx.next();
             },
         });
         const results = await db.users.find();
@@ -240,5 +241,60 @@ describe("ValtheraClass.plugin", () => {
         });
         const result = await db.find({ collection: "users" });
         expect(result).toHaveLength(1);
+    });
+
+    test("15. can change operation e.g. remove to update (soft delete)", async () => {
+        const db = createMemoryValthera({
+            users: [{ _id: "1", name: "John" }],
+        });
+        db.plugin({
+            name: "soft-delete",
+            execute(ctx) {
+                if (ctx.op === "remove") {
+                    ctx.op = "update";
+                    ctx.query = {
+                        ...ctx.query,
+                        updater: { deleted: true },
+                    };
+                }
+                return ctx.next();
+            },
+        });
+
+        await db.remove({ collection: "users", search: { _id: "1" } });
+
+        const result: any = await db.findOne({
+            collection: "users",
+            search: { _id: "1" },
+        });
+        expect(result).not.toBeNull();
+        expect(result.deleted).toBe(true);
+        expect(result.name).toBe("John");
+    });
+
+    test("16. mutation of ctx.op visible to later plugins", async () => {
+        const db = createMemoryValthera({
+            users: [{ _id: "1", name: "John" }],
+        });
+        let seenOp: string | undefined;
+        db.plugin({
+            name: "a",
+            execute(ctx) {
+                ctx.op = "find";
+                ctx.query = { ...ctx.query, search: { _id: "1" } };
+                return ctx.next();
+            },
+        });
+        db.plugin({
+            name: "b",
+            execute(ctx) {
+                seenOp = ctx.op;
+                return ctx.next();
+            },
+        });
+
+        await db.remove({ collection: "users", search: { _id: "1" } });
+
+        expect(seenOp).toBe("find");
     });
 });

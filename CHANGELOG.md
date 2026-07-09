@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.5-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.4...v0.11.5-alpha.0) (2026-07-09)
+
+
+### Features
+
+* nested path select & exclude ([ddc4a41](https://github.com/wxn0brP/ValtheraDB-core/commit/ddc4a41f56bf6345e25c156a05600db1785760df))
+* plugin ([4ffe0c3](https://github.com/wxn0brP/ValtheraDB-core/commit/4ffe0c3d27c6fd8d3150fa456a079ed6b85cf512))
+* plugin init ([9efdba7](https://github.com/wxn0brP/ValtheraDB-core/commit/9efdba7d94e7953cb9b52120e28af66ad0d3eec7))
+
 ### [0.11.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.4-alpha.2...v0.11.4) (2026-07-08)
 
 ### [0.11.4-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.4-alpha.1...v0.11.4-alpha.2) (2026-07-05)

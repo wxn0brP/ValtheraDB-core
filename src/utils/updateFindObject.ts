@@ -3,54 +3,54 @@ import { FindOpts } from "../types/options";
 type Path = string | string[];
 
 function resolvePath(path: Path): string[] {
-    return Array.isArray(path) ? path : path.split(".");
+	return Array.isArray(path) ? path : path.split(".");
 }
 
 function pathExists(obj: any, path: Path): boolean {
-    const segs = resolvePath(path);
-    if (segs.length === 0) return false;
-    let cur = obj;
-    for (const s of segs) {
-        if (cur == null || typeof cur !== "object" || !(s in cur)) return false;
-        cur = cur[s];
-    }
-    return true;
+	const segs = resolvePath(path);
+	if (segs.length === 0) return false;
+	let cur = obj;
+	for (const s of segs) {
+		if (cur == null || typeof cur !== "object" || !(s in cur)) return false;
+		cur = cur[s];
+	}
+	return true;
 }
 
 function getValueAt(obj: any, path: Path): any {
-    const segs = resolvePath(path);
-    let cur = obj;
-    for (const s of segs) {
-        if (cur == null || typeof cur !== "object") return undefined;
-        cur = cur[s];
-    }
-    return cur;
+	const segs = resolvePath(path);
+	let cur = obj;
+	for (const s of segs) {
+		if (cur == null || typeof cur !== "object") return undefined;
+		cur = cur[s];
+	}
+	return cur;
 }
 
 function setNested(obj: any, path: Path, value: any): void {
-    const segs = resolvePath(path);
-    let cur = obj;
-    for (let i = 0; i < segs.length - 1; i++) {
-        const s = segs[i];
-        if (!(s in cur) || typeof cur[s] !== "object" || Array.isArray(cur[s])) {
-            cur[s] = {};
-        }
-        cur = cur[s];
-    }
-    cur[segs[segs.length - 1]] = value;
+	const segs = resolvePath(path);
+	let cur = obj;
+	for (let i = 0; i < segs.length - 1; i++) {
+		const s = segs[i];
+		if (!(s in cur) || typeof cur[s] !== "object" || Array.isArray(cur[s])) {
+			cur[s] = {};
+		}
+		cur = cur[s];
+	}
+	cur[segs[segs.length - 1]] = value;
 }
 
 function deleteNested(obj: any, path: Path): void {
-    const segs = resolvePath(path);
-    if (segs.length === 0) return;
-    let cur = obj;
-    for (let i = 0; i < segs.length - 1; i++) {
-        if (cur == null || typeof cur !== "object") return;
-        cur = cur[segs[i]];
-    }
-    if (cur != null && typeof cur === "object") {
-        delete cur[segs[segs.length - 1]];
-    }
+	const segs = resolvePath(path);
+	if (segs.length === 0) return;
+	let cur = obj;
+	for (let i = 0; i < segs.length - 1; i++) {
+		if (cur == null || typeof cur !== "object") return;
+		cur = cur[segs[i]];
+	}
+	if (cur != null && typeof cur === "object") {
+		delete cur[segs[segs.length - 1]];
+	}
 }
 
 /**
@@ -63,31 +63,30 @@ function deleteNested(obj: any, path: Path): void {
  * @returns The updated object.
  */
 export function updateFindObject(obj: Object, findOpts: FindOpts) {
-    const {
-        transform,
-        select,
-        exclude,
-    } = findOpts;
+	const { transform, select, exclude } = findOpts;
 
-    if (typeof transform === "function") obj = transform(obj);
+	if (typeof transform === "function") obj = transform(obj);
 
-    if (Array.isArray(exclude)) {
-        for (const field of exclude) {
-            if (typeof field === "string" || Array.isArray(field)) {
-                deleteNested(obj, field);
-            }
-        }
-    }
+	if (Array.isArray(exclude)) {
+		for (const field of exclude) {
+			if (typeof field === "string" || Array.isArray(field)) {
+				deleteNested(obj, field);
+			}
+		}
+	}
 
-    if (Array.isArray(select)) {
-        const result: any = {};
-        for (const field of select) {
-            if ((typeof field === "string" || Array.isArray(field)) && pathExists(obj, field)) {
-                setNested(result, field, getValueAt(obj, field));
-            }
-        }
-        obj = result;
-    }
+	if (Array.isArray(select)) {
+		const result: any = {};
+		for (const field of select) {
+			if (
+				(typeof field === "string" || Array.isArray(field)) &&
+				pathExists(obj, field)
+			) {
+				setNested(result, field, getValueAt(obj, field));
+			}
+		}
+		obj = result;
+	}
 
-    return obj;
+	return obj;
 }

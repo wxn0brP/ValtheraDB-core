@@ -40,7 +40,14 @@ export type ComparisonOperators<T = any> = {
 	/** 5 <= 4 */
 	$lte?: NestedValue<T, number, number>;
 	/** 5 between [min, max] */
-	$between?: NestedValue<T, [number, number], number>;
+	$between?: NestedValue<
+		T,
+		[
+			number,
+			number,
+		],
+		number
+	>;
 	/** 2 in [1, 2, 3] */
 	$in?: { [K in keyof T]?: T[K] extends any[] ? T[K] : T[K][] };
 	/** 5 not in [1, 2, 3] */
@@ -72,11 +79,15 @@ export type ArrayOperators<T = any> = {
 	 */
 	$arrinc?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
 	/** [1, 2, 3] array includes all elements e.g. [1, 2] */
-	$arrIncAll?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
+	$arrIncAll?: {
+		[K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][];
+	};
 	/**
 	 * @deprecated Use $arrIncAll instead.
 	 */
-	$arrincall?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
+	$arrincall?: {
+		[K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][];
+	};
 	/** [1, 2, 3] has size 3 */
 	$size?: NestedValue<T, number>;
 };
@@ -108,4 +119,6 @@ export type PredefinedSearchOperators<T = any> = LogicalOperators<T> &
 /**
  * SearchOptions can be either a function or an object with predefined operators.
  */
-export type SearchOptions<T = any> = PredefinedSearchOperators<T> & DeepPartial<T> & Record<string, any>;
+export type SearchOptions<T = any> = PredefinedSearchOperators<T> &
+	DeepPartial<T> &
+	Record<string, any>;

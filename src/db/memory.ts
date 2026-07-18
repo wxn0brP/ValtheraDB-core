@@ -6,61 +6,66 @@ import { Data } from "../types/data";
 import { ValtheraClass } from "./valthera";
 
 export class MemoryAction extends CustomActionsBase {
-    memory: Map<string, any[]>;
-    smartExecutor = true;
+	memory: Map<string, any[]>;
+	smartExecutor = true;
 
-    constructor() {
-        super();
-        this.fileCpu = new CustomFileCpu(this._readMemory.bind(this), this._writeMemory.bind(this));
-        this.memory = new Map();
-    }
+	constructor() {
+		super();
+		this.fileCpu = new CustomFileCpu(
+			this._readMemory.bind(this),
+			this._writeMemory.bind(this),
+		);
+		this.memory = new Map();
+	}
 
-    _readMemory(key: string) {
-        if (!this.memory.has(key)) return [];
-        return this.memory.get(key);
-    }
+	_readMemory(key: string) {
+		if (!this.memory.has(key)) return [];
+		return this.memory.get(key);
+	}
 
-    _writeMemory(key: string, data: any[]) {
-        this.memory.set(key, data);
-    }
+	_writeMemory(key: string, data: any[]) {
+		this.memory.set(key, data);
+	}
 
-    async getCollections() {
-        const collections = Array.from(this.memory.keys());
-        return collections;
-    }
+	async getCollections() {
+		const collections = Array.from(this.memory.keys());
+		return collections;
+	}
 
-    async ensureCollection(collection: string) {
-        if (this.memory.has(collection)) return false;
-        this.memory.set(collection, []);
-        return true;
-    }
+	async ensureCollection(collection: string) {
+		if (this.memory.has(collection)) return false;
+		this.memory.set(collection, []);
+		return true;
+	}
 
-    async issetCollection(collection: string) {
-        return this.memory.has(collection);
-    }
+	async issetCollection(collection: string) {
+		return this.memory.has(collection);
+	}
 
-    async removeCollection(collection: string) {
-        if (!this.memory.has(collection)) return false;
-        this.memory.delete(collection);
-        return true;
-    }
+	async removeCollection(collection: string) {
+		if (!this.memory.has(collection)) return false;
+		this.memory.delete(collection);
+		return true;
+	}
 }
 
 export class ValtheraMemory extends ValtheraClass {
-    constructor(...args: any[]) {
-        super({ adapter: new MemoryAction() });
-    }
+	constructor(...args: any[]) {
+		super({
+			adapter: new MemoryAction(),
+		});
+	}
 }
 
-export function createMemoryValthera<T extends Record<string, Data[]>>
-    (data?: T): ValtheraMemory & { [K in keyof T]: Collection<T[K][number]> } {
+export function createMemoryValthera<T extends Record<string, Data[]>>(
+	data?: T,
+): ValtheraMemory & { [K in keyof T]: Collection<T[K][number]> } {
+	const db = new ValtheraMemory();
+	if (!data) return forgeValthera(db) as any;
 
-    const db = new ValtheraMemory();
-    if (!data) return forgeValthera(db) as any;
+	for (const collection of Object.keys(data)) {
+		(db.adapter as MemoryAction).memory.set(collection, data[collection]);
+	}
 
-    for (const collection of Object.keys(data)) {
-        (db.adapter as MemoryAction).memory.set(collection, data[collection]);
-    }
-
-    return forgeValthera(db) as any;
+	return forgeValthera(db) as any;
 }

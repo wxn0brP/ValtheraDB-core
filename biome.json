@@ -1,0 +1,70 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
+	"files": {
+		"includes": [
+			"src/**/*"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"expand": "always"
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double",
+			"semicolons": "always",
+			"trailingCommas": "all",
+			"arrowParentheses": "asNeeded",
+			"bracketSameLine": true,
+			"bracketSpacing": true
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "none",
+			"correctness": {
+				"recommended": true,
+				"noUnusedVariables": "off",
+				"noUnusedFunctionParameters": "off"
+			},
+			"suspicious": {
+				"recommended": true,
+				"noExplicitAny": "off",
+				"noConfusingVoidType": "off",
+				"noEmptyInterface": "off",
+				"useIterableCallbackReturn": {
+					"level": "on",
+					"options": {
+						"checkForEach": false
+					}
+				}
+			},
+			"style": {
+				"recommended": false,
+				"useConst": "error",
+				"useTemplate": "off"
+			},
+			"complexity": {
+				"recommended": true,
+				"noForEach": "off",
+				"noUselessThisAlias": "off",
+				"useOptionalChain": "off",
+				"useLiteralKeys": "off",
+				"noBannedTypes": "off"
+			},
+			"performance": {
+				"recommended": true,
+				"noAccumulatingSpread": "off"
+			}
+		}
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "off"
+			}
+		}
+	}
+}

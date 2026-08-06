@@ -14,11 +14,10 @@ export function sortByIds<T extends Record<string, any>>(
 	objects: T[],
 	key: string,
 ): T[];
-export function sortByIds<
-	T extends {
-		_id: string;
-	},
->(objects: T[], key = "_id") {
+export function sortByIds<T extends Record<string, any>>(
+	objects: T[],
+	key = "_id",
+) {
 	return objects.slice().sort((a, b) => compareIds(a[key], b[key]));
 }
 

@@ -10,12 +10,14 @@ export async function addId(
 	const { collection, data } = query;
 	const id_gen = query.id_gen ?? defaultGen;
 
+	const { idKey = "_id" } = actions;
+
 	if (!id_gen) return data;
-	if (data._id) return data;
+	if (data[idKey]) return data;
 
 	const { numberId } = actions;
 	if (!numberId) {
-		data._id = genId();
+		data[idKey] = genId();
 		return;
 	}
 
@@ -27,7 +29,7 @@ export async function addId(
 	})) as {
 		i: number;
 	};
-	data._id = find?.i ? find.i + 1 : 1;
+	data[idKey] = find?.i ? find.i + 1 : 1;
 	await actions.updateOneOrAdd({
 		collection: "__vdb_id",
 		search: {

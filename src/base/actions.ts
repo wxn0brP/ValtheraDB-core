@@ -10,6 +10,7 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 	_inited: boolean = true;
 	numberId: boolean = false;
 	smartExecutor: boolean = false;
+	idKey: string = "_id";
 	async init(...args: any[]) {}
 	async close(...args: any[]) {}
 

@@ -2,12 +2,33 @@ export function convertIdToUnix(id: string) {
 	return parseInt(id.split("-")[0], 36);
 }
 
+/**
+ * Sorts an array of objects by their _id property
+ */
 export function sortByIds<
 	T extends {
 		_id: string;
 	},
->(objects: T[]) {
-	return objects.slice().sort((a, b) => compareIds(a._id, b._id));
+>(objects: T[]): T[];
+export function sortByIds<T extends Record<string, any>>(
+	objects: T[],
+	key: string,
+): T[];
+export function sortByIds<
+	T extends {
+		_id: string;
+	},
+>(objects: T[], key = "_id") {
+	return objects.slice().sort((a, b) => compareIds(a[key], b[key]));
+}
+
+/**
+ * Sorts an array of objects using reference
+ * @param objects
+ * @param key default "_id"
+ */
+export function sortByIdsRef(objects: Record<string, any>[], key = "_id") {
+	objects.sort((a, b) => compareIds(a[key], b[key]));
 }
 
 export function compareIds(a: string | number, b: string | number) {

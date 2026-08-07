@@ -142,16 +142,16 @@ describe("hasFieldsAdvanced", () => {
 		expect(hasFieldsAdvanced(obj, { $between: { num: [15, 20] } })).toBe(false);
 	});
 
-	test("18. should handle $arrinc operator", () => {
+	test("18. should handle $arrInc operator", () => {
 		const obj = { arr: [1, 2, 3] };
-		expect(hasFieldsAdvanced(obj, { $arrinc: { arr: [2, 4] } })).toBe(true);
-		expect(hasFieldsAdvanced(obj, { $arrinc: { arr: [4, 5] } })).toBe(false);
+		expect(hasFieldsAdvanced(obj, { $arrInc: { arr: [2, 4] } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $arrInc: { arr: [4, 5] } })).toBe(false);
 	});
 
-	test("19. should handle $arrincall operator", () => {
+	test("19. should handle $arrIncAll operator", () => {
 		const obj = { arr: [1, 2, 3] };
-		expect(hasFieldsAdvanced(obj, { $arrincall: { arr: [1, 2] } })).toBe(true);
-		expect(hasFieldsAdvanced(obj, { $arrincall: { arr: [1, 4] } })).toBe(false);
+		expect(hasFieldsAdvanced(obj, { $arrIncAll: { arr: [1, 2] } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $arrIncAll: { arr: [1, 4] } })).toBe(false);
 	});
 
 	test("20. should handle $not operator", () => {
@@ -475,19 +475,19 @@ describe("hasFieldsAdvanced", () => {
 		};
 
 		expect(
-			hasFieldsAdvanced(obj, { $arrinc: { data: { tags: ["typescript"] } } }),
+			hasFieldsAdvanced(obj, { $arrInc: { data: { tags: ["typescript"] } } }),
 		).toBe(true);
 		expect(
-			hasFieldsAdvanced(obj, { $arrinc: { data: { tags: ["python"] } } }),
+			hasFieldsAdvanced(obj, { $arrInc: { data: { tags: ["python"] } } }),
 		).toBe(false);
 		expect(
 			hasFieldsAdvanced(obj, {
-				$arrincall: { data: { tags: ["javascript", "typescript"] } },
+				$arrIncAll: { data: { tags: ["javascript", "typescript"] } },
 			}),
 		).toBe(true);
 		expect(
 			hasFieldsAdvanced(obj, {
-				$arrincall: { data: { tags: ["javascript", "python"] } },
+				$arrIncAll: { data: { tags: ["javascript", "python"] } },
 			}),
 		).toBe(false);
 	});

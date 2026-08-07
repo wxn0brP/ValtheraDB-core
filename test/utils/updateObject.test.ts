@@ -62,9 +62,9 @@ describe("updateObjectAdvanced", () => {
 		expect(obj.arr).toEqual([1, 2, 3, 2]);
 	});
 
-	test("7. should handle $pullall operator", () => {
+	test("7. should handle $pullAll operator", () => {
 		const obj = { arr: [1, 2, 3, 4, 5] };
-		const result = updateObjectAdvanced(obj, { $pullall: { arr: [2, 4] } });
+		const result = updateObjectAdvanced(obj, { $pullAll: { arr: [2, 4] } });
 		expect(result.arr).toEqual([1, 3, 5]);
 		expect(obj.arr).toEqual([1, 2, 3, 4, 5]);
 	});

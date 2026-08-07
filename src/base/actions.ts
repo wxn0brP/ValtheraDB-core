@@ -4,13 +4,31 @@ import {
 } from "../helpers/assignDataPush";
 import { ActionsBaseInterface } from "../types/action";
 import { DataInternal } from "../types/data";
+import { AdapterOpts } from "../types/options";
 import { VQueryT } from "../types/query";
 
 export abstract class ActionsBase implements ActionsBaseInterface {
 	_inited: boolean = true;
-	numberId: boolean = false;
+	adapterOpts: AdapterOpts = {
+		numberId: false,
+		idKey: "_id",
+	};
 	smartExecutor: boolean = false;
-	idKey: string = "_id";
+
+	get numberId(): boolean {
+		return this.adapterOpts.numberId ?? false;
+	}
+	set numberId(value: boolean) {
+		this.adapterOpts.numberId = value;
+	}
+
+	get idKey(): string {
+		return this.adapterOpts.idKey ?? "_id";
+	}
+	set idKey(value: string) {
+		this.adapterOpts.idKey = value;
+	}
+
 	async init(...args: any[]) {}
 	async close(...args: any[]) {}
 

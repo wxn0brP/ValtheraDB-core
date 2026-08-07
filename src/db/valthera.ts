@@ -57,8 +57,22 @@ export class ValtheraClass implements ValtheraCompatible {
 		options.adapter ??= options.dbAction!;
 		options.dbAction ??= options.adapter!;
 
+		options.adapterOpts ??= {};
+		if (
+			options.numberId !== undefined &&
+			options.adapterOpts.numberId === undefined
+		)
+			options.adapterOpts.numberId = options.numberId;
+		if (options.idKey !== undefined && options.adapterOpts.idKey === undefined)
+			options.adapterOpts.idKey = options.idKey;
+
 		if (typeof options.adapter === "function") return;
-		else this.adapter = options.adapter as ActionsBase;
+		else {
+			this.adapter = options.adapter as ActionsBase;
+			if (options.adapterOpts) {
+				this.adapter.adapterOpts = options.adapterOpts;
+			}
+		}
 	}
 
 	async init(...args: any[]) {
@@ -79,8 +93,12 @@ export class ValtheraClass implements ValtheraCompatible {
 			)
 				self.executor.aware = true;
 
-			if (self.options.numberId) self.adapter.numberId = true;
-			if (self.options.idKey) self.adapter.idKey = self.options.idKey;
+			if (self.options.adapterOpts) {
+				self.adapter.adapterOpts = {
+					...self.adapter.adapterOpts,
+					...self.options.adapterOpts,
+				};
+			}
 
 			await self.adapter.init(...args);
 			self.adapter._inited = true;

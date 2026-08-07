@@ -18,9 +18,17 @@ type AdapterOption =
 
 export type DbOpts = AdapterOption & {
 	executor?: Executor;
+	adapterOpts?: AdapterOpts;
+	/** @deprecated use `adapterOpts.numberId` */
 	numberId?: boolean;
+	/** @deprecated use `adapterOpts.idKey` */
 	idKey?: string;
 };
+
+export interface AdapterOpts {
+	numberId?: boolean;
+	idKey?: string;
+}
 
 export type FieldPath<T = any> =
 	| KeysMatching<T, any>

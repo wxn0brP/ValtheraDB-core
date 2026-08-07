@@ -10,12 +10,11 @@ export async function addId(
 	const { collection, data } = query;
 	const id_gen = query.id_gen ?? defaultGen;
 
-	const { idKey = "_id" } = actions;
+	const { idKey = "_id", numberId } = actions.adapterOpts;
 
 	if (!id_gen) return data;
 	if (data[idKey]) return data;
 
-	const { numberId } = actions;
 	if (!numberId) {
 		data[idKey] = genId();
 		return;

@@ -19,6 +19,7 @@ type AdapterOption =
 export type DbOpts = AdapterOption & {
 	executor?: Executor;
 	numberId?: boolean;
+	idKey?: string;
 };
 
 export type FieldPath<T = any> =

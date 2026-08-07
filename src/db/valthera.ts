@@ -80,6 +80,7 @@ export class ValtheraClass implements ValtheraCompatible {
 				self.executor.aware = true;
 
 			if (self.options.numberId) self.adapter.numberId = true;
+			if (self.options.idKey) self.adapter.idKey = self.options.idKey;
 
 			await self.adapter.init(...args);
 			self.adapter._inited = true;

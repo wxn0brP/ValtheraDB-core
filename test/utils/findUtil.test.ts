@@ -461,4 +461,175 @@ describe("findUtil", () => {
 			expect(result).toEqual([{ minPrice: 10, maxPrice: 20 }]);
 		});
 	});
+
+	describe("sum aggregation", () => {
+		test("1. should return sum of values for specified field", async () => {
+			const query: any = {
+				dbFindOpts: { sum: { totalPrice: "price" } },
+				mockData: [
+					{ _id: "1", price: 10 },
+					{ _id: "2", price: 20 },
+					{ _id: "3", price: 30 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result).toEqual([{ totalPrice: 60 }]);
+		});
+
+		test("2. should return null when no valid numeric values", async () => {
+			const query: any = {
+				dbFindOpts: { sum: { totalPrice: "price" } },
+				mockData: [
+					{ _id: "1", price: undefined },
+					{ _id: "2", price: "not a number" },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result).toEqual([{ totalPrice: null }]);
+		});
+
+		test("3. should handle multiple sum fields", async () => {
+			const query: any = {
+				dbFindOpts: { sum: { totalPrice: "price", totalQty: "quantity" } },
+				mockData: [
+					{ _id: "1", price: 10, quantity: 100 },
+					{ _id: "2", price: 20, quantity: 200 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result).toEqual([{ totalPrice: 30, totalQty: 300 }]);
+		});
+
+		test("4. should combine sum with groupBy", async () => {
+			const query: any = {
+				dbFindOpts: { groupBy: "category", sum: { totalPrice: "price" } },
+				mockData: [
+					{ _id: "1", category: "A", price: 10 },
+					{ _id: "2", category: "B", price: 20 },
+					{ _id: "3", category: "A", price: 15 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result.find((r) => r.category === "A")?.totalPrice).toBe(25);
+			expect(result.find((r) => r.category === "B")?.totalPrice).toBe(20);
+		});
+	});
+
+	describe("distinct aggregation", () => {
+		test("1. should return unique values for specified field", async () => {
+			const query: any = {
+				dbFindOpts: { distinct: "category" },
+				mockData: [
+					{ _id: "1", category: "A", price: 10 },
+					{ _id: "2", category: "B", price: 20 },
+					{ _id: "3", category: "A", price: 15 },
+					{ _id: "4", category: "C", price: 25 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result).toHaveLength(3);
+			expect(result.map((r) => r.category).sort()).toEqual(["A", "B", "C"]);
+		});
+
+		test("2. should handle distinct after groupBy with aggregation", async () => {
+			const query: any = {
+				dbFindOpts: { groupBy: "category", distinct: "category", sum: { totalPrice: "price" } },
+				mockData: [
+					{ _id: "1", category: "A", price: 10 },
+					{ _id: "2", category: "A", price: 20 },
+					{ _id: "3", category: "B", price: 30 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result).toHaveLength(2);
+		});
+
+		test("3. should handle distinct with complex values", async () => {
+			const query: any = {
+				dbFindOpts: { distinct: "tags" },
+				mockData: [
+					{ _id: "1", tags: ["a", "b"] },
+					{ _id: "2", tags: ["a", "b"] },
+					{ _id: "3", tags: ["c"] },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result).toHaveLength(2);
+		});
+	});
+
+	describe("multi-sort", () => {
+		test("1. should sort by multiple fields", async () => {
+			const query: any = {
+				dbFindOpts: {
+					sortBy: [
+						{ field: "category", asc: true },
+						{ field: "price", asc: false },
+					],
+				},
+				mockData: [
+					{ _id: "1", category: "A", price: 10 },
+					{ _id: "2", category: "B", price: 20 },
+					{ _id: "3", category: "A", price: 15 },
+					{ _id: "4", category: "B", price: 25 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result[0].category).toBe("A");
+			expect(result[0].price).toBe(15);
+			expect(result[1].category).toBe("A");
+			expect(result[1].price).toBe(10);
+			expect(result[2].category).toBe("B");
+			expect(result[2].price).toBe(25);
+			expect(result[3].category).toBe("B");
+			expect(result[3].price).toBe(20);
+		});
+
+		test("2. should handle mixed asc/desc sorting", async () => {
+			const query: any = {
+				dbFindOpts: {
+					sortBy: [
+						{ field: "status", asc: true },
+						{ field: "createdAt", asc: false },
+					],
+				},
+				mockData: [
+					{ _id: "1", status: "active", createdAt: 100 },
+					{ _id: "2", status: "inactive", createdAt: 200 },
+					{ _id: "3", status: "active", createdAt: 150 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result[0].status).toBe("active");
+			expect(result[0].createdAt).toBe(150);
+			expect(result[1].status).toBe("active");
+			expect(result[1].createdAt).toBe(100);
+			expect(result[2].status).toBe("inactive");
+		});
+
+		test("3. should maintain backward compatibility with single sortBy", async () => {
+			const query: any = {
+				dbFindOpts: { sortBy: "price", sortAsc: false },
+				mockData: [
+					{ _id: "1", price: 10 },
+					{ _id: "2", price: 30 },
+					{ _id: "3", price: 20 },
+				],
+			};
+
+			const result = await findUtil(query, mockFileCpu, ["file1"]);
+			expect(result[0].price).toBe(30);
+			expect(result[1].price).toBe(20);
+			expect(result[2].price).toBe(10);
+		});
+	});
 });

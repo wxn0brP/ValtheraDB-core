@@ -30,11 +30,18 @@ export interface DbFindOpts<T = any> {
 	reverse?: boolean;
 	limit?: number;
 	offset?: number;
-	sortBy?: KeysMatching<T, any>;
+	sortBy?:
+		| KeysMatching<T, any>
+		| {
+				field: KeysMatching<T, any>;
+				asc?: boolean;
+		  }[];
 	sortAsc?: boolean;
 	min?: Record<string, KeysMatching<T, number>>;
 	max?: Record<string, KeysMatching<T, number>>;
 	avg?: Record<string, KeysMatching<T, number>>;
+	sum?: Record<string, KeysMatching<T, number>>;
+	distinct?: KeysMatching<T, any>;
 	groupBy?: KeysMatching<T, any> | KeysMatching<T, any>[];
 	count?: Record<string, string>;
 }

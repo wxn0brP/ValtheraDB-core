@@ -19,11 +19,14 @@ export async function findUtil(
 		min,
 		max,
 		avg,
+		sum,
+		distinct,
 		groupBy,
 		count,
 	} = dbFindOpts;
 
-	const needsAllData = min || max || avg || groupBy || count || sortBy;
+	const needsAllData =
+		min || max || avg || sum || distinct || groupBy || count || sortBy;
 
 	let datas: Data[] = [];
 	let skippedEntries = 0;
@@ -80,7 +83,8 @@ export async function findUtil(
 
 	if (!needsAllData) return datas;
 
-	if (min || max || avg || groupBy || count) {
+	const hasAggregations = min || max || avg || sum || groupBy || count;
+	if (hasAggregations) {
 		const groups: Map<string, Data[]> = new Map();
 		const groupKeys = Array.isArray(groupBy)
 			? groupBy
@@ -145,15 +149,42 @@ export async function findUtil(
 					: null;
 			}
 
+			for (const [outKey, srcField] of Object.entries(sum ?? {})) {
+				const nums = groupItems
+					.map(d => Number((d as any)[srcField]))
+					.filter(n => !Number.isNaN(n));
+				result[outKey] = nums.length ? nums.reduce((a, b) => a + b, 0) : null;
+			}
+
 			aggregated.push(result);
 		}
 
 		datas = aggregated;
 	}
 
+	if (distinct) {
+		const seen = new Set<string>();
+		datas = datas.filter(item => {
+			const val = (item as any)[distinct];
+			const key = JSON.stringify(val);
+			if (seen.has(key)) return false;
+			seen.add(key);
+			return true;
+		});
+	}
+
 	if (sortBy) {
 		if (sortBy === "random()") {
 			datas.sort(() => Math.random() - 0.5);
+		} else if (Array.isArray(sortBy)) {
+			datas.sort((a, b) => {
+				for (const { field, asc = true } of sortBy) {
+					const dir = asc ? 1 : -1;
+					const cmp = compareSafe((a as any)[field], (b as any)[field]) * dir;
+					if (cmp !== 0) return cmp;
+				}
+				return 0;
+			});
 		} else {
 			const dir = sortAsc ? 1 : -1;
 			datas.sort(

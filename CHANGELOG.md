@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.5...v0.11.6) (2026-08-07)
+
+
+### Features
+
+* adapterOpts ([a1bc7c3](https://github.com/wxn0brP/ValtheraDB-core/commit/a1bc7c320d2dd348616beb63a56476568725dbad))
+* add idKey to ValtheraClass opts ([4261cb2](https://github.com/wxn0brP/ValtheraDB-core/commit/4261cb2c5a75b310eebec0fe1a87d0853f6ff734))
+* improve findUtil ([3e1eb11](https://github.com/wxn0brP/ValtheraDB-core/commit/3e1eb111fb161607875141a0a8d7ae669a3e8353))
+* improve hasFieldsAdavnced ([5e69f4d](https://github.com/wxn0brP/ValtheraDB-core/commit/5e69f4d5a4ac174a99d38b43a111eb1ddfbee9dd))
+* improve sort by ids ([b1f50b6](https://github.com/wxn0brP/ValtheraDB-core/commit/b1f50b6971e254e74f9d0d1dba7a8f43ffa3c681))
+* support custom id key ([1b6e0dd](https://github.com/wxn0brP/ValtheraDB-core/commit/1b6e0ddc5479b6318ae267fda972946b04414962))
+
+
+### Bug Fixes
+
+* sort by ids type ([321f982](https://github.com/wxn0brP/ValtheraDB-core/commit/321f982e2c951e0ef6b22c47c8e4cf4164ac7a6c))
+
 ### [0.11.5](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.5-alpha.2...v0.11.5) (2026-07-10)
 
 ### [0.11.5-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.5-alpha.1...v0.11.5-alpha.2) (2026-07-10)

@@ -31,6 +31,8 @@ export type LogicalOperators<T = any> = {
 
 /** Comparison Operators with nested support */
 export type ComparisonOperators<T = any> = {
+	/** 5 != 4 */
+	$ne?: NestedValue<T, any>;
 	/** 5 > 4 */
 	$gt?: NestedValue<T, number, number>;
 	/** 5 < 4 */
@@ -100,6 +102,10 @@ export type StringOperators<T = any> = {
 	$startsWith?: NestedValue<T, string, string>;
 	/** "John" ends with "hn" */
 	$endsWith?: NestedValue<T, string, string>;
+	/** "John" starts with "jo" (case-insensitive) */
+	$iStartsWith?: NestedValue<T, string, string>;
+	/** "John" ends with "HN" (case-insensitive) */
+	$iEndsWith?: NestedValue<T, string, string>;
 };
 
 /** Other Operators with nested support */

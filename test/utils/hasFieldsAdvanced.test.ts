@@ -526,4 +526,32 @@ describe("hasFieldsAdvanced", () => {
 			}),
 		).toBe(false);
 	});
+
+	test("36. should handle $ne operator", () => {
+		const obj = { a: 5, b: "hello", c: null };
+		expect(hasFieldsAdvanced(obj, { $ne: { a: 10 } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $ne: { a: 5 } })).toBe(false);
+		expect(hasFieldsAdvanced(obj, { $ne: { b: "world" } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $ne: { b: "hello" } })).toBe(false);
+	});
+
+	test("37. should handle $iStartsWith operator", () => {
+		const obj = { text: "Hello World" };
+		expect(hasFieldsAdvanced(obj, { $iStartsWith: { text: "hello" } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $iStartsWith: { text: "HELLO" } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $iStartsWith: { text: "world" } })).toBe(false);
+	});
+
+	test("38. should handle $iEndsWith operator", () => {
+		const obj = { text: "Hello World" };
+		expect(hasFieldsAdvanced(obj, { $iEndsWith: { text: "world" } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $iEndsWith: { text: "WORLD" } })).toBe(true);
+		expect(hasFieldsAdvanced(obj, { $iEndsWith: { text: "hello" } })).toBe(false);
+	});
+
+	test("39. should handle case-insensitive operators with non-string values", () => {
+		const obj = { num: 123, arr: [1, 2, 3] };
+		expect(hasFieldsAdvanced(obj, { $iStartsWith: { arr: "1" } })).toBe(false);
+		expect(hasFieldsAdvanced(obj, { $iEndsWith: { num: "3" } })).toBe(false);
+	});
 });

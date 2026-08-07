@@ -51,6 +51,7 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 
 function mainCheck(obj: Object, fields: Object) {
 	return _for(fields, obj, {
+		ne: (data, value) => data !== value,
 		gt: (data, value) => data > value,
 		lt: (data, value) => data < value,
 		gte: (data, value) => data >= value,
@@ -80,6 +81,12 @@ function mainCheck(obj: Object, fields: Object) {
 		startswith: (data, value) =>
 			typeof data === "string" && data.startsWith(value),
 		endswith: (data, value) => typeof data === "string" && data.endsWith(value),
+		istartswith: (data, value) =>
+			typeof data === "string" &&
+			data.toLowerCase().startsWith(value.toLowerCase()),
+		iendswith: (data, value) =>
+			typeof data === "string" &&
+			data.toLowerCase().endsWith(value.toLowerCase()),
 		between: (data, [min, max]) =>
 			typeof data === "number" && data >= min && data <= max,
 		arrinc: (data, values) =>

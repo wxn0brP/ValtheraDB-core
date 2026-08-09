@@ -1,7 +1,7 @@
 import { CustomActionsBase } from "../base/custom";
 import { CustomFileCpu } from "../customFileCpu";
 import { Collection } from "../helpers/collection";
-import { forgeValthera } from "../helpers/forge";
+import { forgeTypedValthera } from "../helpers/forge";
 import { Data } from "../types/data";
 import { ValtheraClass } from "./valthera";
 
@@ -61,11 +61,11 @@ export function createMemoryValthera<T extends Record<string, Data[]>>(
 	data?: T,
 ): ValtheraMemory & { [K in keyof T]: Collection<T[K][number]> } {
 	const db = new ValtheraMemory();
-	if (!data) return forgeValthera(db) as any;
+	if (!data) return forgeTypedValthera(db) as any;
 
 	for (const collection of Object.keys(data)) {
 		(db.adapter as MemoryAction).memory.set(collection, data[collection]);
 	}
 
-	return forgeValthera(db) as any;
+	return forgeTypedValthera(db) as any;
 }

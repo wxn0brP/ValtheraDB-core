@@ -29,6 +29,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	version = version;
 
 	_plugins: ValtheraPlugin[] = [];
+	_collections: Map<string, Collection<any>> = new Map();
 
 	plugin(p: ValtheraPlugin) {
 		p.init?.(this);
@@ -124,7 +125,11 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Create a new instance of a Collection class.
 	 */
 	c<T = Data>(collection: string): Collection<T> {
-		return new Collection<T>(this, collection);
+		if (this._collections.has(collection))
+			return this._collections.get(collection);
+		const col = new Collection<T>(this, collection);
+		this._collections.set(collection, col);
+		return col;
 	}
 
 	/**

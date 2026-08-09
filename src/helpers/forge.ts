@@ -3,16 +3,6 @@ import { Data } from "../types/data";
 import { ValtheraCompatible } from "../types/valthera";
 import { ValtheraClass } from "../db/valthera";
 
-export function forgeValthera<T extends string>(
-	target: ValtheraClass,
-): ValtheraClass & { [K in T]: Collection };
-export function forgeValthera<T extends string>(
-	target: ValtheraCompatible,
-): ValtheraCompatible & { [K in T]: Collection };
-export function forgeValthera(target: ValtheraClass) {
-	return forgeTypedValthera(target) as any;
-}
-
 export function forgeTypedValthera<T extends Record<string, Data>>(
 	target: ValtheraClass,
 ): ValtheraClass & { [K in keyof T]: Collection<T[K]> };

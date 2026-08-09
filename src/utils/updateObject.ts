@@ -9,13 +9,11 @@ import { _deepMerge } from "./merge";
 export function updateObjectAdvanced(
 	obj: Record<string, any>,
 	field: UpdaterArg,
-): Record<string, any> {
+) {
 	if (typeof field !== "object" || Array.isArray(field) || field === null)
 		throw new Error("Fields must be an object");
 
-	if (Object.keys(field).length === 0) return obj;
-
-	const newObj = structuredClone(obj);
+	if (Object.keys(field).length === 0) return;
 
 	const $fields = {};
 	const subsetFields = {};
@@ -25,11 +23,9 @@ export function updateObjectAdvanced(
 		else subsetFields[key] = field[key];
 	});
 
-	mainUpdate(newObj, $fields);
-	const mergedObj = deepMerge(newObj, $fields);
+	mainUpdate(obj, $fields);
+	const mergedObj = deepMerge(obj, $fields);
 	updateObject(mergedObj, subsetFields);
-
-	return mergedObj;
 }
 
 function deepMerge(obj: Object, fields: UpdaterArg) {

@@ -28,11 +28,16 @@ export function matchObj(config: VQuery, obj: Data): boolean {
 	return false;
 }
 
+/**
+ * @returns reference to object or new object
+ */
 export function updateObj(config: VQueryT.Update, obj: Data): DataInternal {
 	const { updater, context } = config;
 
-	if (typeof updater === "object" && !Array.isArray(updater))
-		return updateObjectAdvanced(obj, updater);
+	if (typeof updater === "object" && !Array.isArray(updater)) {
+		updateObjectAdvanced(obj, updater);
+		return obj;
+	}
 
 	if (typeof updater === "function") {
 		const updateObjValue = updater(obj, context);

@@ -20,11 +20,11 @@ export class MemoryAction extends CustomActionsBase {
 
 	_readMemory(key: string) {
 		if (!this.memory.has(key)) return [];
-		return this.memory.get(key);
+		return structuredClone(this.memory.get(key));
 	}
 
 	_writeMemory(key: string, data: any[]) {
-		this.memory.set(key, data);
+		this.memory.set(key, structuredClone(data));
 	}
 
 	async getCollections() {

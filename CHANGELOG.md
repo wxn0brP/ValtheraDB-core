@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.6...v0.12.0-alpha.0) (2026-08-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* Collection managements
+* remove deprecated code
+* object reference
+
+### Features
+
+* Infinity limit ([5df4f36](https://github.com/wxn0brP/ValtheraDB-core/commit/5df4f36daba18f1b88fe18d7ecd8a0ee0f2bb516))
+
+
+### Bug Fixes
+
+* unit tests ([fbf2182](https://github.com/wxn0brP/ValtheraDB-core/commit/fbf2182238c638ec16c8b2703d6ffefb3e79cae1))
+
+
+* Collection managements ([b790e8b](https://github.com/wxn0brP/ValtheraDB-core/commit/b790e8bf0b707202f518f65546f026e6d7b3e178))
+* object reference ([9aaa31d](https://github.com/wxn0brP/ValtheraDB-core/commit/9aaa31d1173c911f4625285c0c3ba467d38ae561))
+* remove deprecated code ([134e1fe](https://github.com/wxn0brP/ValtheraDB-core/commit/134e1fe01d51ba8fcba3f1b895d5447235c1ad60))
+
 ### [0.11.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.5...v0.11.6) (2026-08-07)
 
 

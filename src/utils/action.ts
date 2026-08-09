@@ -13,7 +13,6 @@ export async function findUtil(
 	const {
 		reverse = false,
 		offset = 0,
-		limit = -1,
 		sortBy,
 		sortAsc = true,
 		min,
@@ -24,6 +23,9 @@ export async function findUtil(
 		groupBy,
 		count,
 	} = dbFindOpts;
+
+	let limit = dbFindOpts.limit ?? -1;
+	if (limit === Infinity) limit = -1;
 
 	const needsAllData =
 		min || max || avg || sum || distinct || groupBy || count || sortBy;

@@ -26,8 +26,6 @@ export class ValtheraClass implements ValtheraCompatible {
 			"*": (name: keyof ValtheraCompatible, query: VQuery, result: any) => void;
 		}
 	> = new VEE();
-	/** @deprecated typo */
-	emiter = this.emitter;
 	version = version;
 
 	_plugins: ValtheraPlugin[] = [];
@@ -41,30 +39,8 @@ export class ValtheraClass implements ValtheraCompatible {
 		};
 	}
 
-	/** @deprecated use `adapter` */
-	get dbAction() {
-		return this.adapter;
-	}
-
-	/** @deprecated use `adapter` */
-	set dbAction(action: ActionsBase) {
-		this.adapter = action;
-	}
-
 	constructor(public options: DbOpts) {
 		this.executor = options.executor || new SmartExecutor(undefined, false);
-
-		options.adapter ??= options.dbAction!;
-		options.dbAction ??= options.adapter!;
-
-		options.adapterOpts ??= {};
-		if (
-			options.numberId !== undefined &&
-			options.adapterOpts.numberId === undefined
-		)
-			options.adapterOpts.numberId = options.numberId;
-		if (options.idKey !== undefined && options.adapterOpts.idKey === undefined)
-			options.adapterOpts.idKey = options.idKey;
 
 		if (typeof options.adapter === "function") return;
 		else {

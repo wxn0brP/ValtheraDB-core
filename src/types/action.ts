@@ -5,10 +5,6 @@ import { VQueryT } from "./query";
 export interface ActionsBaseInterface {
 	_inited: boolean;
 	adapterOpts: AdapterOpts;
-	/** @deprecated use `adapterOpts.numberId` */
-	numberId: boolean;
-	/** @deprecated use `adapterOpts.idKey` */
-	idKey: string;
 	smartExecutor: boolean;
 	init(...args: any[]): Promise<void>;
 	close(...args: any[]): Promise<void>;

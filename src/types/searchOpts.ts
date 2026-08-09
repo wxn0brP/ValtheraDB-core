@@ -76,18 +76,8 @@ export type TypeAndExistenceOperators<T = any> = {
 export type ArrayOperators<T = any> = {
 	/** [1, 2, 3] includes 2 */
 	$arrInc?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
-	/**
-	 * @deprecated Use $arrInc instead.
-	 */
-	$arrinc?: { [K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][] };
 	/** [1, 2, 3] array includes all elements e.g. [1, 2] */
 	$arrIncAll?: {
-		[K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][];
-	};
-	/**
-	 * @deprecated Use $arrIncAll instead.
-	 */
-	$arrincall?: {
 		[K in keyof T]?: T[K] extends any[] ? T[K][number][] : T[K][];
 	};
 	/** [1, 2, 3] has size 3 */

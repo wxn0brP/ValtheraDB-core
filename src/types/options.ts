@@ -4,26 +4,11 @@ import { KeysMatching } from "./utils";
 
 export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
 
-type AdapterOption =
-	| {
-			adapter: AdapterValue;
-			/** @deprecated use `adapter` */
-			dbAction?: AdapterValue;
-	  }
-	| {
-			adapter?: AdapterValue;
-			/** @deprecated use `adapter` */
-			dbAction: AdapterValue;
-	  };
-
-export type DbOpts = AdapterOption & {
+export interface DbOpts {
+	adapter: AdapterValue;
 	executor?: Executor;
 	adapterOpts?: AdapterOpts;
-	/** @deprecated use `adapterOpts.numberId` */
-	numberId?: boolean;
-	/** @deprecated use `adapterOpts.idKey` */
-	idKey?: string;
-};
+}
 
 export interface AdapterOpts {
 	numberId?: boolean;

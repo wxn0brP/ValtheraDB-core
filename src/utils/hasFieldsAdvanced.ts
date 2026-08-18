@@ -52,10 +52,10 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 function mainCheck(obj: Object, fields: Object) {
 	return _for(fields, obj, {
 		ne: (data, value) => data !== value,
-		gt: (data, value) => data > value,
-		lt: (data, value) => data < value,
-		gte: (data, value) => data >= value,
-		lte: (data, value) => data <= value,
+		gt: (data, value) => typeof data === typeof value && data > value,
+		lt: (data, value) => typeof data === typeof value && data < value,
+		gte: (data, value) => typeof data === typeof value && data >= value,
+		lte: (data, value) => typeof data === typeof value && data <= value,
 		in: (data, value) => value.includes(data),
 		nin: (data, value) => !value.includes(data),
 		type: (data, value) => typeof data === value,

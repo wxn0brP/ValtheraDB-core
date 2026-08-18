@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.0-alpha.0...v0.12.0-alpha.1) (2026-08-18)
+
+
+### Features
+
+* e2e tests for memory adapter ([0272925](https://github.com/wxn0brP/ValtheraDB-core/commit/02729252f7b604bf1347c6a04fa057d3f789fb74))
+
+
+### Bug Fixes
+
+* findUtil early return ([7d3b4f6](https://github.com/wxn0brP/ValtheraDB-core/commit/7d3b4f69574e021b4a29595ffc2fa6972f87b1c3))
+* gt/lt/gte/lte string + number = error ([359768a](https://github.com/wxn0brP/ValtheraDB-core/commit/359768a007b0e9d9088ec826c4b5822e35535849))
+
 ## [0.12.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.11.6...v0.12.0-alpha.0) (2026-08-09)
 
 

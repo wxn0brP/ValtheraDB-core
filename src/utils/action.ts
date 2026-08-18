@@ -85,6 +85,8 @@ export async function findUtil(
 
 	if (!needsAllData) return datas;
 
+	if (datas.length === 0) return [];
+
 	const hasAggregations = min || max || avg || sum || groupBy || count;
 	if (hasAggregations) {
 		const groups: Map<string, Data[]> = new Map();
@@ -130,22 +132,22 @@ export async function findUtil(
 
 			for (const [outKey, srcField] of Object.entries(min ?? {})) {
 				const nums = groupItems
-					.map(d => Number((d as any)[srcField]))
-					.filter(n => !Number.isNaN(n));
+					.map(d => (d as any)[srcField])
+					.filter((v): v is number => typeof v === "number");
 				result[outKey] = nums.length ? Math.min(...nums) : null;
 			}
 
 			for (const [outKey, srcField] of Object.entries(max ?? {})) {
 				const nums = groupItems
-					.map(d => Number((d as any)[srcField]))
-					.filter(n => !Number.isNaN(n));
+					.map(d => (d as any)[srcField])
+					.filter((v): v is number => typeof v === "number");
 				result[outKey] = nums.length ? Math.max(...nums) : null;
 			}
 
 			for (const [outKey, srcField] of Object.entries(avg ?? {})) {
 				const nums = groupItems
-					.map(d => Number((d as any)[srcField]))
-					.filter(n => !Number.isNaN(n));
+					.map(d => (d as any)[srcField])
+					.filter((v): v is number => typeof v === "number");
 				result[outKey] = nums.length
 					? nums.reduce((a, b) => a + b, 0) / nums.length
 					: null;
@@ -153,8 +155,8 @@ export async function findUtil(
 
 			for (const [outKey, srcField] of Object.entries(sum ?? {})) {
 				const nums = groupItems
-					.map(d => Number((d as any)[srcField]))
-					.filter(n => !Number.isNaN(n));
+					.map(d => (d as any)[srcField])
+					.filter((v): v is number => typeof v === "number");
 				result[outKey] = nums.length ? nums.reduce((a, b) => a + b, 0) : null;
 			}
 

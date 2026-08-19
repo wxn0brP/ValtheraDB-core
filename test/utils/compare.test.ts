@@ -52,30 +52,56 @@ describe("compareSafe", () => {
 		expect(compareSafe(true, true)).toBe(0);
 	});
 
-	test("7. should return 0 when comparing different types", () => {
-		expect(compareSafe(1, "string")).toBe(0);
-		expect(compareSafe("string", 1)).toBe(0);
-		expect(compareSafe(1, false)).toBe(0);
-		expect(compareSafe(true, "string")).toBe(0);
-		expect(compareSafe([], {})).toBe(0); // objects/arrays fallback to 0
-	});
-
-	test("8. should handle object comparisons (fallback)", () => {
-		const obj1 = { a: 1 };
-		const obj2 = { b: 2 };
-		expect(compareSafe(obj1, obj2)).toBe(0); // objects fallback to 0
-	});
-
-	test("9. should handle arrays (fallback)", () => {
-		const arr1 = [1, 2, 3];
-		const arr2 = [4, 5, 6];
-		expect(compareSafe(arr1, arr2)).toBe(0); // arrays fallback to 0
-	});
-
-	test("10. should handle complex comparisons", () => {
-		// Mixed type comparisons should return 0
-		expect(compareSafe(42, {})).toBe(0);
-		expect(compareSafe([], "string")).toBe(0);
-		expect(compareSafe(new Date(), false)).toBe(0);
+	test.each([
+		{
+			a: 1,
+			b: "string",
+		},
+		{
+			a: "string",
+			b: 1,
+		},
+		{
+			a: 1,
+			b: false,
+		},
+		{
+			a: true,
+			b: "string",
+		},
+		{
+			a: [],
+			b: {},
+		},
+		{
+			a: {
+				a: 1,
+			},
+			b: {
+				b: 2,
+			},
+		},
+		{
+			a: [
+				1,
+				2,
+				3,
+			],
+			b: [
+				4,
+				5,
+				6,
+			],
+		},
+		{
+			a: 42,
+			b: {},
+		},
+		{
+			a: [],
+			b: "string",
+		},
+	])("should return 0 for different/mixed types ($a vs $b)", ({ a, b }) => {
+		expect(compareSafe(a, b)).toBe(0);
 	});
 });

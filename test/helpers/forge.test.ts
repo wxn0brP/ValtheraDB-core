@@ -26,8 +26,14 @@ describe("forgeTypedValthera", () => {
 	test("3. should create and cache collections", () => {
 		const db = createMemoryValthera();
 		const typedForgedDb = forgeTypedValthera<{
-			users: { _id: string; name: string };
-			posts: { _id: string; title: string };
+			users: {
+				_id: string;
+				name: string;
+			};
+			posts: {
+				_id: string;
+				title: string;
+			};
 		}>(db);
 
 		const usersCollection1 = typedForgedDb.users;

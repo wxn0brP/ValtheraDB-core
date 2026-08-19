@@ -5,7 +5,12 @@ import { describe, expect, test } from "bun:test";
 describe("addId", () => {
 	test("1. should add a generated ID when id_gen is true and data has no _id", async () => {
 		const db = new MemoryAction();
-		const query: any = { collection: "test", data: { name: "test" } };
+		const query: any = {
+			collection: "test",
+			data: {
+				name: "test",
+			},
+		};
 
 		await addId(query, db, true);
 
@@ -17,7 +22,9 @@ describe("addId", () => {
 		const db = new MemoryAction();
 		const query: any = {
 			collection: "test",
-			data: { name: "test" },
+			data: {
+				name: "test",
+			},
 			id_gen: false,
 		};
 
@@ -30,7 +37,10 @@ describe("addId", () => {
 		const db = new MemoryAction();
 		const query = {
 			collection: "test",
-			data: { _id: "existing-id", name: "test" },
+			data: {
+				_id: "existing-id",
+				name: "test",
+			},
 		};
 
 		await addId(query, db, true);
@@ -42,7 +52,12 @@ describe("addId", () => {
 		const db = new MemoryAction();
 		db.numberId = true;
 
-		const query: any = { collection: "test", data: { name: "test" } };
+		const query: any = {
+			collection: "test",
+			data: {
+				name: "test",
+			},
+		};
 
 		await addId(query, db, true);
 
@@ -53,8 +68,18 @@ describe("addId", () => {
 		const db = new MemoryAction();
 		db.numberId = true;
 
-		const query1: any = { collection: "test", data: { name: "test1" } };
-		const query2: any = { collection: "test", data: { name: "test2" } };
+		const query1: any = {
+			collection: "test",
+			data: {
+				name: "test1",
+			},
+		};
+		const query2: any = {
+			collection: "test",
+			data: {
+				name: "test2",
+			},
+		};
 
 		await addId(query1, db, true);
 		await addId(query2, db, true);

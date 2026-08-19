@@ -11,10 +11,21 @@ describe("Executor", () => {
 
 	test("2. should add single VQuery operation to the queue", async () => {
 		const executor = new Executor();
-		const mockAdd = async (query: VQuery) => ({ _id: "1", ...query.data });
-		const query: VQuery = { collection: "users", data: { name: "John" } };
+		const mockAdd = async (query: VQuery) => ({
+			_id: "1",
+			...query.data,
+		});
+		const query: VQuery = {
+			collection: "users",
+			data: {
+				name: "John",
+			},
+		};
 		const result = await executor.addOp(mockAdd, query);
-		expect(result).toEqual({ _id: "1", name: "John" });
+		expect(result).toEqual({
+			_id: "1",
+			name: "John",
+		});
 	});
 
 	test("3. should execute VQuery operations sequentially", async () => {
@@ -22,18 +33,42 @@ describe("Executor", () => {
 		const order: string[] = [];
 		const mockAdd = async (query: VQuery) => {
 			order.push(`add-${query.data?.name}`);
-			return { _id: "1", ...query.data };
+			return {
+				_id: "1",
+				...query.data,
+			};
 		};
 		const mockFind = async (query: VQuery) => {
 			order.push(`find-${query.collection}`);
-			return [{ _id: "1", name: "John" }];
+			return [
+				{
+					_id: "1",
+					name: "John",
+				},
+			];
 		};
 		await Promise.all([
-			executor.addOp(mockAdd, { collection: "users", data: { name: "Alice" } }),
-			executor.addOp(mockFind, { collection: "users" }),
-			executor.addOp(mockAdd, { collection: "users", data: { name: "Bob" } }),
+			executor.addOp(mockAdd, {
+				collection: "users",
+				data: {
+					name: "Alice",
+				},
+			}),
+			executor.addOp(mockFind, {
+				collection: "users",
+			}),
+			executor.addOp(mockAdd, {
+				collection: "users",
+				data: {
+					name: "Bob",
+				},
+			}),
 		]);
-		expect(order).toEqual(["add-Alice", "find-users", "add-Bob"]);
+		expect(order).toEqual([
+			"add-Alice",
+			"find-users",
+			"add-Bob",
+		]);
 	});
 });
 
@@ -45,19 +80,38 @@ describe("SmartExecutor", () => {
 
 	test("2. should create separate executors for different collections", async () => {
 		const executor = new SmartExecutor();
-		const mockAdd = async (query: VQuery) => ({ _id: "1", ...query.data });
+		const mockAdd = async (query: VQuery) => ({
+			_id: "1",
+			...query.data,
+		});
 		const result1 = await executor.addOp(
 			mockAdd,
-			{ collection: "users", data: { name: "John" } },
+			{
+				collection: "users",
+				data: {
+					name: "John",
+				},
+			},
 			"users",
 		);
 		const result2 = await executor.addOp(
 			mockAdd,
-			{ collection: "posts", data: { title: "Hello" } },
+			{
+				collection: "posts",
+				data: {
+					title: "Hello",
+				},
+			},
 			"posts",
 		);
-		expect(result1).toEqual({ _id: "1", name: "John" });
-		expect(result2).toEqual({ _id: "1", title: "Hello" });
+		expect(result1).toEqual({
+			_id: "1",
+			name: "John",
+		});
+		expect(result2).toEqual({
+			_id: "1",
+			title: "Hello",
+		});
 		expect(executor.collections.size).toBe(2);
 	});
 
@@ -66,35 +120,64 @@ describe("SmartExecutor", () => {
 		const order: string[] = [];
 		const mockAdd = async (query: VQuery) => {
 			order.push(`add-${query.data?.name}`);
-			return { _id: "1", ...query.data };
+			return {
+				_id: "1",
+				...query.data,
+			};
 		};
 		const mockUpdate = async (query: VQuery) => {
 			order.push(`update-${query.collection}`);
-			// @ts-expect-error
-			return [{ _id: "1", ...query.updater?.({ name: "Updated" }) }];
+			const updaterFn = query.updater as ((data: any) => any) | undefined;
+			return [
+				{
+					_id: "1",
+					...updaterFn?.({
+						name: "Updated",
+					}),
+				},
+			];
 		};
 		await Promise.all([
 			executor.addOp(
 				mockAdd,
-				{ collection: "users", data: { name: "Alice" } },
+				{
+					collection: "users",
+					data: {
+						name: "Alice",
+					},
+				},
 				"users",
 			),
 			executor.addOp(
 				mockUpdate,
 				{
 					collection: "users",
-					search: { name: "Alice" },
-					updater: (d: any) => ({ ...d, name: "Bob" }),
+					search: {
+						name: "Alice",
+					},
+					updater: (d: any) => ({
+						...d,
+						name: "Bob",
+					}),
 				},
 				"users",
 			),
 			executor.addOp(
 				mockAdd,
-				{ collection: "users", data: { name: "Charlie" } },
+				{
+					collection: "users",
+					data: {
+						name: "Charlie",
+					},
+				},
 				"users",
 			),
 		]);
-		expect(order).toEqual(["add-Alice", "update-users", "add-Charlie"]);
+		expect(order).toEqual([
+			"add-Alice",
+			"update-users",
+			"add-Charlie",
+		]);
 	});
 
 	test("4. should allow parallel operations on different collections", async () => {
@@ -102,17 +185,30 @@ describe("SmartExecutor", () => {
 		const order: string[] = [];
 		const mockAdd = async (query: VQuery) => {
 			order.push(`add-${query.collection}`);
-			return { _id: "1", ...query.data };
+			return {
+				_id: "1",
+				...query.data,
+			};
 		};
 		await Promise.all([
 			executor.addOp(
 				mockAdd,
-				{ collection: "users", data: { name: "John" } },
+				{
+					collection: "users",
+					data: {
+						name: "John",
+					},
+				},
 				"users",
 			),
 			executor.addOp(
 				mockAdd,
-				{ collection: "posts", data: { title: "Post" } },
+				{
+					collection: "posts",
+					data: {
+						title: "Post",
+					},
+				},
 				"posts",
 			),
 		]);
@@ -124,7 +220,57 @@ describe("SmartExecutor", () => {
 		const executor = new SmartExecutor();
 		const mockFind = async (_query: VQuery) => [];
 		// @ts-expect-error
-		await executor.addOp(mockFind, { collection: "test" });
+		await executor.addOp(mockFind, {
+			collection: "test",
+		});
 		expect(executor.collections.has("__default__")).toBe(true);
+	});
+
+	test("6. should cleanup collection after ttl when not executing", async () => {
+		const executor = new SmartExecutor(50);
+		const mockAdd = async (query: VQuery) => ({
+			_id: "1",
+			...query.data,
+		});
+		await executor.addOp(
+			mockAdd,
+			{
+				collection: "users",
+				data: {
+					name: "John",
+				},
+			},
+			"users",
+		);
+		expect(executor.collections.has("users")).toBe(true);
+		await new Promise(resolve => setTimeout(resolve, 100));
+		expect(executor.collections.has("users")).toBe(false);
+	});
+
+	test("7. should reschedule cleanup when executor is still executing", async () => {
+		const executor = new SmartExecutor(50);
+		let resolveOp: () => void;
+		const slowOp = new Promise<void>(resolve => {
+			resolveOp = resolve;
+		});
+		const mockSlow = async (_query: VQuery) => {
+			await slowOp;
+			return {
+				_id: "1",
+			};
+		};
+		const opPromise = executor.addOp(
+			mockSlow,
+			{
+				collection: "users",
+			},
+			"users",
+		);
+		await new Promise(resolve => setTimeout(resolve, 60));
+		expect(executor.collections.has("users")).toBe(true);
+		resolveOp!();
+		await opPromise;
+		await new Promise(resolve => setTimeout(resolve, 100));
+		expect(executor.collections.has("users")).toBe(false);
 	});
 });

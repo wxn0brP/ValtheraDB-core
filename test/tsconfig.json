@@ -4,13 +4,19 @@
 		"target": "ES2022",
 		"moduleResolution": "bundler",
 		"paths": {
-			"#*": ["../src/*"]
+			"#*": [
+				"../src/*"
+			]
 		},
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"noEmit": true,
 		"strict": false,
-		"types": ["bun-types"]
+		"types": [
+			"bun-types"
+		]
 	},
-	"include": ["."]
+	"include": [
+		"."
+	]
 }

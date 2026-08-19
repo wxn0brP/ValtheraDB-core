@@ -15,7 +15,10 @@ describe("Collection", () => {
 		const db = createMemoryValthera();
 		const usersCollection = new Collection(db, "users");
 
-		const userData = { name: "John Doe", email: "john@example.com" };
+		const userData = {
+			name: "John Doe",
+			email: "john@example.com",
+		};
 		const result = await usersCollection.add(userData);
 
 		expect(result).toHaveProperty("_id");
@@ -26,13 +29,23 @@ describe("Collection", () => {
 	test("3. should find data in the database", async () => {
 		const db = createMemoryValthera({
 			users: [
-				{ _id: "1", name: "John", email: "john@example.com" },
-				{ _id: "2", name: "Jane", email: "jane@example.com" },
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					email: "jane@example.com",
+				},
 			],
 		});
 		const usersCollection = new Collection(db, "users");
 
-		const results = await usersCollection.find({ name: "John" });
+		const results = await usersCollection.find({
+			name: "John",
+		});
 
 		expect(results).toHaveLength(1);
 		expect(results[0].name).toBe("John");
@@ -41,13 +54,23 @@ describe("Collection", () => {
 	test("4. should find one data entry in the database", async () => {
 		const db = createMemoryValthera({
 			users: [
-				{ _id: "1", name: "John", email: "john@example.com" },
-				{ _id: "2", name: "Jane", email: "jane@example.com" },
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					email: "jane@example.com",
+				},
 			],
 		});
 		const usersCollection = new Collection(db, "users");
 
-		const result = await usersCollection.findOne({ name: "Jane" });
+		const result = await usersCollection.findOne({
+			name: "Jane",
+		});
 
 		expect(result).toBeDefined();
 		expect(result.name).toBe("Jane");
@@ -55,13 +78,26 @@ describe("Collection", () => {
 
 	test("5. should update data in the database", async () => {
 		const db = createMemoryValthera({
-			users: [{ _id: "1", name: "John", email: "john@example.com", age: 25 }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+					age: 25,
+				},
+			],
 		});
 		const usersCollection = new Collection(db, "users");
 
 		const results = await usersCollection.update(
-			{ _id: "1" },
-			{ $set: { age: 30 } },
+			{
+				_id: "1",
+			},
+			{
+				$set: {
+					age: 30,
+				},
+			},
 		);
 
 		expect(results).toHaveLength(1);
@@ -70,13 +106,26 @@ describe("Collection", () => {
 
 	test("6. should update one data entry in the database", async () => {
 		const db = createMemoryValthera({
-			users: [{ _id: "1", name: "John", email: "john@example.com", age: 25 }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+					age: 25,
+				},
+			],
 		});
 		const usersCollection = new Collection(db, "users");
 
 		const result = await usersCollection.updateOne(
-			{ _id: "1" },
-			{ $set: { age: 30 } },
+			{
+				_id: "1",
+			},
+			{
+				$set: {
+					age: 30,
+				},
+			},
 		);
 
 		expect(result).toBeDefined();
@@ -86,13 +135,23 @@ describe("Collection", () => {
 	test("7. should remove data from the database", async () => {
 		const db = createMemoryValthera({
 			users: [
-				{ _id: "1", name: "John", email: "john@example.com" },
-				{ _id: "2", name: "Jane", email: "jane@example.com" },
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					email: "jane@example.com",
+				},
 			],
 		});
 		const usersCollection = new Collection(db, "users");
 
-		const results = await usersCollection.remove({ name: "John" });
+		const results = await usersCollection.remove({
+			name: "John",
+		});
 
 		expect(results).toHaveLength(1);
 		expect(results[0].name).toBe("John");
@@ -106,13 +165,23 @@ describe("Collection", () => {
 	test("8. should remove one data entry from the database", async () => {
 		const db = createMemoryValthera({
 			users: [
-				{ _id: "1", name: "John", email: "john@example.com" },
-				{ _id: "2", name: "Jane", email: "jane@example.com" },
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					email: "jane@example.com",
+				},
 			],
 		});
 		const usersCollection = new Collection(db, "users");
 
-		const result = await usersCollection.removeOne({ name: "John" });
+		const result = await usersCollection.removeOne({
+			name: "John",
+		});
 
 		expect(result).toBeDefined();
 		expect(result.name).toBe("John");
@@ -125,28 +194,55 @@ describe("Collection", () => {
 
 	test("9. should update one or add data to the database", async () => {
 		const db = createMemoryValthera({
-			users: [{ _id: "1", name: "John", email: "john@example.com", age: 25 }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+					age: 25,
+				},
+			],
 		});
 		const usersCollection = new Collection(db, "users");
 
 		// Update existing
 		const updateResult = await usersCollection.updateOneOrAdd(
-			{ name: "John" },
-			{ $set: { age: 30 } },
+			{
+				name: "John",
+			},
+			{
+				$set: {
+					age: 30,
+				},
+			},
 		);
 		expect(updateResult).toBeDefined();
 		// The updateResult might not directly reflect the update, so we'll check the database
-		const updatedUser = await usersCollection.findOne({ name: "John" });
+		const updatedUser = await usersCollection.findOne({
+			name: "John",
+		});
 		expect(updatedUser.age).toBe(30);
 
 		// Add new
 		const addResult = await usersCollection.updateOneOrAdd(
-			{ name: "Bob" },
-			{ $set: { age: 25 } },
-			{ add_arg: { email: "bob@example.com" } },
+			{
+				name: "Bob",
+			},
+			{
+				$set: {
+					age: 25,
+				},
+			},
+			{
+				add_arg: {
+					email: "bob@example.com",
+				},
+			},
 		);
 		expect(addResult).toBeDefined();
-		const newUser = await usersCollection.findOne({ name: "Bob" });
+		const newUser = await usersCollection.findOne({
+			name: "Bob",
+		});
 		expect(newUser.name).toBe("Bob");
 		expect(newUser.age).toBe(25);
 		expect(newUser.email).toBe("bob@example.com");
@@ -155,29 +251,48 @@ describe("Collection", () => {
 	test("10. should toggle one data entry in the database", async () => {
 		// First, test toggling an existing record (which should remove it)
 		const db = createMemoryValthera({
-			users: [{ _id: "1", name: "John", email: "john@example.com" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+			],
 		});
 		const usersCollection = new Collection(db, "users");
 
 		// Toggle to remove the record
-		const result1 = await usersCollection.toggleOne({ name: "John" }, {});
+		const result1 = await usersCollection.toggleOne(
+			{
+				name: "John",
+			},
+			{},
+		);
 		// The toggleOne method returns the result of removeOne (the removed record or null)
 		expect(result1).toBeDefined(); // removeOne succeeded and returned the record
 
 		// Verify the record was removed
-		const userAfterRemove = await usersCollection.findOne({ name: "John" });
+		const userAfterRemove = await usersCollection.findOne({
+			name: "John",
+		});
 		expect(userAfterRemove).toBeNull();
 
 		// Toggle again to add the record back
 		const result2 = await usersCollection.toggleOne(
-			{ name: "John" },
-			{ active: true },
+			{
+				name: "John",
+			},
+			{
+				active: true,
+			},
 		);
 		// When no record is found to remove, toggleOne adds a new record and returns it
 		expect(result2).toBeDefined(); // add succeeded and returned the new record
 
 		// Verify the record was added back
-		const userAfterAdd = await usersCollection.findOne({ name: "John" });
+		const userAfterAdd = await usersCollection.findOne({
+			name: "John",
+		});
 		expect(userAfterAdd).toBeDefined();
 		expect(userAfterAdd.name).toBe("John");
 		expect(userAfterAdd.active).toBe(true);

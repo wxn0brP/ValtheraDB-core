@@ -1,31 +1,33 @@
-import { compareIds, convertIdToUnix, sortByIds } from "#utils/id";
+import {
+	compareIds,
+	convertIdToUnix,
+	sortByIds,
+	sortByIdsRef,
+} from "#utils/id";
 import { describe, expect, test } from "bun:test";
 
 describe("convertIdToUnix", () => {
-	test("1. should convert base36 timestamp to unix timestamp", () => {
-		// Create a simple ID with known timestamp in base36
-		const timestamp = 1672531200; // Jan 1, 2023
-		const base36Time = timestamp.toString(36);
-		const id = `${base36Time}-abc123`;
-
-		expect(convertIdToUnix(id)).toBe(timestamp);
-	});
-
-	test("2. should handle IDs with multiple parts separated by hyphens", () => {
-		const timestamp = 1680000000;
-		const base36Time = timestamp.toString(36);
-		const id = `${base36Time}-part1-part2`;
-
-		expect(convertIdToUnix(id)).toBe(timestamp);
-	});
-
-	test("3. should handle minimal valid ID format", () => {
-		const timestamp = 12345;
-		const base36Time = timestamp.toString(36);
-		const id = `${base36Time}-x`;
-
-		expect(convertIdToUnix(id)).toBe(timestamp);
-	});
+	test.each([
+		{
+			timestamp: 1672531200,
+			suffix: "abc123",
+		},
+		{
+			timestamp: 1680000000,
+			suffix: "part1-part2",
+		},
+		{
+			timestamp: 12345,
+			suffix: "x",
+		},
+	])(
+		"should convert base36 timestamp to unix timestamp ($timestamp)",
+		({ timestamp, suffix }) => {
+			const base36Time = timestamp.toString(36);
+			const id = `${base36Time}-${suffix}`;
+			expect(convertIdToUnix(id)).toBe(timestamp);
+		},
+	);
 });
 
 describe("sortByIds", () => {
@@ -35,16 +37,34 @@ describe("sortByIds", () => {
 		const id3 = "1gc1301k-3"; // an earlier timestamp
 
 		const objects = [
-			{ _id: id2, name: "second" },
-			{ _id: id3, name: "first" },
-			{ _id: id1, name: "middle" },
+			{
+				_id: id2,
+				name: "second",
+			},
+			{
+				_id: id3,
+				name: "first",
+			},
+			{
+				_id: id1,
+				name: "middle",
+			},
 		];
 
 		const sorted = sortByIds(objects);
 		expect(sorted).toEqual([
-			{ _id: id3, name: "first" },
-			{ _id: id1, name: "middle" },
-			{ _id: id2, name: "second" },
+			{
+				_id: id3,
+				name: "first",
+			},
+			{
+				_id: id1,
+				name: "middle",
+			},
+			{
+				_id: id2,
+				name: "second",
+			},
 		]);
 	});
 
@@ -52,11 +72,19 @@ describe("sortByIds", () => {
 		const id1 = "1gc1302w-1";
 		const id2 = "1gc1303x-2";
 		const originalArray = [
-			{ _id: id2, name: "second" },
-			{ _id: id1, name: "first" },
+			{
+				_id: id2,
+				name: "second",
+			},
+			{
+				_id: id1,
+				name: "first",
+			},
 		];
 
-		const originalCopy = [...originalArray];
+		const originalCopy = [
+			...originalArray,
+		];
 		const sorted = sortByIds(originalArray);
 
 		expect(originalArray).toEqual(originalCopy); // original unchanged
@@ -65,10 +93,20 @@ describe("sortByIds", () => {
 
 	test("3. should handle single element array", () => {
 		const id = "1gc1302w-1";
-		const objects = [{ _id: id, name: "single" }];
+		const objects = [
+			{
+				_id: id,
+				name: "single",
+			},
+		];
 
 		const sorted = sortByIds(objects);
-		expect(sorted).toEqual([{ _id: id, name: "single" }]);
+		expect(sorted).toEqual([
+			{
+				_id: id,
+				name: "single",
+			},
+		]);
 	});
 
 	test("4. should handle empty array", () => {
@@ -105,5 +143,82 @@ describe("compareIds", () => {
 		expect(compareIds(1672531200, "1gc1302w-1")).toBeLessThan(0); // assuming string ID represents a later time
 		expect(compareIds("1gc1302w-1", 1672531200)).toBeGreaterThan(0);
 		expect(compareIds(1672531200, "1gc1302w-later")).toBeLessThan(0); // if string represents later time
+	});
+});
+
+describe("sortByIdsRef", () => {
+	test("1. should sort objects in place by their _id property", () => {
+		const id1 = "1gc1302w-1";
+		const id2 = "1gc1303x-2";
+		const id3 = "1gc1301k-3";
+
+		const objects = [
+			{
+				_id: id2,
+				name: "second",
+			},
+			{
+				_id: id3,
+				name: "first",
+			},
+			{
+				_id: id1,
+				name: "middle",
+			},
+		];
+
+		sortByIdsRef(objects);
+		expect(objects).toEqual([
+			{
+				_id: id3,
+				name: "first",
+			},
+			{
+				_id: id1,
+				name: "middle",
+			},
+			{
+				_id: id2,
+				name: "second",
+			},
+		]);
+	});
+
+	test("2. should mutate the original array", () => {
+		const id1 = "1gc1302w-1";
+		const id2 = "1gc1303x-2";
+		const objects = [
+			{
+				_id: id2,
+				name: "second",
+			},
+			{
+				_id: id1,
+				name: "first",
+			},
+		];
+
+		const originalRef = objects;
+		sortByIdsRef(objects);
+		expect(objects).toBe(originalRef);
+		expect(objects[0]._id).toBe(id1);
+	});
+
+	test("3. should sort by custom key", () => {
+		const id1 = "1gc1302w-1";
+		const id2 = "1gc1303x-2";
+		const objects = [
+			{
+				customId: id2,
+				name: "second",
+			},
+			{
+				customId: id1,
+				name: "first",
+			},
+		];
+
+		sortByIdsRef(objects, "customId");
+		expect(objects[0].customId).toBe(id1);
 	});
 });

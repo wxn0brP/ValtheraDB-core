@@ -21,6 +21,7 @@
     "devDependencies": {
         "@types/bun": "*",
         "@types/node": "*",
+        "fast-check": "^4",
         "tsc-alias": "^1",
         "typescript": "^7"
     },

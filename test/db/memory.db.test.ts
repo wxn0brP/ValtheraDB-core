@@ -6,16 +6,30 @@ describe("createMemoryValthera - db interface", () => {
 	test("19. should update a single document via db.updateOne", async () => {
 		const initialData = {
 			users: [
-				{ _id: "1", name: "John", email: "john@example.com", age: 25 },
-				{ _id: "2", name: "Jane", email: "jane@example.com", age: 30 },
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+					age: 25,
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					email: "jane@example.com",
+					age: 30,
+				},
 			],
 		};
 		const db = createMemoryValthera(initialData);
 
 		const result: Data = await db.updateOne({
 			collection: "users",
-			search: { name: "John" },
-			updater: { age: 35 },
+			search: {
+				name: "John",
+			},
+			updater: {
+				age: 35,
+			},
 		});
 
 		expect(result).toBeDefined();
@@ -25,14 +39,24 @@ describe("createMemoryValthera - db interface", () => {
 
 	test("20. should return null from db.updateOne when no document matches", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John", email: "john@example.com" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 
 		const result = await db.updateOne({
 			collection: "users",
-			search: { name: "NonExistent" },
-			updater: { age: 30 },
+			search: {
+				name: "NonExistent",
+			},
+			updater: {
+				age: 30,
+			},
 		});
 
 		expect(result).toBeNull();
@@ -41,34 +65,59 @@ describe("createMemoryValthera - db interface", () => {
 	test("21. should remove a single document via db.removeOne", async () => {
 		const initialData = {
 			users: [
-				{ _id: "1", name: "John", email: "john@example.com" },
-				{ _id: "2", name: "Jane", email: "jane@example.com" },
-				{ _id: "3", name: "Bob", email: "bob@example.com" },
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					email: "jane@example.com",
+				},
+				{
+					_id: "3",
+					name: "Bob",
+					email: "bob@example.com",
+				},
 			],
 		};
 		const db = createMemoryValthera(initialData);
 
 		const result = await db.removeOne({
 			collection: "users",
-			search: { name: "Jane" },
+			search: {
+				name: "Jane",
+			},
 		});
 
 		expect(result).toBeDefined();
 		expect(result?.name).toBe("Jane");
 
-		const allUsers = await db.find({ collection: "users", search: {} });
+		const allUsers = await db.find({
+			collection: "users",
+			search: {},
+		});
 		expect(allUsers).toHaveLength(2);
 	});
 
 	test("22. should return null from db.removeOne when no document matches", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John", email: "john@example.com" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 
 		const result = await db.removeOne({
 			collection: "users",
-			search: { name: "NonExistent" },
+			search: {
+				name: "NonExistent",
+			},
 		});
 
 		expect(result).toBeNull();
@@ -76,19 +125,34 @@ describe("createMemoryValthera - db interface", () => {
 
 	test("23. should update existing document via db.updateOneOrAdd", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John", email: "john@example.com", age: 25 }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+					age: 25,
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 
 		const result = await db.updateOneOrAdd({
 			collection: "users",
-			search: { name: "John" },
-			updater: { age: 30 },
+			search: {
+				name: "John",
+			},
+			updater: {
+				age: 30,
+			},
 		});
 
 		expect(result.type).toBe("updated");
 		expect(result.data).toEqual(
-			expect.objectContaining({ _id: "1", name: "John", age: 30 }),
+			expect.objectContaining({
+				_id: "1",
+				name: "John",
+				age: 30,
+			}),
 		);
 	});
 
@@ -101,32 +165,50 @@ describe("createMemoryValthera - db interface", () => {
 			_id: string;
 		}>({
 			collection: "users",
-			search: { name: "John" },
-			updater: { age: 25 },
+			search: {
+				name: "John",
+			},
+			updater: {
+				age: 25,
+			},
 		});
 
 		expect(result.type).toBe("added");
 		expect(result.data).toEqual(
-			expect.objectContaining({ name: "John", age: 25 }),
+			expect.objectContaining({
+				name: "John",
+				age: 25,
+			}),
 		);
 		expect(result.data._id).toBeDefined();
 	});
 
 	test("25. should remove existing document via db.toggleOne", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John", email: "john@example.com" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					email: "john@example.com",
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 
 		const result = await db.toggleOne({
 			collection: "users",
-			search: { name: "John" },
+			search: {
+				name: "John",
+			},
 			data: {},
 		});
 
 		expect(result.type).toBe("removed");
 		expect(result.data).toEqual(
-			expect.objectContaining({ _id: "1", name: "John" }),
+			expect.objectContaining({
+				_id: "1",
+				name: "John",
+			}),
 		);
 	});
 
@@ -135,20 +217,37 @@ describe("createMemoryValthera - db interface", () => {
 
 		const result = await db.toggleOne({
 			collection: "users",
-			search: { name: "John" },
-			data: { email: "john@example.com" },
+			search: {
+				name: "John",
+			},
+			data: {
+				email: "john@example.com",
+			},
 		});
 
 		expect(result.type).toBe("added");
 		expect(result.data).toEqual(
-			expect.objectContaining({ name: "John", email: "john@example.com" }),
+			expect.objectContaining({
+				name: "John",
+				email: "john@example.com",
+			}),
 		);
 	});
 
 	test("27. should db.getCollections return collection names", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John" }],
-			posts: [{ _id: "1", title: "Post" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+				},
+			],
+			posts: [
+				{
+					_id: "1",
+					title: "Post",
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 
@@ -172,7 +271,12 @@ describe("createMemoryValthera - db interface", () => {
 
 	test("29. should issetCollection check if collection exists", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 
@@ -187,8 +291,18 @@ describe("createMemoryValthera - db interface", () => {
 
 	test("30. should removeCollection remove a collection and return boolean", async () => {
 		const initialData = {
-			users: [{ _id: "1", name: "John" }],
-			posts: [{ _id: "1", title: "Post" }],
+			users: [
+				{
+					_id: "1",
+					name: "John",
+				},
+			],
+			posts: [
+				{
+					_id: "1",
+					title: "Post",
+				},
+			],
 		};
 		const db = createMemoryValthera(initialData);
 

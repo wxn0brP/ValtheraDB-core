@@ -20,12 +20,27 @@ describe("pickByPath", () => {
 					theme: "dark",
 				},
 			},
-			posts: [{ title: "Post 1" }, { title: "Post 2" }],
+			posts: [
+				{
+					title: "Post 1",
+				},
+				{
+					title: "Post 2",
+				},
+			],
 		};
 
 		const paths = [
-			["user", "profile", "name"],
-			["user", "settings", "theme"],
+			[
+				"user",
+				"profile",
+				"name",
+			],
+			[
+				"user",
+				"settings",
+				"theme",
+			],
 		];
 		const result = pickByPath(obj, paths);
 
@@ -42,11 +57,24 @@ describe("pickByPath", () => {
 	});
 
 	test("2. should handle non-existent paths gracefully", () => {
-		const obj = { user: { name: "John" } };
+		const obj = {
+			user: {
+				name: "John",
+			},
+		};
 		const paths = [
-			["user", "name"],
-			["user", "email"],
-			["admin", "role"],
+			[
+				"user",
+				"name",
+			],
+			[
+				"user",
+				"email",
+			],
+			[
+				"admin",
+				"role",
+			],
 		];
 		const result = pickByPath(obj, paths);
 
@@ -57,15 +85,33 @@ describe("pickByPath", () => {
 	});
 
 	test("3. should return empty object for null/undefined input", () => {
-		expect(pickByPath(null, [["key"]])).toEqual({});
-		expect(pickByPath(undefined, [["key"]])).toEqual({});
+		expect(
+			pickByPath(null, [
+				[
+					"key",
+				],
+			]),
+		).toEqual({});
+		expect(
+			pickByPath(undefined, [
+				[
+					"key",
+				],
+			]),
+		).toEqual({});
 	});
 });
 
 describe("autoSelect", () => {
 	test("1. should return undefined select when relation has no select", () => {
 		const [select, shouldDelete] = autoSelect(
-			{ pk: "_id", path: ["db", "collection"] } as any,
+			{
+				pk: "_id",
+				path: [
+					"db",
+					"collection",
+				],
+			} as any,
 			"field",
 		);
 		expect(select).toBeUndefined();
@@ -74,34 +120,60 @@ describe("autoSelect", () => {
 
 	test("2. should return copy of select array when relation has select", () => {
 		const rel = {
-			select: ["field1", "field2"],
-			path: ["db", "collection"],
+			select: [
+				"field1",
+				"field2",
+			],
+			path: [
+				"db",
+				"collection",
+			],
 		} as any;
 		const [select, shouldDelete] = autoSelect(rel, "field3");
 
-		expect(select).toEqual(["field1", "field2", "field3"]);
+		expect(select).toEqual([
+			"field1",
+			"field2",
+			"field3",
+		]);
 		expect(shouldDelete).toBe(true);
 	});
 
 	test("3. should not add field to select if it already exists", () => {
 		const rel = {
-			select: ["field1", "field2"],
-			path: ["db", "collection"],
+			select: [
+				"field1",
+				"field2",
+			],
+			path: [
+				"db",
+				"collection",
+			],
 		} as any;
 		const [select, shouldDelete] = autoSelect(rel, "field1");
 
-		expect(select).toEqual(["field1", "field2"]);
+		expect(select).toEqual([
+			"field1",
+			"field2",
+		]);
 		expect(shouldDelete).toBe(false);
 	});
 });
 
 describe("convertSearchObjToSearchArray", () => {
 	test("1. should convert simple object to path arrays", () => {
-		const obj = { name: "John", age: 30 };
+		const obj = {
+			name: "John",
+			age: 30,
+		};
 		const result = convertSearchObjToSearchArray(obj);
 
-		expect(result).toContainEqual(["name"]);
-		expect(result).toContainEqual(["age"]);
+		expect(result).toContainEqual([
+			"name",
+		]);
+		expect(result).toContainEqual([
+			"age",
+		]);
 		expect(result).toHaveLength(2);
 	});
 
@@ -121,9 +193,20 @@ describe("convertSearchObjToSearchArray", () => {
 		};
 		const result = convertSearchObjToSearchArray(obj);
 
-		expect(result).toContainEqual(["user", "profile", "name"]);
-		expect(result).toContainEqual(["user", "settings", "theme"]);
-		expect(result).toContainEqual(["posts", "title"]);
+		expect(result).toContainEqual([
+			"user",
+			"profile",
+			"name",
+		]);
+		expect(result).toContainEqual([
+			"user",
+			"settings",
+			"theme",
+		]);
+		expect(result).toContainEqual([
+			"posts",
+			"title",
+		]);
 	});
 
 	test("3. should skip falsy values", () => {
@@ -136,7 +219,9 @@ describe("convertSearchObjToSearchArray", () => {
 		};
 		const result = convertSearchObjToSearchArray(obj);
 
-		expect(result).toContainEqual(["valid"]); // Only valid field should be included
+		expect(result).toContainEqual([
+			"valid",
+		]); // Only valid field should be included
 		expect(result).toHaveLength(1);
 	});
 });
@@ -145,27 +230,55 @@ describe("processRelations", () => {
 	test("1. should handle 1:1 relationship", async () => {
 		const userDb = createMemoryValthera({
 			users: [
-				{ _id: 1, name: "John", profileId: 101 },
-				{ _id: 2, name: "Jane", profileId: 102 },
+				{
+					_id: 1,
+					name: "John",
+					profileId: 101,
+				},
+				{
+					_id: 2,
+					name: "Jane",
+					profileId: 102,
+				},
 			],
 			profiles: [
-				{ _id: 101, bio: "John's bio", userId: 1 },
-				{ _id: 102, bio: "Jane's bio", userId: 2 },
+				{
+					_id: 101,
+					bio: "John's bio",
+					userId: 1,
+				},
+				{
+					_id: 102,
+					bio: "Jane's bio",
+					userId: 2,
+				},
 			],
 		});
 
-		const dbs = { userDb };
+		const dbs = {
+			userDb,
+		};
 		const cfg = {
 			profile: {
 				pk: "_id",
 				fk: "userId",
 				type: "1" as const,
-				path: ["userDb", "profiles"] as [string, string],
+				path: [
+					"userDb",
+					"profiles",
+				] as [
+					string,
+					string,
+				],
 				as: "profile",
 			},
 		};
 
-		const data = { _id: 1, name: "John", profileId: 101 };
+		const data = {
+			_id: 1,
+			name: "John",
+			profileId: 101,
+		};
 
 		await processRelations(dbs, cfg, data);
 
@@ -178,28 +291,57 @@ describe("processRelations", () => {
 	test("2. should handle 1:n relationship", async () => {
 		const postDb = createMemoryValthera({
 			users: [
-				{ _id: 1, name: "John" },
-				{ _id: 2, name: "Jane" },
+				{
+					_id: 1,
+					name: "John",
+				},
+				{
+					_id: 2,
+					name: "Jane",
+				},
 			],
 			posts: [
-				{ _id: 1, title: "Post 1", userId: 1 },
-				{ _id: 2, title: "Post 2", userId: 1 },
-				{ _id: 3, title: "Post 3", userId: 2 },
+				{
+					_id: 1,
+					title: "Post 1",
+					userId: 1,
+				},
+				{
+					_id: 2,
+					title: "Post 2",
+					userId: 1,
+				},
+				{
+					_id: 3,
+					title: "Post 3",
+					userId: 2,
+				},
 			],
 		});
 
-		const dbs = { postDb };
+		const dbs = {
+			postDb,
+		};
 		const cfg = {
 			posts: {
 				pk: "_id",
 				fk: "userId",
 				type: "1n" as const,
-				path: ["postDb", "posts"] as [string, string],
+				path: [
+					"postDb",
+					"posts",
+				] as [
+					string,
+					string,
+				],
 				as: "posts",
 			},
 		};
 
-		const data = { _id: 1, name: "John" };
+		const data = {
+			_id: 1,
+			name: "John",
+		};
 
 		await processRelations(dbs, cfg, data);
 
@@ -207,10 +349,10 @@ describe("processRelations", () => {
 		const dataWithPosts: any = data;
 		expect(dataWithPosts.posts).toBeDefined();
 		expect(dataWithPosts.posts).toHaveLength(2);
-		expect(dataWithPosts.posts.some((post) => post.title === "Post 1")).toBe(
+		expect(dataWithPosts.posts.some(post => post.title === "Post 1")).toBe(
 			true,
 		);
-		expect(dataWithPosts.posts.some((post) => post.title === "Post 2")).toBe(
+		expect(dataWithPosts.posts.some(post => post.title === "Post 2")).toBe(
 			true,
 		);
 	});
@@ -219,22 +361,50 @@ describe("processRelations", () => {
 describe("Relation class", () => {
 	test("1. should find one record with relations", async () => {
 		const userDb = createMemoryValthera({
-			users: [{ _id: 1, name: "John", profileId: 101 }],
-			profiles: [{ _id: 101, bio: "John's bio", userId: 1 }],
+			users: [
+				{
+					_id: 1,
+					name: "John",
+					profileId: 101,
+				},
+			],
+			profiles: [
+				{
+					_id: 101,
+					bio: "John's bio",
+					userId: 1,
+				},
+			],
 		});
 
-		const relation = new Relation({ userDb });
-		const path: [string, string] = ["userDb", "users"];
+		const relation = new Relation({
+			userDb,
+		});
+		const path: [
+			string,
+			string,
+		] = [
+			"userDb",
+			"users",
+		];
 
 		const result = await relation.findOne(
 			path,
-			{ _id: 1 },
+			{
+				_id: 1,
+			},
 			{
 				profile: {
 					pk: "_id",
 					fk: "userId",
 					type: "1",
-					path: ["userDb", "profiles"] as [string, string],
+					path: [
+						"userDb",
+						"profiles",
+					] as [
+						string,
+						string,
+					],
 					as: "profile",
 				},
 			},
@@ -252,18 +422,44 @@ describe("Relation class", () => {
 	test("2. should find records with relations", async () => {
 		const postDb = createMemoryValthera({
 			users: [
-				{ _id: 1, name: "John" },
-				{ _id: 2, name: "Jane" },
+				{
+					_id: 1,
+					name: "John",
+				},
+				{
+					_id: 2,
+					name: "Jane",
+				},
 			],
 			posts: [
-				{ _id: 1, title: "Post 1", userId: 1 },
-				{ _id: 2, title: "Post 2", userId: 1 },
-				{ _id: 3, title: "Post 3", userId: 2 },
+				{
+					_id: 1,
+					title: "Post 1",
+					userId: 1,
+				},
+				{
+					_id: 2,
+					title: "Post 2",
+					userId: 1,
+				},
+				{
+					_id: 3,
+					title: "Post 3",
+					userId: 2,
+				},
 			],
 		});
 
-		const relation = new Relation({ postDb });
-		const path: [string, string] = ["postDb", "users"];
+		const relation = new Relation({
+			postDb,
+		});
+		const path: [
+			string,
+			string,
+		] = [
+			"postDb",
+			"users",
+		];
 
 		const results = await relation.find(
 			path,
@@ -273,15 +469,21 @@ describe("Relation class", () => {
 					pk: "_id",
 					fk: "userId",
 					type: "1n",
-					path: ["postDb", "posts"] as [string, string],
+					path: [
+						"postDb",
+						"posts",
+					] as [
+						string,
+						string,
+					],
 					as: "posts",
 				},
 			},
 		);
 
 		expect(results).toHaveLength(2);
-		const john: any = results.find((u) => u.name === "John");
-		const jane: any = results.find((u) => u.name === "Jane");
+		const john: any = results.find(u => u.name === "John");
+		const jane: any = results.find(u => u.name === "Jane");
 
 		expect(john.posts).toHaveLength(2);
 		expect(jane.posts).toHaveLength(1);

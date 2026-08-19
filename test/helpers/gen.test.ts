@@ -29,7 +29,10 @@ describe("genId", () => {
 	});
 
 	test("2. should generate IDs with custom parts schema", () => {
-		const id = genId([2, 3]);
+		const id = genId([
+			2,
+			3,
+		]);
 
 		expect(typeof id).toBe("string");
 		const parts = id.split("-");
@@ -49,8 +52,20 @@ describe("genId", () => {
 
 	test("4. should generate unique IDs using custom IdData", () => {
 		const idData = getIdData();
-		const id1 = genId([1, 1], idData);
-		const id2 = genId([1, 1], idData);
+		const id1 = genId(
+			[
+				1,
+				1,
+			],
+			idData,
+		);
+		const id2 = genId(
+			[
+				1,
+				1,
+			],
+			idData,
+		);
 
 		expect(id1).not.toBe(id2);
 		expect(typeof id1).toBe("string");
@@ -62,7 +77,15 @@ describe("genId", () => {
 		const ids = [];
 
 		for (let i = 0; i < 10; i++) {
-			ids.push(genId([1, 1], idData));
+			ids.push(
+				genId(
+					[
+						1,
+						1,
+					],
+					idData,
+				),
+			);
 		}
 
 		// All IDs should be unique

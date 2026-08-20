@@ -245,9 +245,10 @@ export class ValtheraClass implements ValtheraCompatible {
 	}
 
 	/**
-	 * Removes a database collection from the file system.
+	 * Removes a database collection from the database.
 	 */
 	removeCollection(collection: string) {
+		this._collections.delete(collection);
 		return this.execute<boolean>("removeCollection", collection);
 	}
 }

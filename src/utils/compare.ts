@@ -9,7 +9,7 @@ export function compareSafe(a: any, b: any): -1 | 0 | 1 {
 	const typeB = typeof b;
 
 	if (typeA === "string" && typeB === "string") {
-		return a.localeCompare(b);
+		return Math.sign(a.localeCompare(b)) as -1 | 0 | 1;
 	}
 
 	if (

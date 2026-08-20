@@ -553,7 +553,31 @@ describe("updateObjectAdvanced", () => {
 		});
 	});
 
-	test("22. should handle nested $inc operator in deep object", () => {
+	test("22. should handle $merge operator with arrays (concatenation)", () => {
+		const obj = {
+			arr: [
+				1,
+				2,
+			],
+		};
+		const result = updateObjectAdvanced(obj, {
+			$merge: {
+				arr: [
+					3,
+					4,
+				],
+			},
+		});
+		expect(result).toBeUndefined();
+		expect(obj.arr).toEqual([
+			1,
+			2,
+			3,
+			4,
+		]);
+	});
+
+	test("23. should handle nested $inc operator in deep object", () => {
 		const obj: Data = {
 			nested: {
 				count: 5,
@@ -570,7 +594,7 @@ describe("updateObjectAdvanced", () => {
 		expect(obj.nested.count).toBe(8);
 	});
 
-	test("23. should handle nested $push operator in deep object", () => {
+	test("24. should handle nested $push operator in deep object", () => {
 		const obj: Data = {
 			nested: {
 				items: [

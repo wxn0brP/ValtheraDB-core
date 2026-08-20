@@ -75,7 +75,15 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 		},
 
 		merge: (item, updater) => {
-			if (typeof item === "object" && typeof updater === "object") {
+			if (Array.isArray(item) && Array.isArray(updater)) {
+				return [...item, ...updater];
+			}
+			if (
+				typeof item === "object" &&
+				typeof updater === "object" &&
+				!Array.isArray(item) &&
+				!Array.isArray(updater)
+			) {
 				Object.assign(item, updater);
 				return item;
 			}

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.0-alpha.1...v0.12.0-alpha.2) (2026-08-20)
+
+
+### Bug Fixes
+
+* array concatenation in $merge ([0cc0724](https://github.com/wxn0brP/ValtheraDB-core/commit/0cc0724c991d11dcc0ff84e91d09a8ac9c5cffc7))
+* clear collection cache on removeCollection ([514593f](https://github.com/wxn0brP/ValtheraDB-core/commit/514593f5896387cd863dce2299f664e8a6393089))
+* compareSafe ([acba28a](https://github.com/wxn0brP/ValtheraDB-core/commit/acba28a5a4854e933fb162fe8682e9bf4a472b2e))
+
 ## [0.12.0-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.0-alpha.0...v0.12.0-alpha.1) (2026-08-18)
 
 

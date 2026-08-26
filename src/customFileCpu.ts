@@ -1,7 +1,8 @@
 import { Data, DataInternal } from "./types/data";
 import { FileCpu } from "./types/fileCpu";
 import { VQueryT } from "./types/query";
-import { matchObj, findObj, updateObj } from "./utils/process";
+import { matchObj, updateObj } from "./utils/process";
+import { updateFindObject } from "./utils/updateFindObject";
 
 export type WriteFile = (file: string, data: any[]) => Promise<void>;
 export type ReadFile = (file: string) => Promise<any[]>;
@@ -14,7 +15,11 @@ export class CustomFileCpu implements FileCpu {
 	_readFile: ReadFile;
 	_writeFile: WriteFile;
 
-	constructor(readFile: ReadFile, writeFile: WriteFile) {
+	constructor(
+		readFile: ReadFile,
+		writeFile: WriteFile,
+		public requireClone = false,
+	) {
 		this._readFile = readFile;
 		this._writeFile = writeFile;
 	}
@@ -29,8 +34,9 @@ export class CustomFileCpu implements FileCpu {
 	async find(file: string, config: VQueryT.Find): Promise<Data[]> {
 		file = pathRepair(file);
 		const entries = await this._readFile(file);
-
-		return entries.map(entry => findObj(config, entry)).filter(Boolean);
+		const result = entries.filter(entry => matchObj(config, entry));
+		const objs = this.requireClone ? structuredClone(result) : result;
+		return objs.map(obj => updateFindObject(obj, config.findOpts || {}));
 	}
 
 	async findOne(
@@ -41,8 +47,10 @@ export class CustomFileCpu implements FileCpu {
 		const entries = await this._readFile(file);
 
 		for (const entry of entries) {
-			const result = findObj(config, entry);
-			if (result) return result;
+			const isMatch = matchObj(config, entry);
+			if (!isMatch) continue;
+			const obj = this.requireClone ? structuredClone(entry) : entry;
+			return updateFindObject(obj, config.findOpts || {}) as DataInternal;
 		}
 		return false;
 	}

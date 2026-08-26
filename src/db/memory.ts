@@ -14,17 +14,18 @@ export class MemoryAction extends CustomActionsBase {
 		this.fileCpu = new CustomFileCpu(
 			this._readMemory.bind(this),
 			this._writeMemory.bind(this),
+			true,
 		);
 		this.memory = new Map();
 	}
 
 	_readMemory(key: string) {
 		if (!this.memory.has(key)) return [];
-		return structuredClone(this.memory.get(key));
+		return this.memory.get(key);
 	}
 
 	_writeMemory(key: string, data: any[]) {
-		this.memory.set(key, structuredClone(data));
+		this.memory.set(key, data);
 	}
 
 	async getCollections() {

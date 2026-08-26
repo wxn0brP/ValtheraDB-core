@@ -25,14 +25,20 @@ export function _deepMerge(
 	return _deepMerge(target, ...sources);
 }
 
+function fastClone(obj: any): any {
+	if (obj === null || typeof obj !== "object") return obj;
+	if (Array.isArray(obj)) return obj.map(fastClone);
+	if (obj instanceof Date) return new Date(obj.getTime());
+	const result: any = {};
+	for (const key in obj) result[key] = fastClone(obj[key]);
+	return result;
+}
+
 export function deepMerge(
 	target: Record<string, any>,
 	...sources: Record<string, any>[]
 ): Record<string, any> {
-	return _deepMerge(
-		structuredClone(target),
-		...sources.map(s => structuredClone(s)),
-	);
+	return _deepMerge(fastClone(target), ...sources.map(fastClone));
 }
 
 function isObject(item: any): boolean {

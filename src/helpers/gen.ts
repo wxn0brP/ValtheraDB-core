@@ -10,6 +10,8 @@ export function getIdData() {
 	return {
 		usedIds: new Map(),
 		lastId: undefined as Id,
+		lastTimeStr: "",
+		lastCounter: 0,
 		recentIdsTimestamps: [] as number[],
 		startIndex: 0,
 		lastGeneratedMs: 0,
@@ -52,13 +54,8 @@ export function genId(parts: number[] = null, idData = defaultIdData): Id {
 function getUniqueRandom(opts: GetUniqueRandomOpts, idData: IdData): string {
 	while (true) {
 		let minValue = 0;
-		if (idData.lastId) {
-			const parts = idData.lastId.split("-");
-			const lastTime = parts.shift();
-			if (lastTime === opts.time) {
-				const int36 = parts.join("");
-				minValue = parseInt(int36, 36) + 1;
-			}
+		if (idData.lastTimeStr === opts.time) {
+			minValue = idData.lastCounter + 1;
 		}
 
 		const partsLengthSum = opts.partsSchema.reduce((acc, num) => acc + num, 0);
@@ -74,6 +71,8 @@ function getUniqueRandom(opts: GetUniqueRandomOpts, idData: IdData): string {
 			idData.usedIds.set(id, true);
 			setTimeout(() => idData.usedIds.delete(id), 1000);
 			idData.lastId = id;
+			idData.lastTimeStr = opts.time;
+			idData.lastCounter = idData.lastRandomValue;
 			return id;
 		}
 		opts.s++;

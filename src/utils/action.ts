@@ -34,10 +34,14 @@ export async function findUtil(
 	let skippedEntries = 0;
 
 	if (Array.isArray(fileCpuOrData)) {
-		datas = [
-			...fileCpuOrData,
-		];
-		if (reverse && !sortBy) datas.reverse();
+		const src = fileCpuOrData as Data[];
+		const len = src.length;
+		if (reverse && !sortBy) {
+			datas = new Array(len);
+			for (let i = 0; i < len; i++) datas[i] = src[len - 1 - i];
+		} else {
+			datas = src.slice();
+		}
 		if (!needsAllData) {
 			if (offset > 0 || limit !== -1) {
 				const start = offset;
@@ -58,7 +62,7 @@ export async function findUtil(
 			if (reverse && !sortBy) entries.reverse();
 
 			if (needsAllData) {
-				datas.push(...entries);
+				for (let i = 0; i < entries.length; i++) datas.push(entries[i]);
 				continue;
 			}
 
@@ -77,7 +81,7 @@ export async function findUtil(
 				if (entries.length > remaining) entries = entries.slice(0, remaining);
 			}
 
-			datas.push(...entries);
+			for (let i = 0; i < entries.length; i++) datas.push(entries[i]);
 
 			if (limit !== -1 && datas.length >= limit) return datas;
 		}
@@ -100,16 +104,19 @@ export async function findUtil(
 
 		if (groupKeys.length) {
 			for (const data of datas) {
-				const key = groupKeys
-					.map(k => String((data as any)[k] ?? ""))
-					.join("|");
-				if (!groups.has(key)) groups.set(key, []);
-				groups.get(key)!.push(data);
+				let key = String((data as any)[groupKeys[0]] ?? "");
+				for (let i = 1; i < groupKeys.length; i++) {
+					key += "|" + String((data as any)[groupKeys[i]] ?? "");
+				}
+				let group = groups.get(key);
+				if (!group) {
+					group = [];
+					groups.set(key, group);
+				}
+				group.push(data);
 			}
 		} else {
-			groups.set("all", [
-				...datas,
-			]);
+			groups.set("all", datas.slice());
 		}
 
 		const aggregated: Data[] = [];
@@ -123,41 +130,74 @@ export async function findUtil(
 
 			if (count) {
 				for (const [outKey, srcKey] of Object.entries(count)) {
-					result[outKey] = groupItems.filter(
-						d =>
-							(d as any)[srcKey] !== undefined && (d as any)[srcKey] !== null,
-					).length;
+					let c = 0;
+					for (let i = 0; i < groupItems.length; i++) {
+						const v = (groupItems[i] as any)[srcKey];
+						if (v !== undefined && v !== null) c++;
+					}
+					result[outKey] = c;
 				}
 			}
 
-			for (const [outKey, srcField] of Object.entries(min ?? {})) {
-				const nums = groupItems
-					.map(d => (d as any)[srcField])
-					.filter((v): v is number => typeof v === "number");
-				result[outKey] = nums.length ? Math.min(...nums) : null;
+			const minEntries = min ? Object.entries(min) : null;
+			const maxEntries = max ? Object.entries(max) : null;
+			const avgEntries = avg ? Object.entries(avg) : null;
+			const sumEntries = sum ? Object.entries(sum) : null;
+
+			if (minEntries) {
+				for (const [outKey, srcField] of minEntries) {
+					let best: number | null = null;
+					for (let i = 0; i < groupItems.length; i++) {
+						const v = (groupItems[i] as any)[srcField];
+						if (typeof v === "number") {
+							if (best === null || v < best) best = v;
+						}
+					}
+					result[outKey] = best;
+				}
 			}
 
-			for (const [outKey, srcField] of Object.entries(max ?? {})) {
-				const nums = groupItems
-					.map(d => (d as any)[srcField])
-					.filter((v): v is number => typeof v === "number");
-				result[outKey] = nums.length ? Math.max(...nums) : null;
+			if (maxEntries) {
+				for (const [outKey, srcField] of maxEntries) {
+					let best: number | null = null;
+					for (let i = 0; i < groupItems.length; i++) {
+						const v = (groupItems[i] as any)[srcField];
+						if (typeof v === "number") {
+							if (best === null || v > best) best = v;
+						}
+					}
+					result[outKey] = best;
+				}
 			}
 
-			for (const [outKey, srcField] of Object.entries(avg ?? {})) {
-				const nums = groupItems
-					.map(d => (d as any)[srcField])
-					.filter((v): v is number => typeof v === "number");
-				result[outKey] = nums.length
-					? nums.reduce((a, b) => a + b, 0) / nums.length
-					: null;
+			if (avgEntries) {
+				for (const [outKey, srcField] of avgEntries) {
+					let total = 0;
+					let c = 0;
+					for (let i = 0; i < groupItems.length; i++) {
+						const v = (groupItems[i] as any)[srcField];
+						if (typeof v === "number") {
+							total += v;
+							c++;
+						}
+					}
+					result[outKey] = c > 0 ? total / c : null;
+				}
 			}
 
-			for (const [outKey, srcField] of Object.entries(sum ?? {})) {
-				const nums = groupItems
-					.map(d => (d as any)[srcField])
-					.filter((v): v is number => typeof v === "number");
-				result[outKey] = nums.length ? nums.reduce((a, b) => a + b, 0) : null;
+			if (sumEntries) {
+				for (const [outKey, srcField] of sumEntries) {
+					let total = 0;
+					let c = 0;
+					for (let i = 0; i < groupItems.length; i++) {
+						const v = (groupItems[i] as any)[srcField];
+						if (typeof v === "number") {
+							total += v;
+							c++;
+						}
+					}
+					result[outKey] = c > 0 ? total : null;
+				}
 			}
 
 			aggregated.push(result);
@@ -167,14 +207,18 @@ export async function findUtil(
 	}
 
 	if (distinct) {
-		const seen = new Set<string>();
-		datas = datas.filter(item => {
-			const val = (item as any)[distinct];
-			const key = JSON.stringify(val);
-			if (seen.has(key)) return false;
-			seen.add(key);
-			return true;
-		});
+		const seen = new Set();
+		const result: Data[] = [];
+		for (let i = 0; i < datas.length; i++) {
+			const val = (datas[i] as any)[distinct];
+			const key =
+				typeof val === "object" && val !== null ? JSON.stringify(val) : val;
+			if (!seen.has(key)) {
+				seen.add(key);
+				result.push(datas[i]);
+			}
+		}
+		datas = result;
 	}
 
 	if (sortBy) {

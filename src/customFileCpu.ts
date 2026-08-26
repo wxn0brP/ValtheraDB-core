@@ -34,9 +34,17 @@ export class CustomFileCpu implements FileCpu {
 	async find(file: string, config: VQueryT.Find): Promise<Data[]> {
 		file = pathRepair(file);
 		const entries = await this._readFile(file);
-		const result = entries.filter(entry => matchObj(config, entry));
-		const objs = this.requireClone ? structuredClone(result) : result;
-		return objs.map(obj => updateFindObject(obj, config.findOpts || {}));
+		const findOpts = config.findOpts || {};
+		const result: Data[] = [];
+		for (let i = 0; i < entries.length; i++) {
+			if (matchObj(config, entries[i])) {
+				const obj = this.requireClone
+					? structuredClone(entries[i])
+					: entries[i];
+				result.push(updateFindObject(obj, findOpts));
+			}
+		}
+		return result;
 	}
 
 	async findOne(

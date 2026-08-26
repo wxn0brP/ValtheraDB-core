@@ -15,17 +15,26 @@ export function updateObjectAdvanced(
 
 	if (Object.keys(field).length === 0) return;
 
-	const $fields = {};
-	const subsetFields = {};
+	const $fields: Record<string, any> = {};
+	const subsetFields: Record<string, any> = {};
+	let hasDollar = false;
+	let hasSubset = false;
 
-	Object.keys(field).forEach(key => {
-		if (key.startsWith("$")) $fields[key.toLowerCase()] = field[key];
-		else subsetFields[key] = field[key];
-	});
+	for (const key in field) {
+		if (key.charCodeAt(0) === 36) {
+			$fields[key.toLowerCase()] = field[key];
+			hasDollar = true;
+		} else {
+			subsetFields[key] = field[key];
+			hasSubset = true;
+		}
+	}
 
-	mainUpdate(obj, $fields);
-	const mergedObj = deepMerge(obj, $fields);
-	updateObject(mergedObj, subsetFields);
+	if (hasDollar) {
+		mainUpdate(obj, $fields);
+		deepMerge(obj, $fields);
+	}
+	if (hasSubset) updateObject(obj, subsetFields);
 }
 
 function deepMerge(obj: Object, fields: UpdaterArg) {
@@ -76,7 +85,10 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 
 		merge: (item, updater) => {
 			if (Array.isArray(item) && Array.isArray(updater)) {
-				return [...item, ...updater];
+				return [
+					...item,
+					...updater,
+				];
 			}
 			if (
 				typeof item === "object" &&

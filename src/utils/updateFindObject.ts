@@ -6,40 +6,6 @@ function resolvePath(path: Path): string[] {
 	return Array.isArray(path) ? path : path.split(".");
 }
 
-function pathExists(obj: any, path: Path): boolean {
-	const segs = resolvePath(path);
-	if (segs.length === 0) return false;
-	let cur = obj;
-	for (const s of segs) {
-		if (cur == null || typeof cur !== "object" || !(s in cur)) return false;
-		cur = cur[s];
-	}
-	return true;
-}
-
-function getValueAt(obj: any, path: Path): any {
-	const segs = resolvePath(path);
-	let cur = obj;
-	for (const s of segs) {
-		if (cur == null || typeof cur !== "object") return undefined;
-		cur = cur[s];
-	}
-	return cur;
-}
-
-function setNested(obj: any, path: Path, value: any): void {
-	const segs = resolvePath(path);
-	let cur = obj;
-	for (let i = 0; i < segs.length - 1; i++) {
-		const s = segs[i];
-		if (!(s in cur) || typeof cur[s] !== "object" || Array.isArray(cur[s])) {
-			cur[s] = {};
-		}
-		cur = cur[s];
-	}
-	cur[segs[segs.length - 1]] = value;
-}
-
 function deleteNested(obj: any, path: Path): void {
 	const segs = resolvePath(path);
 	if (segs.length === 0) return;
@@ -78,11 +44,31 @@ export function updateFindObject(obj: Object, findOpts: FindOpts) {
 	if (Array.isArray(select)) {
 		const result: any = {};
 		for (const field of select) {
-			if (
-				(typeof field === "string" || Array.isArray(field)) &&
-				pathExists(obj, field)
-			) {
-				setNested(result, field, getValueAt(obj, field));
+			const segs = typeof field === "string" ? field.split(".") : field;
+			if (!segs.length) continue;
+			let src: any = obj;
+			let found = true;
+			for (let i = 0; i < segs.length; i++) {
+				if (src == null || typeof src !== "object" || !(segs[i] in src)) {
+					found = false;
+					break;
+				}
+				src = src[segs[i]];
+			}
+			if (found) {
+				let dst = result;
+				for (let i = 0; i < segs.length - 1; i++) {
+					const s = segs[i];
+					if (
+						!(s in dst) ||
+						typeof dst[s] !== "object" ||
+						Array.isArray(dst[s])
+					) {
+						dst[s] = {};
+					}
+					dst = dst[s];
+				}
+				dst[segs[segs.length - 1]] = src;
 			}
 		}
 		obj = result;

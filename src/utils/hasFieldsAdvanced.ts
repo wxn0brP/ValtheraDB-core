@@ -14,15 +14,19 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 
 	const $fields: Record<string, any> = {};
 	const subsetFields: Record<string, any> = {};
+	let hasSubset = false;
 
-	Object.keys(fields).forEach(key => {
-		if (key.startsWith("$")) $fields[key.toLowerCase()] = fields[key];
-		else subsetFields[key] = fields[key];
-	});
+	for (const key in fields) {
+		if (key.charCodeAt(0) === 36) {
+			$fields[key.toLowerCase()] = fields[key];
+		} else {
+			subsetFields[key] = fields[key];
+			hasSubset = true;
+		}
+	}
 
 	// Shallow fields first
-	if (Object.keys(subsetFields).length && !hasFields(obj, subsetFields))
-		return false;
+	if (hasSubset && !hasFields(obj, subsetFields)) return false;
 
 	// Direct fields only
 	if (Object.keys($fields).length === 0) return true;

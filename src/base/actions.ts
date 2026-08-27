@@ -15,20 +15,6 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 	};
 	smartExecutor: boolean = false;
 
-	get numberId(): boolean {
-		return this.adapterOpts.numberId ?? false;
-	}
-	set numberId(value: boolean) {
-		this.adapterOpts.numberId = value;
-	}
-
-	get idKey(): string {
-		return this.adapterOpts.idKey ?? "_id";
-	}
-	set idKey(value: string) {
-		this.adapterOpts.idKey = value;
-	}
-
 	async init(...args: any[]) {}
 	async close(...args: any[]) {}
 

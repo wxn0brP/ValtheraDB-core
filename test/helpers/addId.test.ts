@@ -50,7 +50,7 @@ describe("addId", () => {
 
 	test("4. should use number ID when numberId is enabled", async () => {
 		const db = new MemoryAction();
-		db.numberId = true;
+		db.adapterOpts.numberId = true;
 
 		const query: any = {
 			collection: "test",
@@ -66,7 +66,7 @@ describe("addId", () => {
 
 	test("5. should increment number ID correctly", async () => {
 		const db = new MemoryAction();
-		db.numberId = true;
+		db.adapterOpts.numberId = true;
 
 		const query1: any = {
 			collection: "test",

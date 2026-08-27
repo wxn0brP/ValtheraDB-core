@@ -6,6 +6,7 @@ import { ActionsBaseInterface } from "../types/action";
 import { DataInternal } from "../types/data";
 import { AdapterOpts } from "../types/options";
 import { VQueryT } from "../types/query";
+import { version } from "../version";
 
 export abstract class ActionsBase implements ActionsBaseInterface {
 	_inited: boolean = true;
@@ -14,6 +15,7 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 		idKey: "_id",
 	};
 	smartExecutor: boolean = false;
+	version = "ActionsBase-core-" + version;
 
 	async init(...args: any[]) {}
 	async close(...args: any[]) {}

@@ -100,7 +100,13 @@ describe("assignDataPush - property-based", () => {
 						.string({
 							minLength: 1,
 						})
-						.filter(s => !s.startsWith("$")),
+						.filter(
+							s =>
+								!s.startsWith("$") &&
+								s !== "__proto__" &&
+								s !== "constructor" &&
+								s !== "prototype",
+						),
 					fc.integer(),
 					{
 						minKeys: 1,

@@ -87,6 +87,8 @@ export async function processRelations(
 				data,
 			];
 
+	if (targets.length === 0) return;
+
 	for (const key in cfg) {
 		if (!Object.hasOwn(cfg, key)) continue;
 		const rel = cfg[key];

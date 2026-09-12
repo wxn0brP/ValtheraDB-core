@@ -488,4 +488,98 @@ describe("Relation class", () => {
 		expect(john.posts).toHaveLength(2);
 		expect(jane.posts).toHaveLength(1);
 	});
+
+	test("3. should handle n:m relationship with batch optimization", async () => {
+		const db = createMemoryValthera({
+			posts: [
+				{
+					_id: 1,
+					title: "Post 1",
+				},
+				{
+					_id: 2,
+					title: "Post 2",
+				},
+			],
+			tags: [
+				{
+					_id: 101,
+					name: "JavaScript",
+				},
+				{
+					_id: 102,
+					name: "TypeScript",
+				},
+				{
+					_id: 103,
+					name: "Database",
+				},
+			],
+			post_tags: [
+				{
+					postId: 1,
+					tagId: 101,
+				},
+				{
+					postId: 1,
+					tagId: 102,
+				},
+				{
+					postId: 2,
+					tagId: 102,
+				},
+				{
+					postId: 2,
+					tagId: 103,
+				},
+			],
+		});
+
+		const relation = new Relation({
+			db,
+		});
+
+		const results = await relation.find(
+			[
+				"db",
+				"posts",
+			],
+			{},
+			{
+				tags: {
+					pk: "_id",
+					fk: "_id",
+					type: "nm",
+					path: [
+						"db",
+						"tags",
+					] as [
+						string,
+						string,
+					],
+					through: {
+						table: "post_tags",
+						pk: "postId",
+						fk: "tagId",
+					},
+				},
+			},
+		);
+
+		expect(results).toHaveLength(2);
+		const post1: any = results.find(p => p.title === "Post 1");
+		const post2: any = results.find(p => p.title === "Post 2");
+
+		expect(post1.tags).toHaveLength(2);
+		expect(post1.tags.map((t: any) => t.name).sort()).toEqual([
+			"JavaScript",
+			"TypeScript",
+		]);
+
+		expect(post2.tags).toHaveLength(2);
+		expect(post2.tags.map((t: any) => t.name).sort()).toEqual([
+			"Database",
+			"TypeScript",
+		]);
+	});
 });

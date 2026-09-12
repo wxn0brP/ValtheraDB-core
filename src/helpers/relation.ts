@@ -208,29 +208,55 @@ export async function processRelations(
 					`Relation type "nm" requires a defined "through" in "${key}"`,
 				);
 
+			const allSourceIds = targets.map(i => i[pk]);
+			const pivotDb = dbs[through.db || dbKey];
+
+			const allPivots = await pivotDb.find({
+				collection: through.table,
+				search: {
+					$in: {
+						[through.pk]: allSourceIds,
+					},
+				},
+			});
+
+			const pivotMap = new Map<any, any[]>();
+			for (const p of allPivots) {
+				const srcId = p[through.pk];
+				const arr = pivotMap.get(srcId) || [];
+				arr.push(p[through.fk]);
+				pivotMap.set(srcId, arr);
+			}
+
+			const allTargetIds = [
+				...new Set(allPivots.map(p => p[through.fk])),
+			];
+
+			const allRelated = await db.find({
+				collection,
+				search: {
+					$in: {
+						[fk]: allTargetIds,
+					},
+				},
+				findOpts: {
+					select,
+				},
+			});
+
+			const targetMap = new Map(
+				allRelated.map(r => [
+					r[fk],
+					r,
+				]),
+			);
+
 			for (const item of targets) {
-				const pivotDb = dbs[through.db || dbKey];
-				const pivots = await pivotDb.find({
-					collection: through.table,
-					search: {
-						[through.pk]: item[pk],
-					},
-				});
-				const ids = pivots.map(p => p[through.fk]);
-				const related = await db.find({
-					collection,
-					search: {
-						$in: {
-							[fk]: ids,
-						},
-					},
-					findOpts: {
-						select,
-					},
-				});
+				const targetIds = pivotMap.get(item[pk]) || [];
+				const related = targetIds.map(id => targetMap.get(id)).filter(Boolean);
 				item[as] = related;
 
-				if (rel.relations) {
+				if (rel.relations && related.length > 0) {
 					await Promise.all(
 						related.map(row => processRelations(dbs, rel.relations!, row)),
 					);

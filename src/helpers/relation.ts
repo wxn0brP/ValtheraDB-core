@@ -262,6 +262,47 @@ export async function processRelations(
 					);
 				}
 			}
+		} else if (type === "n1") {
+			const allFkIds = [
+				...new Set(targets.flatMap(i => i[pk] || [])),
+			];
+
+			if (allFkIds.length === 0) {
+				for (const item of targets) item[as] = null;
+			} else {
+				const [selectSafe, deleteSelect] = autoSelect(rel, fk);
+
+				const results = await db.find({
+					collection,
+					search: {
+						$in: {
+							[fk]: allFkIds,
+						},
+					},
+					findOpts: {
+						select: selectSafe,
+					},
+				});
+
+				const map = new Map(
+					results.map(row => [
+						row[fk],
+						row,
+					]),
+				);
+
+				for (const item of targets) {
+					const fks = item[pk] || [];
+					const result = map.get(fks[0]) || null;
+
+					if (result && rel.relations)
+						await processRelations(dbs, rel.relations, result);
+
+					if (deleteSelect && result) delete result[fk];
+
+					item[as] = result;
+				}
+			}
 		} else {
 			throw new Error(`Unknown relation type: ${type}`);
 		}

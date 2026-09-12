@@ -582,4 +582,85 @@ describe("Relation class", () => {
 			"TypeScript",
 		]);
 	});
+
+	test("4. should handle n1 relationship (array FK lookup)", async () => {
+		const db = createMemoryValthera({
+			posts: [
+				{
+					_id: 1,
+					title: "Post 1",
+					tagIds: [
+						101,
+						102,
+					],
+				},
+				{
+					_id: 2,
+					title: "Post 2",
+					tagIds: [
+						102,
+						103,
+					],
+				},
+				{
+					_id: 3,
+					title: "Post 3",
+					tagIds: [],
+				},
+			],
+			tags: [
+				{
+					_id: 101,
+					name: "JavaScript",
+				},
+				{
+					_id: 102,
+					name: "TypeScript",
+				},
+				{
+					_id: 103,
+					name: "Database",
+				},
+			],
+		});
+
+		const relation = new Relation({
+			db,
+		});
+
+		const results = await relation.find(
+			[
+				"db",
+				"posts",
+			],
+			{},
+			{
+				firstTag: {
+					pk: "tagIds",
+					fk: "_id",
+					type: "n1",
+					path: [
+						"db",
+						"tags",
+					] as [
+						string,
+						string,
+					],
+				},
+			},
+		);
+
+		expect(results).toHaveLength(3);
+		const post1: any = results.find(p => p.title === "Post 1");
+		const post2: any = results.find(p => p.title === "Post 2");
+		const post3: any = results.find(p => p.title === "Post 3");
+
+		expect(post1.firstTag).toBeDefined();
+		expect(post1.firstTag.name).toBe("JavaScript");
+
+		expect(post2.firstTag).toBeDefined();
+		expect(post2.firstTag.name).toBe("TypeScript");
+
+		expect(post3.firstTag).toBeNull();
+	});
 });

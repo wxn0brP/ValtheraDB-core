@@ -24,7 +24,7 @@ export namespace RelationTypes {
 		select?: string[];
 
 		dbFindOpts?: DbFindOpts;
-		type?: "1" | "11" | "1n" | "nm";
+		type?: "1" | "11" | "1n" | "nm" | "n1";
 		relations?: Relation;
 
 		through?: {

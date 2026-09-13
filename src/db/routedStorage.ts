@@ -1,5 +1,6 @@
 import { ActionsBase } from "../base/actions";
 import { VQueryT, VQuery } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
 
 export type MatchRule = string | RegExp | ((config: VQuery) => boolean);
 
@@ -141,5 +142,17 @@ export class RoutedStorage extends ActionsBase {
 		);
 		const merged = new Set(all.flat());
 		return Array.from(merged);
+	}
+
+	async beginTransaction(): Promise<TransactionHandle> {
+		throw new Error("Transactions are not supported for RoutedStorage");
+	}
+
+	async commitTransaction() {
+		throw new Error("Transactions are not supported for RoutedStorage");
+	}
+
+	async rollbackTransaction() {
+		throw new Error("Transactions are not supported for RoutedStorage");
 	}
 }

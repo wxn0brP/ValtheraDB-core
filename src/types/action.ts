@@ -1,6 +1,8 @@
 import { DataInternal } from "./data";
+import { Id } from "./Id";
 import { AdapterOpts } from "./options";
 import { VQueryT } from "./query";
+import { TransactionHandle } from "./transaction";
 
 export interface ActionsBaseInterface {
 	_inited: boolean;
@@ -27,4 +29,8 @@ export interface ActionsBaseInterface {
 	toggleOne(
 		query: VQueryT.ToggleOne,
 	): Promise<VQueryT.ToggleOneResult<DataInternal>>;
+
+	beginTransaction(id: Id): Promise<TransactionHandle>;
+	commitTransaction(handle: TransactionHandle): Promise<void>;
+	rollbackTransaction(handle: TransactionHandle): Promise<void>;
 }

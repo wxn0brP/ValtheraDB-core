@@ -2,10 +2,12 @@ import { VEE } from "@wxn0brp/event-emitter";
 import { ActionsBase } from "../base/actions";
 import { Collection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
+import { genId } from "../helpers/gen";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
 import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
 
@@ -30,6 +32,7 @@ export class ValtheraClass implements ValtheraCompatible {
 
 	_plugins: ValtheraPlugin[] = [];
 	_collections: Map<string, Collection<any>> = new Map();
+	_activeTx: TransactionHandle | null = null;
 
 	plugin(p: ValtheraPlugin) {
 		p.init?.(this);
@@ -100,6 +103,11 @@ export class ValtheraClass implements ValtheraCompatible {
 		query: VQuery<any> | string,
 	) {
 		await this.init();
+		const isTransaction = this._activeTx && typeof query !== "string";
+
+		if (isTransaction) {
+			query.transaction = this._activeTx;
+		}
 
 		const plugins = this._plugins;
 		const self = this;
@@ -111,8 +119,10 @@ export class ValtheraClass implements ValtheraCompatible {
 			next: async () => {
 				if (idx < plugins.length) return plugins[idx++].execute(ctx);
 
+				if (isTransaction) return self.adapter[name](query);
+
 				return self.executor.addOp(
-					(self.adapter as any)[ctx.op].bind(self.adapter),
+					self.adapter[ctx.op].bind(self.adapter),
 					ctx.query,
 					typeof ctx.query === "string" ? ctx.query : ctx.query.collection,
 				);
@@ -253,5 +263,67 @@ export class ValtheraClass implements ValtheraCompatible {
 	removeCollection(collection: string) {
 		this._collections.delete(collection);
 		return this.execute<boolean>("removeCollection", collection);
+	}
+
+	/**
+	 * @experimental
+	 *
+	 * Executes operations within a transaction. Automatically rolls back on error.
+	 *
+	 * This feature is highly experimental and may change or be removed at any time.
+	 *
+	 * - Requires `executorAware: false` in ValtheraClass options.
+	 * - Transaction support depends on the executor implementation.
+	 * - Nested transactions are not supported.
+	 * - Transactions lock the whole database for the duration of the transaction.
+	 */
+	async transaction<T>(
+		fn: (handle: TransactionHandle) => Promise<T>,
+	): Promise<T> {
+		await this.init();
+
+		if ("aware" in this.executor && this.executor.aware) {
+			throw new Error(
+				"Transactions are not supported when using a smart executor. " +
+					"Please use options.executorAware = false when creating the Valthera instance.",
+			);
+		}
+
+		if (this._activeTx)
+			throw new Error("Nested transactions are not supported");
+
+		const self = this;
+
+		return this.executor.addOp(async () => {
+			if (self._activeTx)
+				throw new Error("Nested transactions are not supported");
+
+			const handle = await self.adapter.beginTransaction(genId());
+			self._activeTx = handle;
+
+			try {
+				const result = await fn(handle);
+
+				await self.adapter.commitTransaction(handle);
+
+				return result;
+			} catch (err) {
+				try {
+					await self.adapter.rollbackTransaction(handle);
+				} catch (rollbackErr) {
+					throw new AggregateError(
+						[
+							err,
+							rollbackErr,
+						],
+						"Transaction failed and rollback failed",
+					);
+				}
+
+				throw err;
+			} finally {
+				self._activeTx = null;
+			}
+		});
 	}
 }

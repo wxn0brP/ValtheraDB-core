@@ -1,6 +1,7 @@
 import { Arg, Search, Updater } from "./arg";
 import { Data } from "./data";
 import { DbFindOpts, FindOpts } from "./options";
+import { TransactionHandle } from "./transaction";
 import { VContext } from "./types";
 
 /**
@@ -26,6 +27,7 @@ export interface VQuery<T = Data, AllowFn extends boolean = true> {
 	add_arg?: Arg<T>;
 	updater?: Updater<T, AllowFn>;
 	control?: VQuery_Control;
+	transaction?: TransactionHandle;
 }
 
 export namespace VQueryT {

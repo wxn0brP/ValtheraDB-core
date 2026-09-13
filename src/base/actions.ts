@@ -4,8 +4,10 @@ import {
 } from "../helpers/assignDataPush";
 import { ActionsBaseInterface } from "../types/action";
 import { DataInternal } from "../types/data";
+import { Id } from "../types/Id";
 import { AdapterOpts } from "../types/options";
 import { VQueryT } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
 import { version } from "../version";
 
 export abstract class ActionsBase implements ActionsBaseInterface {
@@ -32,6 +34,18 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 	abstract updateOne(config: VQueryT.Update): Promise<DataInternal | null>;
 	abstract remove(config: VQueryT.Remove): Promise<DataInternal[]>;
 	abstract removeOne(config: VQueryT.Remove): Promise<DataInternal | null>;
+
+	async beginTransaction(id: Id): Promise<TransactionHandle> {
+		throw new Error("Transactions are not supported for ActionsBase");
+	}
+
+	async commitTransaction(handle: TransactionHandle) {
+		throw new Error("Transactions are not supported for ActionsBase");
+	}
+
+	async rollbackTransaction(handle: TransactionHandle) {
+		throw new Error("Transactions are not supported for ActionsBase");
+	}
 
 	async updateOneOrAdd(
 		config: VQueryT.UpdateOneOrAdd,

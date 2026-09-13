@@ -1,5 +1,6 @@
 import { ActionsBase } from "../base/actions";
 import { VQueryT } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
 
 export class MultiBackend extends ActionsBase {
 	backends: ActionsBase[];
@@ -133,5 +134,17 @@ export class MultiBackend extends ActionsBase {
 		});
 
 		return Array.from(uniqueCollections);
+	}
+
+	async beginTransaction(): Promise<TransactionHandle> {
+		throw new Error("Transactions are not supported for MultiBackend");
+	}
+
+	async commitTransaction() {
+		throw new Error("Transactions are not supported for MultiBackend");
+	}
+
+	async rollbackTransaction() {
+		throw new Error("Transactions are not supported for MultiBackend");
 	}
 }

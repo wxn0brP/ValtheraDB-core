@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.4-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.3...v0.12.4-alpha.0) (2026-09-13)
+
+
+### Features
+
+* experimental transaction ([201fcf9](https://github.com/wxn0brP/ValtheraDB-core/commit/201fcf95ec17ca04d5081b9bd42fa9d84392b8d0))
+* manual disable aware executor ([85f3a04](https://github.com/wxn0brP/ValtheraDB-core/commit/85f3a045be76abc6e62b7c041d4757d8f88ebc14))
+
 ### [0.12.3](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.2...v0.12.3) (2026-09-12)
 
 

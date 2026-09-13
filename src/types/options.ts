@@ -7,6 +7,7 @@ export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
 export interface DbOpts {
 	adapter: AdapterValue;
 	executor?: Executor;
+	executorAware?: boolean;
 	adapterOpts?: AdapterOpts;
 }
 

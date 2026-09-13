@@ -50,6 +50,8 @@ export class ValtheraClass implements ValtheraCompatible {
 				this.adapter.adapterOpts = options.adapterOpts;
 			}
 		}
+
+		options.executorAware ??= true;
 	}
 
 	async init(...args: any[]) {
@@ -65,6 +67,7 @@ export class ValtheraClass implements ValtheraCompatible {
 			// if the executor is not set, and the action wants a smart executor
 			if (
 				!self.options.executor &&
+				self.options.executorAware &&
 				self.adapter.smartExecutor &&
 				self.executor instanceof SmartExecutor
 			)

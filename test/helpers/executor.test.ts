@@ -219,7 +219,6 @@ describe("SmartExecutor", () => {
 	test("5. should use default collection when collection is not specified", async () => {
 		const executor = new SmartExecutor();
 		const mockFind = async (_query: VQuery) => [];
-		// @ts-expect-error
 		await executor.addOp(mockFind, {
 			collection: "test",
 		});

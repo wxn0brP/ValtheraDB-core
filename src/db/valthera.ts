@@ -3,6 +3,15 @@ import { ActionsBase } from "../base/actions";
 import { Collection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
+import {
+	applyAddDefaults,
+	applyFindDefaults,
+	applyFindOneDefaults,
+	applyRemoveDefaults,
+	applyToggleOneDefaults,
+	applyUpdateDefaults,
+	applyUpdateOneOrAddDefaults,
+} from "../helpers/queryDefaults";
 import { Data } from "../types/data";
 import { DbOpts } from "../types/options";
 import { PluginContext, ValtheraPlugin } from "../types/plugin";
@@ -10,6 +19,7 @@ import { VQuery, VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
 import { version } from "../version";
+import { Transaction } from "./transaction";
 
 /**
  * Represents a database management class for performing CRUD operations.
@@ -32,7 +42,6 @@ export class ValtheraClass implements ValtheraCompatible {
 
 	_plugins: ValtheraPlugin[] = [];
 	_collections: Map<string, Collection<any>> = new Map();
-	_activeTx: TransactionHandle | null = null;
 
 	plugin(p: ValtheraPlugin) {
 		p.init?.(this);
@@ -101,13 +110,11 @@ export class ValtheraClass implements ValtheraCompatible {
 	async execute<T>(
 		name: keyof ValtheraCompatible,
 		query: VQuery<any> | string,
+		txHandle?: TransactionHandle,
 	) {
 		await this.init();
-		const isTransaction = this._activeTx && typeof query !== "string";
 
-		if (isTransaction) {
-			query.transaction = this._activeTx;
-		}
+		if (txHandle && typeof query === "object") query.transaction = txHandle;
 
 		const plugins = this._plugins;
 		const self = this;
@@ -118,8 +125,6 @@ export class ValtheraClass implements ValtheraCompatible {
 			query,
 			next: async () => {
 				if (idx < plugins.length) return plugins[idx++].execute(ctx);
-
-				if (isTransaction) return self.adapter[name](query);
 
 				return self.executor.addOp(
 					self.adapter[ctx.op].bind(self.adapter),
@@ -170,8 +175,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Add data to a database.
 	 */
 	add<T = Data>(query: VQueryT.Add<T>) {
-		query.control ||= {};
-		query.id_gen ??= true;
+		applyAddDefaults(query);
 		return this.execute<T>("add", query);
 	}
 
@@ -179,11 +183,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Find data in a database.
 	 */
 	find<T = Data>(query: VQueryT.Find<T>) {
-		query.search ||= {};
-		query.dbFindOpts ||= {};
-		query.findOpts ||= {};
-		query.context ||= {};
-		query.control ||= {};
+		applyFindDefaults(query);
 		return this.execute<T[]>("find", query);
 	}
 
@@ -191,9 +191,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Find one data entry in a database.
 	 */
 	findOne<T = Data>(query: VQueryT.FindOne<T>) {
-		query.findOpts ||= {};
-		query.context ||= {};
-		query.control ||= {};
+		applyFindOneDefaults(query);
 		return this.execute<T | null>("findOne", query);
 	}
 
@@ -201,8 +199,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Update data in a database.
 	 */
 	update<T = Data>(query: VQueryT.Update<T>) {
-		query.context ||= {};
-		query.control ||= {};
+		applyUpdateDefaults(query);
 		return this.execute<T[]>("update", query);
 	}
 
@@ -210,8 +207,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Update one data entry in a database.
 	 */
 	updateOne<T = Data>(query: VQueryT.Update<T>) {
-		query.context ||= {};
-		query.control ||= {};
+		applyUpdateDefaults(query);
 		return this.execute<T | null>("updateOne", query);
 	}
 
@@ -219,8 +215,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Remove data from a database.
 	 */
 	remove<T = Data>(query: VQueryT.Remove<T>) {
-		query.context ||= {};
-		query.control ||= {};
+		applyRemoveDefaults(query);
 		return this.execute<T[]>("remove", query);
 	}
 
@@ -228,8 +223,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Remove one data entry from a database.
 	 */
 	removeOne<T = Data>(query: VQueryT.Remove<T>) {
-		query.context ||= {};
-		query.control ||= {};
+		applyRemoveDefaults(query);
 		return this.execute<T | null>("removeOne", query);
 	}
 
@@ -237,10 +231,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
 	 */
 	updateOneOrAdd<T = Data>(query: VQueryT.UpdateOneOrAdd<T>) {
-		query.context ||= {};
-		query.add_arg ||= {};
-		query.control ||= {};
-		query.id_gen ??= true;
+		applyUpdateOneOrAddDefaults(query);
 		return this.execute<VQueryT.UpdateOneOrAddResult<T>>(
 			"updateOneOrAdd",
 			query,
@@ -251,9 +242,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
 	 */
 	toggleOne<T = Data>(query: VQueryT.ToggleOne<T>) {
-		query.data ||= {};
-		query.context ||= {};
-		query.control ||= {};
+		applyToggleOneDefaults(query);
 		return this.execute<VQueryT.ToggleOneResult<T>>("toggleOne", query);
 	}
 
@@ -270,60 +259,63 @@ export class ValtheraClass implements ValtheraCompatible {
 	 *
 	 * Executes operations within a transaction. Automatically rolls back on error.
 	 *
+	 * Receives a transaction-scoped object (`tx`) whose operations are executed
+	 * within the transaction context.
+	 *
 	 * This feature is highly experimental and may change or be removed at any time.
 	 *
-	 * - Requires `executorAware: false` in ValtheraClass options.
-	 * - Transaction support depends on the executor implementation.
-	 * - Nested transactions are not supported.
-	 * - Transactions lock the whole database for the duration of the transaction.
+	 * - Transaction support depends on the adapter implementation.
+	 * - Collections must be declared upfront to ensure proper locking.
+	 * - Operations invoked via the original `db` reference are NOT part of the transaction.
 	 */
 	async transaction<T>(
-		fn: (handle: TransactionHandle) => Promise<T>,
+		collections: string[],
+		fn: (tx: Transaction) => Promise<T>,
 	): Promise<T> {
 		await this.init();
 
-		if ("aware" in this.executor && this.executor.aware) {
-			throw new Error(
-				"Transactions are not supported when using a smart executor. " +
-					"Please use options.executorAware = false when creating the Valthera instance.",
+		const releases: Array<() => void> = [];
+
+		const promises = collections.map(collection => {
+			let started: () => void;
+			const startedPromise = new Promise<void>(r => (started = r));
+
+			this.executor.addOp(
+				async () => {
+					started();
+					await new Promise<void>(resolve => releases.push(resolve));
+				},
+				undefined,
+				collection,
 			);
-		}
 
-		if (this._activeTx)
-			throw new Error("Nested transactions are not supported");
-
-		const self = this;
-
-		return this.executor.addOp(async () => {
-			if (self._activeTx)
-				throw new Error("Nested transactions are not supported");
-
-			const handle = await self.adapter.beginTransaction(genId());
-			self._activeTx = handle;
-
-			try {
-				const result = await fn(handle);
-
-				await self.adapter.commitTransaction(handle);
-
-				return result;
-			} catch (err) {
-				try {
-					await self.adapter.rollbackTransaction(handle);
-				} catch (rollbackErr) {
-					throw new AggregateError(
-						[
-							err,
-							rollbackErr,
-						],
-						"Transaction failed and rollback failed",
-					);
-				}
-
-				throw err;
-			} finally {
-				self._activeTx = null;
-			}
+			return startedPromise;
 		});
+
+		await Promise.all(promises);
+
+		const handle = await this.adapter.beginTransaction(genId());
+		const tx = new Transaction(handle, this);
+
+		try {
+			const result = await fn(tx);
+			await tx.commit();
+			return result;
+		} catch (err) {
+			try {
+				await tx.rollback();
+			} catch (rollbackErr) {
+				throw new AggregateError(
+					[
+						err,
+						rollbackErr,
+					],
+					"Transaction failed and rollback failed",
+				);
+			}
+			throw err;
+		} finally {
+			releases.forEach(release => release());
+		}
 	}
 }

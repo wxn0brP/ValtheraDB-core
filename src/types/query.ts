@@ -34,6 +34,7 @@ export namespace VQueryT {
 	export type QueryBase<T = Data> = {
 		collection: string;
 		control?: VQuery_Control;
+		transaction?: TransactionHandle;
 	};
 
 	export type Add<T = Data> = QueryBase<T> & {

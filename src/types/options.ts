@@ -1,12 +1,12 @@
 import { ActionsBase } from "../base/actions";
-import { Executor } from "../helpers/executor";
+import { ExecutorInterface } from "../helpers/executor";
 import { KeysMatching } from "./utils";
 
 export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
 
 export interface DbOpts {
 	adapter: AdapterValue;
-	executor?: Executor;
+	executor?: ExecutorInterface;
 	executorAware?: boolean;
 	adapterOpts?: AdapterOpts;
 }

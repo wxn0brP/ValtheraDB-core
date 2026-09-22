@@ -20,11 +20,14 @@ export async function addId(
 		return;
 	}
 
+	const txOpts = query.transaction ? { transaction: query.transaction } : {};
+
 	const find = (await actions.findOne({
 		collection: "__vdb_id",
 		search: {
 			c: collection,
 		},
+		...txOpts,
 	})) as {
 		i: number;
 	};
@@ -40,5 +43,6 @@ export async function addId(
 			},
 		},
 		id_gen: false,
+		...txOpts,
 	});
 }

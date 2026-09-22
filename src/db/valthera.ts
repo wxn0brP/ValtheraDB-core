@@ -125,6 +125,7 @@ export class ValtheraClass implements ValtheraCompatible {
 			query,
 			next: async () => {
 				if (idx < plugins.length) return plugins[idx++].execute(ctx);
+				if (txHandle) return self.adapter[ctx.op](query, txHandle);
 
 				return self.executor.addOp(
 					self.adapter[ctx.op].bind(self.adapter),

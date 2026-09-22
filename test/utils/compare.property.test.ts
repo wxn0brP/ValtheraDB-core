@@ -31,7 +31,8 @@ describe("compareSafe - property-based", () => {
 			fc.property(fc.integer(), fc.integer(), (a, b) => {
 				const ab = compareSafe(a, b);
 				const ba = compareSafe(b, a);
-				expect(ab).toBe(-ba as -1 | 0 | 1);
+				if (ab === 0) expect(ba).toBe(0);
+				else expect(ba).toBe(-ab as -1 | 0 | 1);
 			}),
 		);
 	});

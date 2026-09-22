@@ -30,12 +30,16 @@ export class ValtheraClass implements ValtheraCompatible {
 	executor: ExecutorInterface;
 	emitter: VEE<
 		{
-			[K in keyof ValtheraCompatible]: (
+			[K in keyof Omit<ValtheraCompatible, "c">]: (
 				query: VQuery,
 				result: Awaited<ReturnType<ValtheraCompatible[K]>>,
 			) => void;
 		} & {
-			"*": (name: keyof ValtheraCompatible, query: VQuery, result: any) => void;
+			"*": (
+				name: keyof Omit<ValtheraCompatible, "c">,
+				query: VQuery,
+				result: any,
+			) => void;
 		}
 	> = new VEE();
 	version = version;

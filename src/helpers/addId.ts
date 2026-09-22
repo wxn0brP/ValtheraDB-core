@@ -20,7 +20,11 @@ export async function addId(
 		return;
 	}
 
-	const txOpts = query.transaction ? { transaction: query.transaction } : {};
+	const txOpts = query.transaction
+		? {
+				transaction: query.transaction,
+			}
+		: {};
 
 	const find = (await actions.findOne({
 		collection: "__vdb_id",

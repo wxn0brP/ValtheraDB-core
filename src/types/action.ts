@@ -33,4 +33,6 @@ export interface ActionsBaseInterface {
 	beginTransaction(id: Id): Promise<TransactionHandle>;
 	commitTransaction(handle: TransactionHandle): Promise<void>;
 	rollbackTransaction(handle: TransactionHandle): Promise<void>;
+
+	createIndex(config: VQueryT.CreateIndex): Promise<void>;
 }

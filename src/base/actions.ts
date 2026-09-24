@@ -47,6 +47,10 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 		throw new Error("Transactions are not supported for ActionsBase");
 	}
 
+	async createIndex(config: VQueryT.CreateIndex) {
+		// No-op: adapter does not use indexes internally
+	}
+
 	async updateOneOrAdd(
 		config: VQueryT.UpdateOneOrAdd,
 	): Promise<VQueryT.UpdateOneOrAddResult<DataInternal>> {

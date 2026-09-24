@@ -1,5 +1,6 @@
 import { Collection } from "../helpers/collection";
 import { Data } from "./data";
+import { IndexOpts } from "./idx";
 import { VQueryT } from "./query";
 
 export interface ValtheraCompatible {
@@ -21,4 +22,9 @@ export interface ValtheraCompatible {
 	toggleOne<T = Data>(
 		query: VQueryT.ToggleOne<T>,
 	): Promise<VQueryT.ToggleOneResult<T>>;
+	createIndex(
+		collection: string,
+		fields: string[],
+		opts?: IndexOpts,
+	): Promise<void>;
 }

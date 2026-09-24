@@ -1,5 +1,6 @@
 import { Arg, Search, Updater } from "./arg";
 import { Data } from "./data";
+import { IndexDefinition } from "./idx";
 import { DbFindOpts, FindOpts } from "./options";
 import { TransactionHandle } from "./transaction";
 import { VContext } from "./types";
@@ -28,6 +29,7 @@ export interface VQuery<T = Data, AllowFn extends boolean = true> {
 	updater?: Updater<T, AllowFn>;
 	control?: VQuery_Control;
 	transaction?: TransactionHandle;
+	index?: IndexDefinition;
 }
 
 export namespace VQueryT {
@@ -104,4 +106,8 @@ export namespace VQueryT {
 		data: T;
 		type: "added" | "removed";
 	}
+
+	export type CreateIndex<T = Data> = QueryBase<T> & {
+		index: IndexDefinition;
+	};
 }

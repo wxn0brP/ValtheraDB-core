@@ -13,6 +13,7 @@ import {
 	applyUpdateOneOrAddDefaults,
 } from "../helpers/queryDefaults";
 import { Data } from "../types/data";
+import { IndexDefinition, IndexOpts } from "../types/idx";
 import { DbOpts } from "../types/options";
 import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
@@ -257,6 +258,21 @@ export class ValtheraClass implements ValtheraCompatible {
 	removeCollection(collection: string) {
 		this._collections.delete(collection);
 		return this.execute<boolean>("removeCollection", collection);
+	}
+
+	/**
+	 * Create an index on a collection.
+	 */
+	async createIndex(collection: string, fields: string[], opts?: IndexOpts) {
+		const index: IndexDefinition = {
+			collection,
+			fields,
+			opts,
+		};
+		await this.execute("createIndex", {
+			collection,
+			index,
+		});
 	}
 
 	/**

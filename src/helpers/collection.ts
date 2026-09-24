@@ -1,6 +1,7 @@
 import { Arg, Search, Updater } from "../types/arg";
 import { UpdateOneOrAdd } from "../types/collection";
 import { Data } from "../types/data";
+import { IndexOpts } from "../types/idx";
 import { DbFindOpts, FindOpts } from "../types/options";
 import { VQueryT } from "../types/query";
 import { VContext } from "../types/types";
@@ -152,5 +153,12 @@ export class Collection<D = Data> {
 			data,
 			context,
 		});
+	}
+
+	/**
+	 * Create an index on this collection.
+	 */
+	createIndex(fields: string[], opts?: IndexOpts) {
+		return this.db.createIndex(this.collection, fields, opts);
 	}
 }

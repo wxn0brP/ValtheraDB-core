@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.5](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.4...v0.12.5) (2026-09-30)
+
+
+### Bug Fixes
+
+* transaction lock ([9e51316](https://github.com/wxn0brP/ValtheraDB-core/commit/9e51316181b57c670a55787a5c828c7af1b5bd50))
+
 ### [0.12.4](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.4-alpha.2...v0.12.4) (2026-09-25)
 
 ### [0.12.4-alpha.2](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.4-alpha.1...v0.12.4-alpha.2) (2026-09-24)

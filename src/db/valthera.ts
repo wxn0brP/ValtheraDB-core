@@ -315,26 +315,28 @@ export class ValtheraClass implements ValtheraCompatible {
 
 		await Promise.all(promises);
 
-		const handle = await this.adapter.beginTransaction(genId());
-		const tx = new Transaction(handle, this);
-
 		try {
-			const result = await fn(tx);
-			await tx.commit();
-			return result;
-		} catch (err) {
+			const handle = await this.adapter.beginTransaction(genId());
+			const tx = new Transaction(handle, this);
+
 			try {
-				await tx.rollback();
-			} catch (rollbackErr) {
-				throw new AggregateError(
-					[
-						err,
-						rollbackErr,
-					],
-					"Transaction failed and rollback failed",
-				);
+				const result = await fn(tx);
+				await tx.commit();
+				return result;
+			} catch (err) {
+				try {
+					await tx.rollback();
+				} catch (rollbackErr) {
+					throw new AggregateError(
+						[
+							err,
+							rollbackErr,
+						],
+						"Transaction failed and rollback failed",
+					);
+				}
+				throw err;
 			}
-			throw err;
 		} finally {
 			releases.forEach(release => release());
 		}

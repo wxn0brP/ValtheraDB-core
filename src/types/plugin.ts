@@ -10,4 +10,5 @@ export interface ValtheraPlugin {
 	name: string;
 	execute(ctx: PluginContext): Promise<any>;
 	init?: (db: ValtheraClass) => void;
+	collections?: string[];
 }

@@ -48,7 +48,14 @@ export class ValtheraClass implements ValtheraCompatible {
 	_plugins: ValtheraPlugin[] = [];
 	_collections: Map<string, Collection<any>> = new Map();
 
-	plugin(p: ValtheraPlugin) {
+	plugin(p: ValtheraPlugin, collections?: string[] | string) {
+		if (collections) {
+			p.collections = Array.isArray(collections)
+				? collections
+				: [
+						collections,
+					];
+		}
 		p.init?.(this);
 		this._plugins.push(p);
 		return () => {
@@ -121,7 +128,10 @@ export class ValtheraClass implements ValtheraCompatible {
 
 		if (txHandle && typeof query === "object") query.transaction = txHandle;
 
-		const plugins = this._plugins;
+		const collection = typeof query === "string" ? query : query.collection;
+		const plugins = this._plugins.filter(
+			p => !p.collections || p.collections.includes(collection),
+		);
 		const self = this;
 		let idx = 0;
 

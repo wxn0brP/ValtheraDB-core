@@ -16,9 +16,7 @@ export function forgeTypedValthera(target: ValtheraClass) {
 				return Reflect.get(target, prop, receiver);
 			}
 
-			const collection = new Collection(target, prop);
-			target[prop] = collection;
-			return collection;
+			return target.c(prop);
 		},
 
 		set(target, prop: string, value, receiver) {

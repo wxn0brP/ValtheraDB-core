@@ -67,15 +67,14 @@ export class ValtheraClass implements ValtheraCompatible {
 	constructor(public options: DbOpts) {
 		this.executor = options.executor || new SmartExecutor(undefined, false);
 
-		if (typeof options.adapter === "function") return;
-		else {
+		options.executorAware ??= true;
+
+		if (typeof options.adapter !== "function") {
 			this.adapter = options.adapter as ActionsBase;
 			if (options.adapterOpts) {
 				this.adapter.adapterOpts = options.adapterOpts;
 			}
 		}
-
-		options.executorAware ??= true;
 	}
 
 	async init(...args: any[]) {
@@ -110,10 +109,10 @@ export class ValtheraClass implements ValtheraCompatible {
 	}
 
 	async close(...args: any[]) {
-		if (!this.adapter._inited) return;
+		if (!this.adapter?._inited) return;
 		const self = this;
 		return await this.executor.addOp(async () => {
-			if (!self.adapter._inited) return;
+			if (!self.adapter?._inited) return;
 			await self.adapter.close(...args);
 			self.adapter._inited = false;
 		});

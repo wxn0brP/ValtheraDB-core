@@ -70,7 +70,16 @@ export class RoutedStorage extends ActionsBase {
 	}
 
 	async init(...args: any[]) {
-		const all = new Set(this.rules.flatMap(r => r.backends));
+		const all = new Set([
+			...this.rules.flatMap(r => r.backends),
+			...this.defaultBackend,
+		]);
+		for (const b of all) {
+			b.adapterOpts = {
+				...b.adapterOpts,
+				...this.adapterOpts,
+			};
+		}
 		await Promise.all(Array.from(all).map(b => b.init?.(...args)));
 	}
 
@@ -83,18 +92,19 @@ export class RoutedStorage extends ActionsBase {
 	}
 
 	async add(config: VQueryT.Add) {
-		const res = await this._withFirst(config, b => b.add(config));
-		await this._withAll(
-			{
-				...config,
-				data: res,
-			},
-			b =>
-				b.add({
-					...config,
-					data: res,
-				}),
-		);
+		const backends = this._matchBackends(config);
+		const [first, ...rest] = backends;
+		const res = await first.add(config);
+		if (rest.length > 0) {
+			await Promise.all(
+				rest.map(b =>
+					b.add({
+						...config,
+						data: res,
+					}),
+				),
+			);
+		}
 		return res;
 	}
 
@@ -136,9 +146,12 @@ export class RoutedStorage extends ActionsBase {
 
 	async getCollections() {
 		const all = await Promise.all(
-			Array.from(new Set(this.rules.flatMap(r => r.backends))).map(b =>
-				b.getCollections(),
-			),
+			Array.from(
+				new Set([
+					...this.rules.flatMap(r => r.backends),
+					...this.defaultBackend,
+				]),
+			).map(b => b.getCollections()),
 		);
 		const merged = new Set(all.flat());
 		return Array.from(merged);

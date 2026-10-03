@@ -13,7 +13,13 @@ export class MultiBackend extends ActionsBase {
 	}
 
 	async init(...args: any[]) {
-		await Promise.all(this.backends.map(b => b.init?.(...args)));
+		for (const b of this.backends) {
+			b.adapterOpts = {
+				...b.adapterOpts,
+				...this.adapterOpts,
+			};
+		}
+		await Promise.all(this.backends.map(b => b.init(...args)));
 	}
 
 	async close(...args: any[]) {

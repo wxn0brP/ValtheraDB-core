@@ -58,7 +58,7 @@ export class Collection<D = Data> {
 		search: Search<D> = {},
 		findOpts: FindOpts<D> = {},
 		context: VContext = {},
-	): Promise<D> {
+	): Promise<D | null> {
 		return this.db.findOne({
 			collection: this.collection,
 			search,

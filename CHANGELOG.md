@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.5...v0.12.6) (2026-10-03)
+
+
+### Features
+
+* collection-scoped plugin registration ([e0974ee](https://github.com/wxn0brP/ValtheraDB-core/commit/e0974ee49011c56ef2af32c794ad46df30083e2a))
+
+
+### Bug Fixes
+
+* db constructor & adapter close ([db17f8b](https://github.com/wxn0brP/ValtheraDB-core/commit/db17f8b1b80af1ae77fc7c262e74540273e17c26))
+* regex & exists ([807d43f](https://github.com/wxn0brP/ValtheraDB-core/commit/807d43fd3fd8ed417d85ee5d9d67277f5c8eda27))
+* relations ([7bdee51](https://github.com/wxn0brP/ValtheraDB-core/commit/7bdee51f17f18587ed8982d55338021d68b7bb6a))
+* RoutedStorage & MultiBackend ([ebcd2b9](https://github.com/wxn0brP/ValtheraDB-core/commit/ebcd2b950c719b6b524c1b44fb112938b9c66913))
+
 ### [0.12.5](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.4...v0.12.5) (2026-09-30)
 
 

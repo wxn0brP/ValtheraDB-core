@@ -119,6 +119,7 @@ export async function processRelations(
 						[fk]: keys,
 					},
 				},
+				dbFindOpts,
 				findOpts: {
 					select: selectSafe,
 				},
@@ -234,6 +235,8 @@ export async function processRelations(
 				...new Set(allPivots.map(p => p[through.fk])),
 			];
 
+			const [selectSafe, deleteSelect] = autoSelect(rel, fk);
+
 			const allRelated = await db.find({
 				collection,
 				search: {
@@ -241,8 +244,9 @@ export async function processRelations(
 						[fk]: allTargetIds,
 					},
 				},
+				dbFindOpts,
 				findOpts: {
-					select,
+					select: selectSafe,
 				},
 			});
 
@@ -264,6 +268,8 @@ export async function processRelations(
 					);
 				}
 			}
+
+			if (deleteSelect) for (const r of allRelated) delete r[fk];
 		} else if (type === "n1") {
 			const allFkIds = [
 				...new Set(targets.flatMap(i => i[pk] || [])),
@@ -281,6 +287,7 @@ export async function processRelations(
 							[fk]: allFkIds,
 						},
 					},
+					dbFindOpts,
 					findOpts: {
 						select: selectSafe,
 					},

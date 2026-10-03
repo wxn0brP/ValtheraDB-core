@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.7](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.6...v0.12.7) (2026-10-03)
+
+
+### Bug Fixes
+
+* collection findOne return type ([2096546](https://github.com/wxn0brP/ValtheraDB-core/commit/20965464058ec73c446ad61614c1fefadf47ccf8))
+
 ### [0.12.6](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.5...v0.12.6) (2026-10-03)
 
 

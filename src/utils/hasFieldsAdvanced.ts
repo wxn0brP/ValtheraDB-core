@@ -64,12 +64,13 @@ function mainCheck(obj: Object, fields: Object) {
 		nin: (data, value) => !value.includes(data),
 		type: (data, value) => typeof data === value,
 
-		exists: (_, shouldExist, key) => {
-			if (shouldExist && !(key in obj)) return false;
-			if (!shouldExist && key in obj) return false;
+		exists: (targetObj, shouldExist, key) => {
+			if (shouldExist && !(key in targetObj)) return false;
+			if (!shouldExist && key in targetObj) return false;
 			return true;
 		},
 		regex: (data, regexData) => {
+			if (typeof data !== "string") return false;
 			const regex =
 				typeof regexData === "string" ? new RegExp(regexData) : regexData;
 			return regex.test(data);
@@ -124,10 +125,19 @@ function _for(
 
 		for (const [key, val] of Object.entries(value as Record<string, any>)) {
 			const targetValue = obj?.[key];
-			if (typeof val === "object" && val !== null && !Array.isArray(val)) {
-				if (!deepCheck(val, targetValue, fieldFn)) return false;
+			if (
+				typeof val === "object" &&
+				val !== null &&
+				!Array.isArray(val) &&
+				!(val instanceof RegExp)
+			) {
+				if (!deepCheck(val, targetValue, fieldFn, fieldRaw)) return false;
 			} else {
-				if (!fieldFn(targetValue, val, key)) return false;
+				if (fieldRaw === "exists") {
+					if (!fieldFn(obj, val, key)) return false;
+				} else {
+					if (!fieldFn(targetValue, val, key)) return false;
+				}
 			}
 		}
 	}
@@ -138,15 +148,25 @@ function deepCheck(
 	valueObj: Record<string, any>,
 	targetObj: any,
 	fieldFn: (data: any, value: any, key: string) => boolean,
+	fieldRaw?: string,
 ): boolean {
 	if (typeof targetObj !== "object" || targetObj === null) return false;
 
 	for (const [k, v] of Object.entries(valueObj)) {
 		const targetValue = targetObj[k];
-		if (typeof v === "object" && v !== null && !Array.isArray(v)) {
-			if (!deepCheck(v, targetValue, fieldFn)) return false;
+		if (
+			typeof v === "object" &&
+			v !== null &&
+			!Array.isArray(v) &&
+			!(v instanceof RegExp)
+		) {
+			if (!deepCheck(v, targetValue, fieldFn, fieldRaw)) return false;
 		} else {
-			if (!fieldFn(targetValue, v, k)) return false;
+			if (fieldRaw === "exists") {
+				if (!fieldFn(targetObj, v, k)) return false;
+			} else {
+				if (!fieldFn(targetValue, v, k)) return false;
+			}
 		}
 	}
 	return true;

@@ -35,7 +35,7 @@ export class RoutedStorage extends ActionsBase {
 			if (
 				(typeof match === "string" && match === collection) ||
 				match === "*" ||
-				(match instanceof RegExp && match.test(collection)) ||
+				(match instanceof RegExp && match.test(collection!)) ||
 				(typeof match === "function" && match(config))
 			) {
 				matched.push(...backends);

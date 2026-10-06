@@ -9,7 +9,7 @@ interface GetUniqueRandomOpts {
 export function getIdData() {
 	return {
 		usedIds: new Map(),
-		lastId: undefined as Id,
+		lastId: undefined as Id | undefined,
 		lastTimeStr: "",
 		lastCounter: 0,
 		recentIdsTimestamps: [] as number[],
@@ -29,7 +29,10 @@ const defaultIdData = getIdData();
  * @param {number[]} [parts] - an array of lengths of parts of the identifier
  * @returns {Id} - a new unique identifier
  */
-export function genId(parts: number[] = null, idData = defaultIdData): Id {
+export function genId(
+	parts: number[] | null = null,
+	idData = defaultIdData,
+): Id {
 	if (parts === null)
 		parts = [
 			1,

@@ -7,7 +7,8 @@ export async function addId(
 	actions: ActionsBase,
 	defaultGen = true,
 ) {
-	const { collection, data } = query;
+	const collection = query.collection!;
+	const data = query.data!;
 	const id_gen = query.id_gen ?? defaultGen;
 
 	const { idKey = "_id", numberId } = actions.adapterOpts;

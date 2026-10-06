@@ -17,7 +17,7 @@ export function matchObj(config: VQuery, obj: Data): boolean {
 	const { search, context } = config;
 
 	if (search === undefined || search === null) return true;
-	if (typeof search === "function" && search(obj, context)) return true;
+	if (typeof search === "function" && search(obj, context!)) return true;
 	if (
 		typeof search === "object" &&
 		!Array.isArray(search) &&
@@ -40,7 +40,7 @@ export function updateObj(config: VQueryT.Update, obj: Data): DataInternal {
 	}
 
 	if (typeof updater === "function") {
-		const updateObjValue = updater(obj, context);
+		const updateObjValue = updater(obj, context!);
 
 		if (updateObjValue) return updateObjValue;
 		return obj;

@@ -108,7 +108,7 @@ function mainCheck(obj: Object, fields: Object) {
 
 function checkNot(obj: Object, fields: Object) {
 	if ("$not" in fields) {
-		return !hasFieldsAdvanced(obj, fields["$not"]);
+		return !hasFieldsAdvanced(obj, fields["$not"]!);
 	}
 	return true;
 }

@@ -127,7 +127,7 @@ export class ValtheraClass implements ValtheraCompatible {
 
 		if (txHandle && typeof query === "object") query.transaction = txHandle;
 
-		const collection = typeof query === "string" ? query : query.collection;
+		const collection = typeof query === "string" ? query : query.collection!;
 		const plugins = this._plugins.filter(
 			p => !p.collections || p.collections.includes(collection),
 		);
@@ -159,7 +159,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 */
 	c<T = Data>(collection: string): Collection<T> {
 		if (this._collections.has(collection))
-			return this._collections.get(collection);
+			return this._collections.get(collection)!;
 		const col = new Collection<T>(this, collection);
 		this._collections.set(collection, col);
 		return col;

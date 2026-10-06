@@ -34,7 +34,7 @@ export function autoSelect(
 				...rel.select,
 			]
 		: undefined;
-	const shouldDelete = select && !select.includes(key);
+	const shouldDelete = select! && !select.includes(key);
 	if (shouldDelete) select.push(key);
 	return [
 		select,

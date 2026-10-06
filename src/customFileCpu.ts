@@ -69,8 +69,8 @@ export class CustomFileCpu implements FileCpu {
 		one: boolean,
 	): Promise<DataInternal[]> {
 		file = pathRepair(file);
-		let entries = await this._readFile(file);
-		const removed = [];
+		let entries: DataInternal[] = await this._readFile(file);
+		const removed: DataInternal[] = [];
 
 		entries = entries.filter(entry => {
 			if (removed.length && one) return true;
@@ -94,8 +94,8 @@ export class CustomFileCpu implements FileCpu {
 		one: boolean,
 	): Promise<DataInternal[]> {
 		file = pathRepair(file);
-		let entries = await this._readFile(file);
-		const updated = [];
+		let entries: DataInternal[] = await this._readFile(file);
+		const updated: DataInternal[] = [];
 
 		entries = entries.map(entry => {
 			if (updated.length && one) return entry;

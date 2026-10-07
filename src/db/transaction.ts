@@ -1,6 +1,8 @@
 import { Collection } from "../helpers/collection";
 import {
 	applyAddDefaults,
+	applyBulkAddDefaults,
+	applyCountDefaults,
 	applyFindDefaults,
 	applyFindOneDefaults,
 	applyRemoveDefaults,
@@ -31,6 +33,11 @@ export class Transaction {
 	add<T = Data>(q: VQueryT.Add<T>) {
 		applyAddDefaults(q);
 		return this._parent.execute<T>("add", q, this.handle);
+	}
+
+	bulkAdd<T = Data>(q: VQueryT.BulkAdd<T>) {
+		applyBulkAddDefaults(q);
+		return this._parent.adapter.bulkAdd(q);
 	}
 
 	find<T = Data>(q: VQueryT.Find<T, true>) {
@@ -79,6 +86,11 @@ export class Transaction {
 			q,
 			this.handle,
 		);
+	}
+
+	count<T = Data>(q: VQueryT.Count<T>) {
+		applyCountDefaults(q);
+		return this._parent.adapter.count(q);
 	}
 
 	ensureCollection(collection: string) {

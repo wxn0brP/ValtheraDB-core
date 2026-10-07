@@ -28,4 +28,5 @@ export interface ValtheraCompatible {
 		opts?: IndexOpts,
 	): Promise<void>;
 	count(query: VQueryT.Count): Promise<number>;
+	bulkAdd<T = Data>(query: VQueryT.BulkAdd<T>): Promise<T[]>;
 }

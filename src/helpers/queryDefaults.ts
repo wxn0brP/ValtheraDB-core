@@ -46,3 +46,9 @@ export function applyCountDefaults<T>(q: VQueryT.Count<T>) {
 	q.search ||= {};
 	q.control ||= {};
 }
+
+export function applyBulkAddDefaults<T>(q: VQueryT.BulkAdd<T>) {
+	q.datas ??= [];
+	q.control ||= {};
+	q.id_gen ??= true;
+}

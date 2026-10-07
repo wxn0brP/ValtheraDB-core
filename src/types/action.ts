@@ -30,6 +30,7 @@ export interface ActionsBaseInterface {
 		query: VQueryT.ToggleOne,
 	): Promise<VQueryT.ToggleOneResult<DataInternal>>;
 	count(query: VQueryT.Count): Promise<number>;
+	bulkAdd(query: VQueryT.BulkAdd): Promise<DataInternal[]>;
 
 	beginTransaction(id: Id): Promise<TransactionHandle>;
 	commitTransaction(handle: TransactionHandle): Promise<void>;

@@ -24,6 +24,7 @@ export interface VQuery<T = Data, AllowFn extends boolean = true> {
 	dbFindOpts?: DbFindOpts<T>;
 	findOpts?: FindOpts<T>;
 	data?: Arg<T>;
+	datas?: Arg<T>[];
 	id_gen?: boolean;
 	add_arg?: Arg<T>;
 	updater?: Updater<T, AllowFn>;
@@ -41,6 +42,11 @@ export namespace VQueryT {
 
 	export type Add<T = Data> = QueryBase<T> & {
 		data: Arg<T>;
+		id_gen?: boolean;
+	};
+
+	export type BulkAdd<T = Data> = QueryBase<T> & {
+		datas: Arg<T>[];
 		id_gen?: boolean;
 	};
 

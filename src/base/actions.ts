@@ -94,4 +94,19 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 	async count(config: VQueryT.Count): Promise<number> {
 		return await this.find(config).then(res => res.length);
 	}
+
+	async bulkAdd(config: VQueryT.BulkAdd): Promise<DataInternal[]> {
+		const results: DataInternal[] = [];
+		for (const item of config.datas) {
+			const result = await this.add({
+				collection: config.collection,
+				data: item,
+				id_gen: config.id_gen,
+				control: config.control,
+				transaction: config.transaction,
+			});
+			results.push(result);
+		}
+		return results;
+	}
 }

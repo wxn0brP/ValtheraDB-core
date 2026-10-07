@@ -6,6 +6,7 @@ import { genId } from "../helpers/gen";
 import {
 	applyAddDefaults,
 	applyCountDefaults,
+	applyBulkAddDefaults,
 	applyFindDefaults,
 	applyFindOneDefaults,
 	applyRemoveDefaults,
@@ -193,6 +194,11 @@ export class ValtheraClass implements ValtheraCompatible {
 	add<T = Data>(query: VQueryT.Add<T>) {
 		applyAddDefaults(query);
 		return this.execute<T>("add", query);
+	}
+
+	bulkAdd<T = Data>(query: VQueryT.BulkAdd<T>) {
+		applyBulkAddDefaults(query);
+		return this.execute<T[]>("bulkAdd", query);
 	}
 
 	/**

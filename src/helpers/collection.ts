@@ -33,6 +33,23 @@ export class Collection<D = Data> {
 		});
 	}
 
+	bulkAdd(data: Arg<D>[], id_gen: false): Promise<D[]>;
+	bulkAdd(
+		data: Arg<D>[],
+		id_gen?: true,
+	): Promise<
+		(D & {
+			_id: string;
+		})[]
+	>;
+	bulkAdd(data: Arg<D>[], id_gen?: boolean): Promise<D[]> {
+		return this.db.bulkAdd({
+			collection: this.collection,
+			datas: data,
+			id_gen,
+		});
+	}
+
 	/**
 	 * Find data in a database.
 	 */

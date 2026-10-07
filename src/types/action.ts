@@ -29,6 +29,7 @@ export interface ActionsBaseInterface {
 	toggleOne(
 		query: VQueryT.ToggleOne,
 	): Promise<VQueryT.ToggleOneResult<DataInternal>>;
+	count(query: VQueryT.Count): Promise<number>;
 
 	beginTransaction(id: Id): Promise<TransactionHandle>;
 	commitTransaction(handle: TransactionHandle): Promise<void>;

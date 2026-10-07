@@ -90,4 +90,8 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 			type: "added",
 		};
 	}
+
+	async count(config: VQueryT.Count): Promise<number> {
+		return await this.find(config).then(res => res.length);
+	}
 }

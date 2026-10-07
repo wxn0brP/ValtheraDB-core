@@ -68,6 +68,16 @@ export class Collection<D = Data> {
 	}
 
 	/**
+	 * Count data entries in a database.
+	 */
+	count(search: Search<D, false> = {}): Promise<number> {
+		return this.db.count({
+			collection: this.collection,
+			search,
+		});
+	}
+
+	/**
 	 * Update data in a database.
 	 */
 	update(

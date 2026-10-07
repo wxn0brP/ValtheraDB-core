@@ -5,6 +5,7 @@ import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
 import {
 	applyAddDefaults,
+	applyCountDefaults,
 	applyFindDefaults,
 	applyFindOneDefaults,
 	applyRemoveDefaults,
@@ -282,6 +283,11 @@ export class ValtheraClass implements ValtheraCompatible {
 			collection,
 			index,
 		});
+	}
+
+	count(query: VQueryT.Count) {
+		applyCountDefaults(query);
+		return this.execute<number>("count", query);
 	}
 
 	/**

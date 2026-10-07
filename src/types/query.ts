@@ -110,4 +110,8 @@ export namespace VQueryT {
 	export type CreateIndex<T = Data> = QueryBase<T> & {
 		index: IndexDefinition;
 	};
+
+	export type Count<T = Data> = QueryBase<T> & {
+		search: Search<T, false>;
+	};
 }

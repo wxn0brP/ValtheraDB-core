@@ -3,6 +3,8 @@ import { CustomFileCpu } from "../customFileCpu";
 import { Collection } from "../helpers/collection";
 import { forgeTypedValthera } from "../helpers/forge";
 import { Data } from "../types/data";
+import { VQueryT } from "../types/query";
+import { hasFieldsAdvanced } from "../utils/hasFieldsAdvanced";
 import { ValtheraClass } from "./valthera";
 
 export class MemoryAction extends CustomActionsBase {
@@ -21,7 +23,7 @@ export class MemoryAction extends CustomActionsBase {
 
 	_readMemory(key: string) {
 		if (!this.memory.has(key)) return [];
-		return this.memory.get(key);
+		return this.memory.get(key)!;
 	}
 
 	_writeMemory(key: string, data: any[]) {
@@ -29,8 +31,7 @@ export class MemoryAction extends CustomActionsBase {
 	}
 
 	async getCollections() {
-		const collections = Array.from(this.memory.keys());
-		return collections;
+		return Array.from(this.memory.keys());
 	}
 
 	async ensureCollection(collection: string) {
@@ -47,6 +48,15 @@ export class MemoryAction extends CustomActionsBase {
 		if (!this.memory.has(collection)) return false;
 		this.memory.delete(collection);
 		return true;
+	}
+
+	async count(config: VQueryT.Count) {
+		const collection = this._readMemory(config.collection);
+		let count = 0;
+		for (const item of collection)
+			if (hasFieldsAdvanced(item, config.search)) count++;
+
+		return count;
 	}
 }
 

@@ -41,3 +41,8 @@ export function applyToggleOneDefaults<T>(q: VQueryT.ToggleOne<T>) {
 	q.context ||= {};
 	q.control ||= {};
 }
+
+export function applyCountDefaults<T>(q: VQueryT.Count<T>) {
+	q.search ||= {};
+	q.control ||= {};
+}

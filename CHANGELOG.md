@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.8-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.7...v0.12.8-alpha.0) (2026-10-08)
+
+
+### Features
+
+* bulkAdd ([5573e43](https://github.com/wxn0brP/ValtheraDB-core/commit/5573e432c9ba2f55baa8b780b7681b7d0f63bbb5))
+* db count ([4e52680](https://github.com/wxn0brP/ValtheraDB-core/commit/4e526808e53d2d5a93613c69386e14ed8cdfe886))
+* strictNullChecks ([cfeb086](https://github.com/wxn0brP/ValtheraDB-core/commit/cfeb0863679e4a70710c0dc81f739e515ce0c38c))
+
 ### [0.12.7](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.6...v0.12.7) (2026-10-03)
 
 

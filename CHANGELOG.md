@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.8-alpha.1](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.8-alpha.0...v0.12.8-alpha.1) (2026-10-09)
+
+
+### Features
+
+* removeIndex ([f10a6e5](https://github.com/wxn0brP/ValtheraDB-core/commit/f10a6e5c5a7a663c2d2e8ce1bf374d0bf3c8dbf9))
+
 ### [0.12.8-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.7...v0.12.8-alpha.0) (2026-10-08)
 
 

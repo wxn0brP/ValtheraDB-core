@@ -291,6 +291,20 @@ export class ValtheraClass implements ValtheraCompatible {
 		});
 	}
 
+	/**
+	 * Remove an index from a collection. Adapter-dependent.
+	 */
+	async removeIndex(collection: string, fields: string[]) {
+		const index: IndexDefinition = {
+			collection,
+			fields,
+		};
+		await this.execute("removeIndex", {
+			collection,
+			index,
+		});
+	}
+
 	count(query: VQueryT.Count) {
 		applyCountDefaults(query);
 		return this.execute<number>("count", query);

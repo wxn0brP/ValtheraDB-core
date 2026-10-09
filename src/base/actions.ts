@@ -51,6 +51,10 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 		// No-op: adapter does not use indexes internally
 	}
 
+	async removeIndex(config: VQueryT.RemoveIndex) {
+		// No-op: adapter does not use indexes internally
+	}
+
 	async updateOneOrAdd(
 		config: VQueryT.UpdateOneOrAdd,
 	): Promise<VQueryT.UpdateOneOrAddResult<DataInternal>> {

@@ -117,6 +117,10 @@ export namespace VQueryT {
 		index: IndexDefinition;
 	};
 
+	export type RemoveIndex<T = Data> = QueryBase<T> & {
+		index: IndexDefinition;
+	};
+
 	export type Count<T = Data> = QueryBase<T> & {
 		search: Search<T, false>;
 	};

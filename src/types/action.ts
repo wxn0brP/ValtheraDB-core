@@ -37,4 +37,5 @@ export interface ActionsBaseInterface {
 	rollbackTransaction(handle: TransactionHandle): Promise<void>;
 
 	createIndex(config: VQueryT.CreateIndex): Promise<void>;
+	removeIndex(config: VQueryT.RemoveIndex): Promise<void>;
 }

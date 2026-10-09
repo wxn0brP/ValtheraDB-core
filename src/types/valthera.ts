@@ -27,6 +27,7 @@ export interface ValtheraCompatible {
 		fields: string[],
 		opts?: IndexOpts,
 	): Promise<void>;
+	removeIndex(collection: string, fields: string[]): Promise<void>;
 	count(query: VQueryT.Count): Promise<number>;
 	bulkAdd<T = Data>(query: VQueryT.BulkAdd<T>): Promise<T[]>;
 }

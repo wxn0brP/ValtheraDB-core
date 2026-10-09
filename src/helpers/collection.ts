@@ -188,4 +188,11 @@ export class Collection<D = Data> {
 	createIndex(fields: string[], opts?: IndexOpts) {
 		return this.db.createIndex(this.collection, fields, opts);
 	}
+
+	/**
+	 * Remove an index from this collection. Adapter-dependent.
+	 */
+	removeIndex(fields: string[]) {
+		return this.db.removeIndex(this.collection, fields);
+	}
 }

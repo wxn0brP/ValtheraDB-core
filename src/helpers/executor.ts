@@ -1,6 +1,8 @@
 export interface Task {
 	func: Function;
-	param: any[];
+	/** @deprecated use query instead */
+	param?: any[];
+	query?: any;
 	resolve: Function;
 	reject: Function;
 }
@@ -30,9 +32,7 @@ export class Executor implements ExecutorInterface {
 		return await new Promise<any>((resolve, reject) => {
 			this.queue.push({
 				func,
-				param: [
-					query,
-				],
+				query,
 				resolve,
 				reject,
 			});
@@ -49,7 +49,7 @@ export class Executor implements ExecutorInterface {
 		while (this.queue.length > 0) {
 			const q = this.queue.shift()!;
 			await q
-				.func(...q.param)
+				.func(q.query || q.param?.[0])
 				.then(q.resolve)
 				.catch(q.reject);
 		}

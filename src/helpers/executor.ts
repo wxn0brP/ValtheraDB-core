@@ -68,7 +68,7 @@ export class SmartExecutor implements ExecutorInterface {
 		public aware = true,
 	) {}
 
-	async addOp(func: Function, query: any, collection: string) {
+	async addOp(func: Function, query: any, collection?: string) {
 		const key = this.aware
 			? (collection ?? defaultCollection)
 			: defaultCollection;

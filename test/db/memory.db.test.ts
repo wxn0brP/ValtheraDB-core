@@ -315,4 +315,112 @@ describe("createMemoryValthera - db interface", () => {
 		expect(collections).not.toContain("posts");
 		expect(collections).toContain("users");
 	});
+
+	test("31. should bulkAdd multiple documents at once", async () => {
+		const db = createMemoryValthera();
+
+		const result = await db.bulkAdd({
+			collection: "users",
+			datas: [
+				{
+					name: "Alice",
+					age: 25,
+				},
+				{
+					name: "Bob",
+					age: 30,
+				},
+				{
+					name: "Charlie",
+					age: 35,
+				},
+			],
+		});
+
+		expect(result).toHaveLength(3);
+		expect(result[0]).toHaveProperty("_id");
+		expect(result[1]).toHaveProperty("_id");
+		expect(result[2]).toHaveProperty("_id");
+		expect(result[0].name).toBe("Alice");
+		expect(result[1].name).toBe("Bob");
+		expect(result[2].name).toBe("Charlie");
+
+		const allUsers = await db.find({
+			collection: "users",
+			search: {},
+		});
+		expect(allUsers).toHaveLength(3);
+	});
+
+	test("32. should count documents with db.count", async () => {
+		const db = createMemoryValthera({
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					age: 25,
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					age: 30,
+				},
+				{
+					_id: "3",
+					name: "Bob",
+					age: 25,
+				},
+			],
+		});
+
+		const totalCount = await db.count({
+			collection: "users",
+			search: {},
+		});
+		expect(totalCount).toBe(3);
+
+		const filteredCount = await db.count({
+			collection: "users",
+			search: {
+				age: 25,
+			},
+		});
+		expect(filteredCount).toBe(2);
+
+		const noMatchCount = await db.count({
+			collection: "users",
+			search: {
+				age: 99,
+			},
+		});
+		expect(noMatchCount).toBe(0);
+	});
+
+	test("33. should createIndex on a collection", async () => {
+		const db = createMemoryValthera();
+
+		await db.createIndex("users", [
+			"name",
+		]);
+		await db.createIndex(
+			"users",
+			[
+				"email",
+			],
+			{
+				unique: true,
+			},
+		);
+	});
+
+	test("34. should removeIndex from a collection", async () => {
+		const db = createMemoryValthera();
+
+		await db.createIndex("users", [
+			"name",
+		]);
+		await db.removeIndex("users", [
+			"name",
+		]);
+	});
 });

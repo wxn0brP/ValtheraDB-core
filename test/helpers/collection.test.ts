@@ -297,4 +297,100 @@ describe("Collection", () => {
 		expect(userAfterAdd.name).toBe("John");
 		expect(userAfterAdd.active).toBe(true);
 	});
+
+	test("11. should bulk add data to the database", async () => {
+		const db = createMemoryValthera();
+		const usersCollection = new Collection(db, "users");
+
+		const result = await usersCollection.bulkAdd([
+			{
+				name: "Alice",
+				email: "alice@example.com",
+			},
+			{
+				name: "Bob",
+				email: "bob@example.com",
+			},
+			{
+				name: "Charlie",
+				email: "charlie@example.com",
+			},
+		]);
+
+		expect(result).toHaveLength(3);
+		expect(result[0]).toHaveProperty("_id");
+		expect(result[1]).toHaveProperty("_id");
+		expect(result[2]).toHaveProperty("_id");
+		expect(result[0].name).toBe("Alice");
+		expect(result[1].name).toBe("Bob");
+		expect(result[2].name).toBe("Charlie");
+
+		const allUsers = await usersCollection.find();
+		expect(allUsers).toHaveLength(3);
+	});
+
+	test("12. should count documents in the collection", async () => {
+		const db = createMemoryValthera({
+			users: [
+				{
+					_id: "1",
+					name: "John",
+					age: 25,
+				},
+				{
+					_id: "2",
+					name: "Jane",
+					age: 30,
+				},
+				{
+					_id: "3",
+					name: "Bob",
+					age: 25,
+				},
+			],
+		});
+		const usersCollection = new Collection(db, "users");
+
+		const totalCount = await usersCollection.count();
+		expect(totalCount).toBe(3);
+
+		const filteredCount = await usersCollection.count({
+			age: 25,
+		});
+		expect(filteredCount).toBe(2);
+
+		const noMatchCount = await usersCollection.count({
+			age: 99,
+		});
+		expect(noMatchCount).toBe(0);
+	});
+
+	test("13. should create an index on the collection", async () => {
+		const db = createMemoryValthera();
+		const usersCollection = new Collection(db, "users");
+
+		await usersCollection.createIndex([
+			"name",
+		]);
+		await usersCollection.createIndex(
+			[
+				"email",
+			],
+			{
+				unique: true,
+			},
+		);
+	});
+
+	test("14. should remove an index from the collection", async () => {
+		const db = createMemoryValthera();
+		const usersCollection = new Collection(db, "users");
+
+		await usersCollection.createIndex([
+			"name",
+		]);
+		await usersCollection.removeIndex([
+			"name",
+		]);
+	});
 });

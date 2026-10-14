@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.10-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.9...v0.12.10-alpha.0) (2026-10-14)
+
+
+### Features
+
+* adapter capabilities ([ee79366](https://github.com/wxn0brP/ValtheraDB-core/commit/ee793667a11cd9473beac7b225852e19a75795c2))
+* unified error handling ([56a6505](https://github.com/wxn0brP/ValtheraDB-core/commit/56a6505d0c0519a894bc53a68b1a738f65e3af01))
+
 ### [0.12.9](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.8...v0.12.9) (2026-10-12)
 
 

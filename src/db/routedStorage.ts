@@ -1,4 +1,5 @@
 import { ActionsBase } from "../base/actions";
+import { UnsupportedOperationError } from "../errors";
 import { VQueryT, VQuery } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 
@@ -158,14 +159,20 @@ export class RoutedStorage extends ActionsBase {
 	}
 
 	async beginTransaction(): Promise<TransactionHandle> {
-		throw new Error("Transactions are not supported for RoutedStorage");
+		throw new UnsupportedOperationError("beginTransaction", {
+			adapter: "RoutedStorage",
+		});
 	}
 
 	async commitTransaction() {
-		throw new Error("Transactions are not supported for RoutedStorage");
+		throw new UnsupportedOperationError("commitTransaction", {
+			adapter: "RoutedStorage",
+		});
 	}
 
 	async rollbackTransaction() {
-		throw new Error("Transactions are not supported for RoutedStorage");
+		throw new UnsupportedOperationError("rollbackTransaction", {
+			adapter: "RoutedStorage",
+		});
 	}
 }

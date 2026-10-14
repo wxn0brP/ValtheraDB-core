@@ -1,5 +1,14 @@
 import { VEE } from "@wxn0brp/event-emitter";
 import { ActionsBase } from "../base/actions";
+import {
+	AdapterCloseError,
+	AdapterInitError,
+	ErrorCodes,
+	isValtheraError,
+	QueryValidationError,
+	TransactionError,
+	wrapAdapterError,
+} from "../errors";
 import { Collection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
@@ -83,11 +92,23 @@ export class ValtheraClass implements ValtheraCompatible {
 		if (this.adapter?._inited) return;
 
 		const self = this;
+		const failInit = (err: unknown): never => {
+			if (isValtheraError(err)) throw err;
+			throw new AdapterInitError(err, {
+				adapter: self.adapter?.version,
+			});
+		};
+
 		return await this.executor.addOp(async () => {
 			if (self.adapter?._inited) return;
 
-			if (typeof self.options.adapter === "function")
-				self.adapter = await (self.options.adapter as any)();
+			if (typeof self.options.adapter === "function") {
+				try {
+					self.adapter = await (self.options.adapter as any)();
+				} catch (err) {
+					failInit(err);
+				}
+			}
 
 			// if the executor is not set, and the action wants a smart executor
 			if (
@@ -105,7 +126,12 @@ export class ValtheraClass implements ValtheraCompatible {
 				};
 			}
 
-			await self.adapter.init(...args);
+			try {
+				await self.adapter.init(...args);
+			} catch (err) {
+				failInit(err);
+			}
+
 			self.adapter._inited = true;
 		});
 	}
@@ -115,7 +141,14 @@ export class ValtheraClass implements ValtheraCompatible {
 		const self = this;
 		return await this.executor.addOp(async () => {
 			if (!self.adapter?._inited) return;
-			await self.adapter.close(...args);
+			try {
+				await self.adapter.close(...args);
+			} catch (err) {
+				if (isValtheraError(err)) throw err;
+				throw new AdapterCloseError(err, {
+					adapter: self.adapter?.version,
+				});
+			}
 			self.adapter._inited = false;
 		});
 	}
@@ -127,9 +160,20 @@ export class ValtheraClass implements ValtheraCompatible {
 	) {
 		await this.init();
 
-		if (txHandle && typeof query === "object") query.transaction = txHandle;
+		const collection =
+			typeof query === "string" ? query : (query?.collection as string);
 
-		const collection = typeof query === "string" ? query : query.collection!;
+		if (!collection && name !== "getCollections")
+			throw new QueryValidationError(
+				`Missing "collection" for operation "${String(name)}"`,
+				{
+					op: name,
+				},
+			);
+
+		if (txHandle && query && typeof query === "object")
+			query.transaction = txHandle;
+
 		const plugins = this._plugins.filter(
 			p => !p.collections || p.collections.includes(collection),
 		);
@@ -141,13 +185,21 @@ export class ValtheraClass implements ValtheraCompatible {
 			query,
 			next: async () => {
 				if (idx < plugins.length) return plugins[idx++].execute(ctx);
-				if (txHandle) return self.adapter[ctx.op](query, txHandle);
+				try {
+					if (txHandle) return await self.adapter[ctx.op](query, txHandle);
 
-				return self.executor.addOp(
-					self.adapter[ctx.op].bind(self.adapter),
-					ctx.query,
-					typeof ctx.query === "string" ? ctx.query : ctx.query.collection,
-				);
+					return await self.executor.addOp(
+						self.adapter[ctx.op].bind(self.adapter),
+						ctx.query,
+						typeof ctx.query === "string" ? ctx.query : ctx.query.collection,
+					);
+				} catch (err) {
+					throw wrapAdapterError(err, {
+						op: ctx.op,
+						collection,
+						adapter: self.adapter?.version,
+					});
+				}
 			},
 		};
 
@@ -351,7 +403,15 @@ export class ValtheraClass implements ValtheraCompatible {
 		await Promise.all(promises);
 
 		try {
-			const handle = await this.adapter.beginTransaction(genId());
+			let handle: TransactionHandle;
+			try {
+				handle = await this.adapter.beginTransaction(genId());
+			} catch (err) {
+				throw wrapAdapterError(err, {
+					op: "beginTransaction",
+					adapter: this.adapter?.version,
+				});
+			}
 			const tx = new Transaction(handle, this);
 
 			try {
@@ -362,13 +422,19 @@ export class ValtheraClass implements ValtheraCompatible {
 				try {
 					await tx.rollback();
 				} catch (rollbackErr) {
-					throw new AggregateError(
-						[
-							err,
-							rollbackErr,
-						],
-						"Transaction failed and rollback failed",
-					);
+					throw new TransactionError("Transaction failed and rollback failed", {
+						code: ErrorCodes.TRANSACTION_ROLLBACK_FAILED,
+						cause: new AggregateError(
+							[
+								err,
+								rollbackErr,
+							],
+							"Transaction failed and rollback failed",
+						),
+						context: {
+							collections,
+						},
+					});
 				}
 				throw err;
 			}

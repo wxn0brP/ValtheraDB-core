@@ -1,6 +1,7 @@
 export { CustomFileCpu } from "./customFileCpu";
 export { createMemoryValthera, ValtheraMemory } from "./db/memory";
 export { ValtheraClass } from "./db/valthera";
+export * from "./errors";
 export { forgeTypedValthera } from "./helpers/forge";
 export { genId } from "./helpers/gen";
 export { Relation } from "./helpers/relation";

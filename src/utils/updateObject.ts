@@ -1,3 +1,4 @@
+import { QueryValidationError } from "../errors";
 import { UpdaterArg } from "../types/updater";
 import { _deepMerge } from "./merge";
 
@@ -11,7 +12,9 @@ export function updateObjectAdvanced(
 	field: UpdaterArg,
 ) {
 	if (typeof field !== "object" || Array.isArray(field) || field === null)
-		throw new Error("Fields must be an object");
+		throw new QueryValidationError("Fields must be an object", {
+			op: "update",
+		});
 
 	if (Object.keys(field).length === 0) return;
 
@@ -107,7 +110,13 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 				return item + updater;
 			}
 			if (!(key in deepObj)) return updater;
-			throw new Error(`Cannot increment non-numeric value at key: ${key}`);
+			throw new QueryValidationError(
+				`Cannot increment non-numeric value at key: ${key}`,
+				{
+					op: "update",
+					key,
+				},
+			);
 		},
 
 		dec: (item, updater, key, deepObj) => {
@@ -115,7 +124,13 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 				return item - updater;
 			}
 			if (!(key in deepObj)) return -updater;
-			throw new Error(`Cannot decrement non-numeric value at key: ${key}`);
+			throw new QueryValidationError(
+				`Cannot decrement non-numeric value at key: ${key}`,
+				{
+					op: "update",
+					key,
+				},
+			);
 		},
 
 		rename: (_, newKey, oldKey, deepObj) => {

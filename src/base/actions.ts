@@ -1,3 +1,4 @@
+import { UnsupportedOperationError } from "../errors";
 import {
 	setDataForToggleOne,
 	setDataForUpdateOneOrAdd,
@@ -36,15 +37,15 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 	abstract removeOne(config: VQueryT.Remove): Promise<DataInternal | null>;
 
 	async beginTransaction(id: Id): Promise<TransactionHandle> {
-		throw new Error("Transactions are not supported for ActionsBase");
+		throw new UnsupportedOperationError("beginTransaction");
 	}
 
 	async commitTransaction(handle: TransactionHandle) {
-		throw new Error("Transactions are not supported for ActionsBase");
+		throw new UnsupportedOperationError("commitTransaction");
 	}
 
 	async rollbackTransaction(handle: TransactionHandle) {
-		throw new Error("Transactions are not supported for ActionsBase");
+		throw new UnsupportedOperationError("rollbackTransaction");
 	}
 
 	async createIndex(config: VQueryT.CreateIndex) {

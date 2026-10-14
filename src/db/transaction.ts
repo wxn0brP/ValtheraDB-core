@@ -1,3 +1,4 @@
+import { wrapAdapterError } from "../errors";
 import { Collection } from "../helpers/collection";
 import {
 	applyAddDefaults,
@@ -37,7 +38,7 @@ export class Transaction {
 
 	bulkAdd<T = Data>(q: VQueryT.BulkAdd<T>) {
 		applyBulkAddDefaults(q);
-		return this._parent.adapter.bulkAdd(q);
+		return this._parent.execute<T[]>("bulkAdd", q, this.handle);
 	}
 
 	find<T = Data>(q: VQueryT.Find<T, true>) {
@@ -90,30 +91,56 @@ export class Transaction {
 
 	count<T = Data>(q: VQueryT.Count<T>) {
 		applyCountDefaults(q);
-		return this._parent.adapter.count(q);
+		return this._parent.execute<number>("count", q, this.handle);
 	}
 
 	ensureCollection(collection: string) {
-		return this._parent.adapter.ensureCollection(collection);
+		return this._parent.execute<boolean>(
+			"ensureCollection",
+			collection,
+			this.handle,
+		);
 	}
 
 	issetCollection(collection: string) {
-		return this._parent.adapter.issetCollection(collection);
+		return this._parent.execute<boolean>(
+			"issetCollection",
+			collection,
+			this.handle,
+		);
 	}
 
 	getCollections() {
-		return this._parent.adapter.getCollections();
+		return this._parent.execute<string[]>("getCollections", {}, this.handle);
 	}
 
 	removeCollection(collection: string) {
-		return this._parent.adapter.removeCollection(collection);
+		return this._parent.execute<boolean>(
+			"removeCollection",
+			collection,
+			this.handle,
+		);
 	}
 
 	async commit() {
-		await this._parent.adapter.commitTransaction(this.handle);
+		try {
+			await this._parent.adapter.commitTransaction(this.handle);
+		} catch (err) {
+			throw wrapAdapterError(err, {
+				op: "commitTransaction",
+				adapter: this._parent.adapter?.version,
+			});
+		}
 	}
 
 	async rollback() {
-		await this._parent.adapter.rollbackTransaction(this.handle);
+		try {
+			await this._parent.adapter.rollbackTransaction(this.handle);
+		} catch (err) {
+			throw wrapAdapterError(err, {
+				op: "rollbackTransaction",
+				adapter: this._parent.adapter?.version,
+			});
+		}
 	}
 }

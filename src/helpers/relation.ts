@@ -1,3 +1,4 @@
+import { QueryValidationError } from "../errors";
 import { Search } from "../types/arg";
 import { DbFindOpts } from "../types/options";
 import { RelationTypes } from "../types/relation";
@@ -207,8 +208,12 @@ export async function processRelations(
 			if (deleteSelect) for (const r of results) delete r[fk];
 		} else if (type === "nm") {
 			if (!through || !through.table || !through.pk || !through.fk)
-				throw new Error(
+				throw new QueryValidationError(
 					`Relation type "nm" requires a defined "through" in "${key}"`,
+					{
+						op: "relation",
+						key,
+					},
 				);
 
 			const allSourceIds = targets.map(i => i[pk]);
@@ -313,7 +318,10 @@ export async function processRelations(
 				}
 			}
 		} else {
-			throw new Error(`Unknown relation type: ${type}`);
+			throw new QueryValidationError(`Unknown relation type: ${type}`, {
+				op: "relation",
+				type,
+			});
 		}
 	}
 }

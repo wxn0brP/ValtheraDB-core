@@ -1,3 +1,4 @@
+import { ErrorCodes, TransactionError } from "#errors";
 import { ValtheraClass } from "#db/valthera";
 import { MemoryAction } from "#db/memory";
 import { SmartExecutor } from "#helpers/executor";
@@ -79,7 +80,7 @@ describe("ValtheraClass.transaction", () => {
 		}
 	});
 
-	test("3. should throw AggregateError if both transaction and rollback fail", async () => {
+	test("3. should throw TransactionError if both transaction and rollback fail", async () => {
 		class FailingRollbackAction extends TransactionalMemoryAction {
 			async rollbackTransaction(handle: { id: string }) {
 				throw new Error("Rollback failed");
@@ -106,11 +107,13 @@ describe("ValtheraClass.transaction", () => {
 			);
 			expect.unreachable("Should have thrown");
 		} catch (err: any) {
-			expect(err).toBeInstanceOf(AggregateError);
+			expect(err).toBeInstanceOf(TransactionError);
+			expect(err.code).toBe(ErrorCodes.TRANSACTION_ROLLBACK_FAILED);
 			expect(err.message).toBe("Transaction failed and rollback failed");
-			expect(err.errors).toHaveLength(2);
-			expect(err.errors[0].message).toBe("Transaction failed");
-			expect(err.errors[1].message).toBe("Rollback failed");
+			expect(err.cause).toBeInstanceOf(AggregateError);
+			expect(err.cause.errors).toHaveLength(2);
+			expect(err.cause.errors[0].message).toBe("Transaction failed");
+			expect(err.cause.errors[1].message).toBe("Rollback failed");
 		}
 	});
 

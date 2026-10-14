@@ -1,3 +1,4 @@
+import { QueryValidationError } from "../errors";
 import { Arg } from "../types/arg";
 import { hasFields } from "./hasFields";
 import { compareIds } from "./id";
@@ -7,7 +8,9 @@ import { compareIds } from "./id";
  */
 export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 	if (typeof fields !== "object" || fields === null) {
-		throw new Error("Fields must be an object");
+		throw new QueryValidationError("Fields must be an object", {
+			op: "search",
+		});
 	}
 
 	if (Object.keys(fields).length === 0) return true;

@@ -10,6 +10,11 @@ import { ValtheraClass } from "./valthera";
 export class MemoryAction extends CustomActionsBase {
 	memory: Map<string, any[]>;
 	smartExecutor = true;
+	capabilities = {
+		transactions: false,
+		indexes: false,
+		persistent: false,
+	};
 
 	constructor() {
 		super();

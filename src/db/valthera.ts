@@ -14,8 +14,8 @@ import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
 import {
 	applyAddDefaults,
-	applyCountDefaults,
 	applyBulkAddDefaults,
+	applyCountDefaults,
 	applyFindDefaults,
 	applyFindOneDefaults,
 	applyRemoveDefaults,
@@ -23,6 +23,7 @@ import {
 	applyUpdateDefaults,
 	applyUpdateOneOrAddDefaults,
 } from "../helpers/queryDefaults";
+import { AdapterCapabilities } from "../types/action";
 import { Data } from "../types/data";
 import { IndexDefinition, IndexOpts } from "../types/idx";
 import { DbOpts } from "../types/options";
@@ -360,6 +361,16 @@ export class ValtheraClass implements ValtheraCompatible {
 	count(query: VQueryT.Count) {
 		applyCountDefaults(query);
 		return this.execute<number>("count", query);
+	}
+
+	/**
+	 * Describe what the underlying adapter supports.
+	 */
+	async capabilities(): Promise<AdapterCapabilities> {
+		await this.init();
+		return {
+			...this.adapter.capabilities,
+		};
 	}
 
 	/**

@@ -1,4 +1,5 @@
 import { Collection } from "../helpers/collection";
+import { AdapterCapabilities } from "./action";
 import { Data } from "./data";
 import { IndexOpts } from "./idx";
 import { VQueryT } from "./query";
@@ -30,4 +31,5 @@ export interface ValtheraCompatible {
 	removeIndex(collection: string, fields: string[]): Promise<void>;
 	count(query: VQueryT.Count): Promise<number>;
 	bulkAdd<T = Data>(query: VQueryT.BulkAdd<T>): Promise<T[]>;
+	capabilities(): Promise<AdapterCapabilities>;
 }

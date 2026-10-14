@@ -4,10 +4,17 @@ import { AdapterOpts } from "./options";
 import { VQueryT } from "./query";
 import { TransactionHandle } from "./transaction";
 
+export interface AdapterCapabilities {
+	transactions: boolean;
+	indexes: boolean;
+	persistent: boolean;
+}
+
 export interface ActionsBaseInterface {
 	_inited: boolean;
 	adapterOpts: AdapterOpts;
 	smartExecutor: boolean;
+	capabilities: AdapterCapabilities;
 	init(...args: any[]): Promise<void>;
 	close(...args: any[]): Promise<void>;
 

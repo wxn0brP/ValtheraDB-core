@@ -3,7 +3,7 @@ import {
 	setDataForToggleOne,
 	setDataForUpdateOneOrAdd,
 } from "../helpers/assignDataPush";
-import { ActionsBaseInterface } from "../types/action";
+import { ActionsBaseInterface, AdapterCapabilities } from "../types/action";
 import { DataInternal } from "../types/data";
 import { Id } from "../types/Id";
 import { AdapterOpts } from "../types/options";
@@ -18,6 +18,11 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 		idKey: "_id",
 	};
 	smartExecutor: boolean = false;
+	capabilities: AdapterCapabilities = {
+		transactions: false,
+		indexes: false,
+		persistent: true,
+	};
 	version = "ActionsBase-core-" + version;
 
 	async init(...args: any[]) {}

@@ -6,6 +6,7 @@ export namespace ValtheraTypes {
 	export type FindOpts = import("./options").FindOpts;
 	export type DbOpts = import("./options").DbOpts;
 	export type AdapterOpts = import("./options").AdapterOpts;
+	export type AdapterCapabilities = import("./action").AdapterCapabilities;
 	export type Data = import("./data").Data;
 	export type SearchOptions = import("./searchOpts").SearchOptions;
 	export type Id = import("./Id").Id;

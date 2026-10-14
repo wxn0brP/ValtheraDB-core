@@ -7,6 +7,7 @@ export { genId } from "./helpers/gen";
 export { Relation } from "./helpers/relation";
 export { convertIdToUnix, sortByIds } from "./utils/id";
 
+export type { AdapterCapabilities } from "./types/action";
 export type { ValtheraTypes } from "./types/export";
 export type { Id } from "./types/Id";
 export type { RelationTypes } from "./types/relation";

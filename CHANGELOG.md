@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.11](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.10...v0.12.11) (2026-10-16)
+
+
+### Features
+
+* beginTransaction wants collections ([363c64e](https://github.com/wxn0brP/ValtheraDB-core/commit/363c64edc227b73eca36887fd04cdf41f384ab8e))
+
 ### [0.12.10](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.10-alpha.0...v0.12.10) (2026-10-15)
 
 ### [0.12.10-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.9...v0.12.10-alpha.0) (2026-10-14)

@@ -416,7 +416,7 @@ export class ValtheraClass implements ValtheraCompatible {
 		try {
 			let handle: TransactionHandle;
 			try {
-				handle = await this.adapter.beginTransaction(genId());
+				handle = await this.adapter.beginTransaction(genId(), collections);
 			} catch (err) {
 				throw wrapAdapterError(err, {
 					op: "beginTransaction",

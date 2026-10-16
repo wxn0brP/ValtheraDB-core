@@ -41,7 +41,10 @@ export abstract class ActionsBase implements ActionsBaseInterface {
 	abstract remove(config: VQueryT.Remove): Promise<DataInternal[]>;
 	abstract removeOne(config: VQueryT.Remove): Promise<DataInternal | null>;
 
-	async beginTransaction(id: Id): Promise<TransactionHandle> {
+	async beginTransaction(
+		id: Id,
+		collections: string[],
+	): Promise<TransactionHandle> {
 		throw new UnsupportedOperationError("beginTransaction");
 	}
 

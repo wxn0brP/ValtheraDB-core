@@ -39,7 +39,7 @@ export interface ActionsBaseInterface {
 	count(query: VQueryT.Count): Promise<number>;
 	bulkAdd(query: VQueryT.BulkAdd): Promise<DataInternal[]>;
 
-	beginTransaction(id: Id): Promise<TransactionHandle>;
+	beginTransaction(id: Id, collections: string[]): Promise<TransactionHandle>;
 	commitTransaction(handle: TransactionHandle): Promise<void>;
 	rollbackTransaction(handle: TransactionHandle): Promise<void>;
 

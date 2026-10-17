@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.12](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.11...v0.12.12) (2026-10-17)
+
+
+### Features
+
+* accept collection object in collection methods ([53b2859](https://github.com/wxn0brP/ValtheraDB-core/commit/53b28591ae5c56ea5fce808e3a40b91ca7bc86a9))
+* improve plugin api ([72441e6](https://github.com/wxn0brP/ValtheraDB-core/commit/72441e6e9ffdcaeda861367dfd1bb4faae25c8f0))
+
 ### [0.12.11](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.10...v0.12.11) (2026-10-16)
 
 

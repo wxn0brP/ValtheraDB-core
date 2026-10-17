@@ -12,6 +12,7 @@ import {
 import { Collection, resolveCollection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
+import { rewriteOp } from "../helpers/plugin";
 import {
 	applyAddDefaults,
 	applyBulkAddDefaults,
@@ -31,6 +32,7 @@ import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
+import { getOpKind } from "../utils/opKind";
 import { version } from "../version";
 import { Transaction } from "./transaction";
 
@@ -46,12 +48,14 @@ export class ValtheraClass implements ValtheraCompatible {
 			[K in keyof Omit<ValtheraCompatible, "c">]: (
 				query: VQuery,
 				result: Awaited<ReturnType<ValtheraCompatible[K]>>,
+				collection?: string,
 			) => void;
 		} & {
 			"*": (
 				name: keyof Omit<ValtheraCompatible, "c">,
 				query: VQuery,
 				result: any,
+				collection?: string,
 			) => void;
 		}
 	> = new VEE();
@@ -183,11 +187,16 @@ export class ValtheraClass implements ValtheraCompatible {
 
 		const ctx: PluginContext = {
 			op: name as string,
+			kind: getOpKind(name as string),
+			collection,
 			query,
 			next: async () => {
 				if (idx < plugins.length) return plugins[idx++].execute(ctx);
+				if (txHandle && ctx.query && typeof ctx.query === "object")
+					ctx.query.transaction = txHandle;
+
 				try {
-					if (txHandle) return await self.adapter[ctx.op](query, txHandle);
+					if (txHandle) return await self.adapter[ctx.op](ctx.query, txHandle);
 
 					return await self.executor.addOp(
 						self.adapter[ctx.op].bind(self.adapter),
@@ -197,15 +206,24 @@ export class ValtheraClass implements ValtheraCompatible {
 				} catch (err) {
 					throw wrapAdapterError(err, {
 						op: ctx.op,
-						collection,
+						collection:
+							typeof ctx.query === "string" ? ctx.query : ctx.query?.collection,
 						adapter: self.adapter?.version,
 					});
 				}
 			},
+			setOp(op: string, q?: any) {
+				rewriteOp(ctx, op, q);
+			},
+			setQuery(q: any) {
+				rewriteOp(ctx, ctx.op, q);
+			},
 		};
 
 		const result = await ctx.next();
-		this.emitter.emit(ctx.op, ctx.query, result);
+		const emittedCollection =
+			typeof ctx.query === "string" ? ctx.query : ctx.query?.collection;
+		this.emitter.emit(ctx.op, ctx.query, result, emittedCollection);
 		return result as T;
 	}
 

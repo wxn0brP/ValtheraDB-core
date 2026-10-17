@@ -7,6 +7,10 @@ import { VQueryT } from "../types/query";
 import { VContext } from "../types/types";
 import { ValtheraCompatible } from "../types/valthera";
 
+export function resolveCollection(target: string | VQueryT.Collection) {
+	return typeof target === "string" ? target : target.collection;
+}
+
 export class Collection<D = Data> {
 	constructor(
 		public db: ValtheraCompatible,

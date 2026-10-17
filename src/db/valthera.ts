@@ -9,7 +9,7 @@ import {
 	TransactionError,
 	wrapAdapterError,
 } from "../errors";
-import { Collection } from "../helpers/collection";
+import { Collection, resolveCollection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
 import {
@@ -230,15 +230,21 @@ export class ValtheraClass implements ValtheraCompatible {
 	/**
 	 * Check and create the specified collection if it doesn't exist.
 	 */
-	async ensureCollection(collection: string) {
-		return await this.execute<boolean>("ensureCollection", collection);
+	async ensureCollection(collection: string | VQueryT.Collection) {
+		return await this.execute<boolean>(
+			"ensureCollection",
+			resolveCollection(collection),
+		);
 	}
 
 	/**
 	 * Check if a collection exists.
 	 */
-	async issetCollection(collection: string) {
-		return await this.execute<boolean>("issetCollection", collection);
+	async issetCollection(collection: string | VQueryT.Collection) {
+		return await this.execute<boolean>(
+			"issetCollection",
+			resolveCollection(collection),
+		);
 	}
 
 	/**
@@ -324,7 +330,8 @@ export class ValtheraClass implements ValtheraCompatible {
 	/**
 	 * Removes a database collection from the database.
 	 */
-	removeCollection(collection: string) {
+	removeCollection(target: string | VQueryT.Collection) {
+		const collection = resolveCollection(target);
 		this._collections.delete(collection);
 		return this.execute<boolean>("removeCollection", collection);
 	}

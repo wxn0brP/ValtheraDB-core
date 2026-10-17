@@ -124,4 +124,8 @@ export namespace VQueryT {
 	export type Count<T = Data> = QueryBase<T> & {
 		search: Search<T, false>;
 	};
+
+	export interface Collection {
+		collection: string;
+	}
 }

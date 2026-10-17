@@ -1,5 +1,5 @@
 import { wrapAdapterError } from "../errors";
-import { Collection } from "../helpers/collection";
+import { Collection, resolveCollection } from "../helpers/collection";
 import {
 	applyAddDefaults,
 	applyBulkAddDefaults,
@@ -94,18 +94,18 @@ export class Transaction {
 		return this._parent.execute<number>("count", q, this.handle);
 	}
 
-	ensureCollection(collection: string) {
+	ensureCollection(collection: string | VQueryT.Collection) {
 		return this._parent.execute<boolean>(
 			"ensureCollection",
-			collection,
+			resolveCollection(collection),
 			this.handle,
 		);
 	}
 
-	issetCollection(collection: string) {
+	issetCollection(collection: string | VQueryT.Collection) {
 		return this._parent.execute<boolean>(
 			"issetCollection",
-			collection,
+			resolveCollection(collection),
 			this.handle,
 		);
 	}
@@ -114,10 +114,10 @@ export class Transaction {
 		return this._parent.execute<string[]>("getCollections", {}, this.handle);
 	}
 
-	removeCollection(collection: string) {
+	removeCollection(target: string | VQueryT.Collection) {
 		return this._parent.execute<boolean>(
 			"removeCollection",
-			collection,
+			resolveCollection(target),
 			this.handle,
 		);
 	}

@@ -7,7 +7,7 @@
 export function hasFields(obj: Object, fields: Object): boolean {
 	const keys = Object.keys(fields);
 	return keys.every(key => {
-		if (obj[key] !== undefined) {
+		if (Object.hasOwn(obj, key)) {
 			if (typeof fields[key] === "object" && fields[key] !== null) {
 				return hasFields(obj[key], fields[key]);
 			}

@@ -1,4 +1,5 @@
 import { VQuery } from "../types/query";
+import { isUnsafeKey } from "../utils/security";
 
 export function assignDataPush(data: any) {
 	if (!data) return {};
@@ -8,6 +9,7 @@ export function assignDataPush(data: any) {
 	const obj = {};
 
 	for (const key of Object.keys(data)) {
+		if (isUnsafeKey(key)) continue;
 		if (!key.startsWith("$")) {
 			obj[key] = data[key];
 			continue;
@@ -15,7 +17,9 @@ export function assignDataPush(data: any) {
 
 		const dk = data[key];
 		if (Array.isArray(dk)) continue;
-		Object.keys(dk).forEach(k => (obj[k] = dk[k]));
+		Object.keys(dk).forEach(k => {
+			if (!isUnsafeKey(k)) obj[k] = dk[k];
+		});
 	}
 
 	return obj;

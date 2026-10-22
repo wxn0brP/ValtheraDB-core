@@ -2,22 +2,38 @@ import { QueryValidationError } from "../errors";
 import { Search } from "../types/arg";
 import { DbFindOpts } from "../types/options";
 import { RelationTypes } from "../types/relation";
+import { hasUnsafeSegment, isUnsafeKey } from "../utils/security";
 
 export function pickByPath(obj: any, paths: string[][]): any {
 	const result = {};
 	for (const path of paths) {
+		if (hasUnsafeSegment(path)) continue;
 		let src = obj;
 		let dst = result;
 		for (let i = 0; i < path.length; i++) {
 			const k = path[i];
 			if (src == null) break;
+
+			const isOwn = Object.hasOwn(src, k);
+			if (!isOwn && k in Object(src)) break;
+
 			if (i === path.length - 1) {
 				dst[k] = src[k];
-			} else {
-				dst[k] ||= {};
-				dst = dst[k];
-				src = src[k];
+				break;
 			}
+
+			if (
+				!Object.hasOwn(dst, k) ||
+				typeof dst[k] !== "object" ||
+				dst[k] === null ||
+				Array.isArray(dst[k])
+			)
+				dst[k] = {};
+
+			if (!isOwn) break;
+
+			dst = dst[k];
+			src = src[k];
 		}
 	}
 	return result;
@@ -91,7 +107,7 @@ export async function processRelations(
 	if (targets.length === 0) return;
 
 	for (const key in cfg) {
-		if (!Object.hasOwn(cfg, key)) continue;
+		if (!Object.hasOwn(cfg, key) || isUnsafeKey(key)) continue;
 		const rel = cfg[key];
 		const {
 			pk = "_id",
@@ -103,6 +119,8 @@ export async function processRelations(
 			dbFindOpts = {},
 			through,
 		} = rel;
+
+		if (isUnsafeKey(as)) continue;
 
 		const [dbKey, collection] = path;
 		const db = dbs[dbKey];
@@ -195,7 +213,7 @@ export async function processRelations(
 					acc[id].push(row);
 					return acc;
 				},
-				{} as Record<string, any[]>,
+				Object.create(null) as Record<string, any[]>,
 			);
 
 			for (const item of targets) item[as] = grouped[item[pk]] || [];

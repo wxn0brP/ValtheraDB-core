@@ -1,3 +1,5 @@
+import { isUnsafeKey } from "./security";
+
 export function _deepMerge(
 	target: Record<string, any>,
 	...sources: Record<string, any>[]
@@ -8,6 +10,7 @@ export function _deepMerge(
 
 	if (isObject(target) && isObject(source)) {
 		for (const key in source) {
+			if (!Object.hasOwn(source, key) || isUnsafeKey(key)) continue;
 			if (isObject(source[key])) {
 				if (!target[key])
 					Object.assign(target, {
@@ -30,7 +33,10 @@ function fastClone(obj: any): any {
 	if (Array.isArray(obj)) return obj.map(fastClone);
 	if (obj instanceof Date) return new Date(obj.getTime());
 	const result: any = {};
-	for (const key in obj) result[key] = fastClone(obj[key]);
+	for (const key in obj) {
+		if (!Object.hasOwn(obj, key) || isUnsafeKey(key)) continue;
+		result[key] = fastClone(obj[key]);
+	}
 	return result;
 }
 

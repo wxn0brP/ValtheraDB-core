@@ -38,7 +38,11 @@ const OP_KINDS: Readonly<Record<string, PluginOpKind>> = {
 };
 
 export function getOpKind(op: string): PluginOpKind {
-	return OP_KINDS[op] ?? "write";
+	return Object.hasOwn(OP_KINDS, op) ? OP_KINDS[op] : "write";
+}
+
+export function isKnownOp(op: string) {
+	return Object.hasOwn(OP_KINDS, op);
 }
 
 export function isMutation(kind: PluginOpKind) {

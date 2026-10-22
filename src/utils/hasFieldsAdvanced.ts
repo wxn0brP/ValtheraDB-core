@@ -2,6 +2,7 @@ import { QueryValidationError } from "../errors";
 import { Arg } from "../types/arg";
 import { hasFields } from "./hasFields";
 import { compareIds } from "./id";
+import { isUnsafeKey } from "./security";
 
 /**
  * Checks if an object meets the criteria specified in the fields with operators.
@@ -20,6 +21,7 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 	let hasSubset = false;
 
 	for (const key in fields) {
+		if (!Object.hasOwn(fields, key) || isUnsafeKey(key)) continue;
 		if (key.charCodeAt(0) === 36) {
 			$fields[key.toLowerCase()] = fields[key];
 		} else {
@@ -35,19 +37,20 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 	if (Object.keys($fields).length === 0) return true;
 
 	// Subset check
-	if ("$subset" in $fields && !hasFields(obj, $fields["$subset"])) return false;
+	if (Object.hasOwn($fields, "$subset") && !hasFields(obj, $fields["$subset"]))
+		return false;
 
 	// Advanced operators
 	if (!mainCheck(obj, $fields)) return false;
 	if (!checkNot(obj, $fields)) return false;
 
-	if ("$and" in $fields) {
+	if (Object.hasOwn($fields, "$and")) {
 		return $fields["$and"].every((subFields: Object) =>
 			hasFieldsAdvanced(obj, subFields),
 		);
 	}
 
-	if ("$or" in $fields) {
+	if (Object.hasOwn($fields, "$or")) {
 		return $fields["$or"].some((subFields: Object) =>
 			hasFieldsAdvanced(obj, subFields),
 		);
@@ -68,8 +71,8 @@ function mainCheck(obj: Object, fields: Object) {
 		type: (data, value) => typeof data === value,
 
 		exists: (targetObj, shouldExist, key) => {
-			if (shouldExist && !(key in targetObj)) return false;
-			if (!shouldExist && key in targetObj) return false;
+			if (shouldExist && !Object.hasOwn(targetObj, key)) return false;
+			if (!shouldExist && Object.hasOwn(targetObj, key)) return false;
 			return true;
 		},
 		regex: (data, regexData) => {
@@ -110,7 +113,7 @@ function mainCheck(obj: Object, fields: Object) {
 }
 
 function checkNot(obj: Object, fields: Object) {
-	if ("$not" in fields) {
+	if (Object.hasOwn(fields, "$not")) {
 		return !hasFieldsAdvanced(obj, fields["$not"]!);
 	}
 	return true;
@@ -123,11 +126,13 @@ function _for(
 ): boolean {
 	for (const [field, value] of Object.entries(fields)) {
 		const fieldRaw = field.slice(1);
-		const fieldFn = opts[fieldRaw];
+		const fieldFn = Object.hasOwn(opts, fieldRaw) ? opts[fieldRaw] : undefined;
 		if (!fieldFn) continue;
 
 		for (const [key, val] of Object.entries(value as Record<string, any>)) {
-			const targetValue = obj?.[key];
+			if (isUnsafeKey(key)) continue;
+			const targetValue =
+				obj != null && Object.hasOwn(obj, key) ? obj[key] : undefined;
 			if (
 				typeof val === "object" &&
 				val !== null &&
@@ -156,7 +161,8 @@ function deepCheck(
 	if (typeof targetObj !== "object" || targetObj === null) return false;
 
 	for (const [k, v] of Object.entries(valueObj)) {
-		const targetValue = targetObj[k];
+		if (isUnsafeKey(k)) continue;
+		const targetValue = Object.hasOwn(targetObj, k) ? targetObj[k] : undefined;
 		if (
 			typeof v === "object" &&
 			v !== null &&

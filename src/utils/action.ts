@@ -2,6 +2,11 @@ import { Data } from "../types/data";
 import { FileCpu } from "../types/fileCpu";
 import { VQueryT } from "../types/query";
 import { compareSafe } from "./compare";
+import { isUnsafeKey } from "./security";
+
+function getOwnValue(obj: any, key: string) {
+	return Object.hasOwn(obj, key) ? obj[key] : undefined;
+}
 
 export async function findUtil(
 	query: VQueryT.Find,
@@ -94,19 +99,21 @@ export async function findUtil(
 	const hasAggregations = min || max || avg || sum || groupBy || count;
 	if (hasAggregations) {
 		const groups: Map<string, Data[]> = new Map();
-		const groupKeys = Array.isArray(groupBy)
-			? groupBy
-			: groupBy
-				? [
-						groupBy,
-					]
-				: [];
+		const groupKeys = (
+			Array.isArray(groupBy)
+				? groupBy
+				: groupBy
+					? [
+							groupBy,
+						]
+					: []
+		).filter(key => !isUnsafeKey(key));
 
 		if (groupKeys.length) {
 			for (const data of datas) {
-				let key = String((data as any)[groupKeys[0]] ?? "");
+				let key = String(getOwnValue(data, groupKeys[0]) ?? "");
 				for (let i = 1; i < groupKeys.length; i++) {
-					key += "|" + String((data as any)[groupKeys[i]] ?? "");
+					key += "|" + String(getOwnValue(data, groupKeys[i]) ?? "");
 				}
 				let group = groups.get(key);
 				if (!group) {
@@ -125,14 +132,17 @@ export async function findUtil(
 
 			if (groupKeys.length) {
 				const sample = groupItems[0];
-				for (const k of groupKeys) result[k] = sample[k];
+				for (const k of groupKeys) {
+					if (Object.hasOwn(sample, k)) result[k] = sample[k];
+				}
 			}
 
 			if (count) {
 				for (const [outKey, srcKey] of Object.entries(count)) {
+					if (isUnsafeKey(outKey)) continue;
 					let c = 0;
 					for (let i = 0; i < groupItems.length; i++) {
-						const v = (groupItems[i] as any)[srcKey];
+						const v = getOwnValue(groupItems[i], srcKey);
 						if (v !== undefined && v !== null) c++;
 					}
 					result[outKey] = c;
@@ -146,9 +156,10 @@ export async function findUtil(
 
 			if (minEntries) {
 				for (const [outKey, srcField] of minEntries) {
+					if (isUnsafeKey(outKey)) continue;
 					let best: number | null = null;
 					for (let i = 0; i < groupItems.length; i++) {
-						const v = (groupItems[i] as any)[srcField];
+						const v = getOwnValue(groupItems[i], srcField);
 						if (typeof v === "number") {
 							if (best === null || v < best) best = v;
 						}
@@ -159,9 +170,10 @@ export async function findUtil(
 
 			if (maxEntries) {
 				for (const [outKey, srcField] of maxEntries) {
+					if (isUnsafeKey(outKey)) continue;
 					let best: number | null = null;
 					for (let i = 0; i < groupItems.length; i++) {
-						const v = (groupItems[i] as any)[srcField];
+						const v = getOwnValue(groupItems[i], srcField);
 						if (typeof v === "number") {
 							if (best === null || v > best) best = v;
 						}
@@ -172,10 +184,11 @@ export async function findUtil(
 
 			if (avgEntries) {
 				for (const [outKey, srcField] of avgEntries) {
+					if (isUnsafeKey(outKey)) continue;
 					let total = 0;
 					let c = 0;
 					for (let i = 0; i < groupItems.length; i++) {
-						const v = (groupItems[i] as any)[srcField];
+						const v = getOwnValue(groupItems[i], srcField);
 						if (typeof v === "number") {
 							total += v;
 							c++;
@@ -187,10 +200,11 @@ export async function findUtil(
 
 			if (sumEntries) {
 				for (const [outKey, srcField] of sumEntries) {
+					if (isUnsafeKey(outKey)) continue;
 					let total = 0;
 					let c = 0;
 					for (let i = 0; i < groupItems.length; i++) {
-						const v = (groupItems[i] as any)[srcField];
+						const v = getOwnValue(groupItems[i], srcField);
 						if (typeof v === "number") {
 							total += v;
 							c++;
@@ -206,11 +220,11 @@ export async function findUtil(
 		datas = aggregated;
 	}
 
-	if (distinct) {
+	if (distinct && !isUnsafeKey(distinct)) {
 		const seen = new Set();
 		const result: Data[] = [];
 		for (let i = 0; i < datas.length; i++) {
-			const val = (datas[i] as any)[distinct];
+			const val = getOwnValue(datas[i], distinct);
 			const key =
 				typeof val === "object" && val !== null ? JSON.stringify(val) : val;
 			if (!seen.has(key)) {
@@ -228,7 +242,8 @@ export async function findUtil(
 			datas.sort((a, b) => {
 				for (const { field, asc = true } of sortBy) {
 					const dir = asc ? 1 : -1;
-					const cmp = compareSafe((a as any)[field], (b as any)[field]) * dir;
+					const cmp =
+						compareSafe(getOwnValue(a, field), getOwnValue(b, field)) * dir;
 					if (cmp !== 0) return cmp;
 				}
 				return 0;
@@ -236,7 +251,8 @@ export async function findUtil(
 		} else {
 			const dir = sortAsc ? 1 : -1;
 			datas.sort(
-				(a, b) => compareSafe((a as any)[sortBy], (b as any)[sortBy]) * dir,
+				(a, b) =>
+					compareSafe(getOwnValue(a, sortBy), getOwnValue(b, sortBy)) * dir,
 			);
 		}
 	}

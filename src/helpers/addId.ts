@@ -1,6 +1,16 @@
 import { ActionsBase } from "../base/actions";
+import { QueryValidationError } from "../errors";
 import { VQuery, VQueryT } from "../types/query";
+import { isUnsafeKey } from "../utils/security";
 import { genId } from "./gen";
+
+function assertSafeIdKey(idKey: string) {
+	if (!isUnsafeKey(idKey)) return;
+	throw new QueryValidationError("Unsafe idKey", {
+		op: "addId",
+		idKey,
+	});
+}
 
 export async function addId(
 	query: VQuery,
@@ -14,6 +24,7 @@ export async function addId(
 	const { idKey = "_id", numberId } = actions.adapterOpts;
 
 	if (!id_gen) return data;
+	assertSafeIdKey(idKey);
 	if (data[idKey]) return data;
 
 	if (!numberId) {
@@ -62,6 +73,7 @@ export async function addIdBulk(
 	const { idKey = "_id", numberId } = actions.adapterOpts;
 
 	if (!id_gen) return;
+	assertSafeIdKey(idKey);
 
 	if (!numberId) {
 		for (const data of query.datas) {

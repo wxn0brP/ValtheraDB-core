@@ -1,3 +1,4 @@
+import { QueryValidationError } from "./errors";
 import { Data, DataInternal } from "./types/data";
 import { FileCpu } from "./types/fileCpu";
 import { VQueryT } from "./types/query";
@@ -8,7 +9,14 @@ export type WriteFile = (file: string, data: any[]) => Promise<void>;
 export type ReadFile = (file: string) => Promise<any[]>;
 
 export function pathRepair(path: string) {
-	return path.replace(/\/+/g, "/");
+	const repaired = path.replace(/\/+/g, "/");
+	if (repaired.split(/[/\\]+/).includes("..")) {
+		throw new QueryValidationError("Path traversal is not allowed", {
+			op: "pathRepair",
+			path,
+		});
+	}
+	return repaired;
 }
 
 export class CustomFileCpu implements FileCpu {

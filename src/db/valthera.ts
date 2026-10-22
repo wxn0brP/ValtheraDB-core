@@ -32,7 +32,7 @@ import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
-import { getOpKind } from "../utils/opKind";
+import { getOpKind, isKnownOp } from "../utils/opKind";
 import { version } from "../version";
 import { Transaction } from "./transaction";
 
@@ -194,6 +194,11 @@ export class ValtheraClass implements ValtheraCompatible {
 				if (idx < plugins.length) return plugins[idx++].execute(ctx);
 				if (txHandle && ctx.query && typeof ctx.query === "object")
 					ctx.query.transaction = txHandle;
+
+				if (!isKnownOp(ctx.op))
+					throw new QueryValidationError(`Unknown operation "${ctx.op}"`, {
+						op: ctx.op,
+					});
 
 				try {
 					if (txHandle) return await self.adapter[ctx.op](ctx.query, txHandle);

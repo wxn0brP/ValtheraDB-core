@@ -1,29 +1,11 @@
 import { VEE } from "@wxn0brp/event-emitter";
 import { ActionsBase } from "../base/actions";
-import {
-	AdapterCloseError,
-	AdapterInitError,
-	ErrorCodes,
-	isValtheraError,
-	QueryValidationError,
-	TransactionError,
-	wrapAdapterError,
-} from "../errors";
+import * as errors from "../errors";
 import { Collection, resolveCollection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/gen";
 import { rewriteOp } from "../helpers/plugin";
-import {
-	applyAddDefaults,
-	applyBulkAddDefaults,
-	applyCountDefaults,
-	applyFindDefaults,
-	applyFindOneDefaults,
-	applyRemoveDefaults,
-	applyToggleOneDefaults,
-	applyUpdateDefaults,
-	applyUpdateOneOrAddDefaults,
-} from "../helpers/queryDefaults";
+import * as queryDefaults from "../helpers/queryDefaults";
 import { AdapterCapabilities } from "../types/action";
 import { Data } from "../types/data";
 import { IndexDefinition, IndexOpts } from "../types/idx";
@@ -98,8 +80,8 @@ export class ValtheraClass implements ValtheraCompatible {
 
 		const self = this;
 		const failInit = (err: unknown): never => {
-			if (isValtheraError(err)) throw err;
-			throw new AdapterInitError(err, {
+			if (errors.isValtheraError(err)) throw err;
+			throw new errors.AdapterInitError(err, {
 				adapter: self.adapter?.version,
 			});
 		};
@@ -149,8 +131,8 @@ export class ValtheraClass implements ValtheraCompatible {
 			try {
 				await self.adapter.close(...args);
 			} catch (err) {
-				if (isValtheraError(err)) throw err;
-				throw new AdapterCloseError(err, {
+				if (errors.isValtheraError(err)) throw err;
+				throw new errors.AdapterCloseError(err, {
 					adapter: self.adapter?.version,
 				});
 			}
@@ -169,7 +151,7 @@ export class ValtheraClass implements ValtheraCompatible {
 			typeof query === "string" ? query : (query?.collection as string);
 
 		if (!collection && name !== "getCollections")
-			throw new QueryValidationError(
+			throw new errors.QueryValidationError(
 				`Missing "collection" for operation "${String(name)}"`,
 				{
 					op: name,
@@ -196,9 +178,12 @@ export class ValtheraClass implements ValtheraCompatible {
 					ctx.query.transaction = txHandle;
 
 				if (!isKnownOp(ctx.op))
-					throw new QueryValidationError(`Unknown operation "${ctx.op}"`, {
-						op: ctx.op,
-					});
+					throw new errors.QueryValidationError(
+						`Unknown operation "${ctx.op}"`,
+						{
+							op: ctx.op,
+						},
+					);
 
 				try {
 					if (txHandle) return await self.adapter[ctx.op](ctx.query, txHandle);
@@ -209,7 +194,7 @@ export class ValtheraClass implements ValtheraCompatible {
 						typeof ctx.query === "string" ? ctx.query : ctx.query.collection,
 					);
 				} catch (err) {
-					throw wrapAdapterError(err, {
+					throw errors.wrapAdapterError(err, {
 						op: ctx.op,
 						collection:
 							typeof ctx.query === "string" ? ctx.query : ctx.query?.collection,
@@ -274,12 +259,12 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Add data to a database.
 	 */
 	add<T = Data>(query: VQueryT.Add<T>) {
-		applyAddDefaults(query);
+		queryDefaults.applyAddDefaults(query);
 		return this.execute<T>("add", query);
 	}
 
 	bulkAdd<T = Data>(query: VQueryT.BulkAdd<T>) {
-		applyBulkAddDefaults(query);
+		queryDefaults.applyBulkAddDefaults(query);
 		return this.execute<T[]>("bulkAdd", query);
 	}
 
@@ -287,7 +272,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Find data in a database.
 	 */
 	find<T = Data>(query: VQueryT.Find<T>) {
-		applyFindDefaults(query);
+		queryDefaults.applyFindDefaults(query);
 		return this.execute<T[]>("find", query);
 	}
 
@@ -295,7 +280,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Find one data entry in a database.
 	 */
 	findOne<T = Data>(query: VQueryT.FindOne<T>) {
-		applyFindOneDefaults(query);
+		queryDefaults.applyFindOneDefaults(query);
 		return this.execute<T | null>("findOne", query);
 	}
 
@@ -303,7 +288,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Update data in a database.
 	 */
 	update<T = Data>(query: VQueryT.Update<T>) {
-		applyUpdateDefaults(query);
+		queryDefaults.applyUpdateDefaults(query);
 		return this.execute<T[]>("update", query);
 	}
 
@@ -311,7 +296,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Update one data entry in a database.
 	 */
 	updateOne<T = Data>(query: VQueryT.Update<T>) {
-		applyUpdateDefaults(query);
+		queryDefaults.applyUpdateDefaults(query);
 		return this.execute<T | null>("updateOne", query);
 	}
 
@@ -319,7 +304,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Remove data from a database.
 	 */
 	remove<T = Data>(query: VQueryT.Remove<T>) {
-		applyRemoveDefaults(query);
+		queryDefaults.applyRemoveDefaults(query);
 		return this.execute<T[]>("remove", query);
 	}
 
@@ -327,7 +312,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Remove one data entry from a database.
 	 */
 	removeOne<T = Data>(query: VQueryT.Remove<T>) {
-		applyRemoveDefaults(query);
+		queryDefaults.applyRemoveDefaults(query);
 		return this.execute<T | null>("removeOne", query);
 	}
 
@@ -335,7 +320,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
 	 */
 	updateOneOrAdd<T = Data>(query: VQueryT.UpdateOneOrAdd<T>) {
-		applyUpdateOneOrAddDefaults(query);
+		queryDefaults.applyUpdateOneOrAddDefaults(query);
 		return this.execute<VQueryT.UpdateOneOrAddResult<T>>(
 			"updateOneOrAdd",
 			query,
@@ -346,7 +331,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	 * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
 	 */
 	toggleOne<T = Data>(query: VQueryT.ToggleOne<T>) {
-		applyToggleOneDefaults(query);
+		queryDefaults.applyToggleOneDefaults(query);
 		return this.execute<VQueryT.ToggleOneResult<T>>("toggleOne", query);
 	}
 
@@ -389,7 +374,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	}
 
 	count(query: VQueryT.Count) {
-		applyCountDefaults(query);
+		queryDefaults.applyCountDefaults(query);
 		return this.execute<number>("count", query);
 	}
 
@@ -448,7 +433,7 @@ export class ValtheraClass implements ValtheraCompatible {
 			try {
 				handle = await this.adapter.beginTransaction(genId(), collections);
 			} catch (err) {
-				throw wrapAdapterError(err, {
+				throw errors.wrapAdapterError(err, {
 					op: "beginTransaction",
 					adapter: this.adapter?.version,
 				});
@@ -463,19 +448,22 @@ export class ValtheraClass implements ValtheraCompatible {
 				try {
 					await tx.rollback();
 				} catch (rollbackErr) {
-					throw new TransactionError("Transaction failed and rollback failed", {
-						code: ErrorCodes.TRANSACTION_ROLLBACK_FAILED,
-						cause: new AggregateError(
-							[
-								err,
-								rollbackErr,
-							],
-							"Transaction failed and rollback failed",
-						),
-						context: {
-							collections,
+					throw new errors.TransactionError(
+						"Transaction failed and rollback failed",
+						{
+							code: errors.ErrorCodes.TRANSACTION_ROLLBACK_FAILED,
+							cause: new AggregateError(
+								[
+									err,
+									rollbackErr,
+								],
+								"Transaction failed and rollback failed",
+							),
+							context: {
+								collections,
+							},
 						},
-					});
+					);
 				}
 				throw err;
 			}

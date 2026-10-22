@@ -47,14 +47,12 @@ export class MultiBackend extends ActionsBase {
 
 	async findOne(config: VQueryT.FindOne) {
 		for (const backend of this.backends) {
-			try {
-				const result = await backend.findOne({
-					...config,
-				});
-				if (result !== null && result !== undefined) {
-					return result;
-				}
-			} catch {}
+			const result = await backend.findOne({
+				...config,
+			});
+			if (result !== null && result !== undefined) {
+				return result;
+			}
 		}
 		return null;
 	}
@@ -73,12 +71,10 @@ export class MultiBackend extends ActionsBase {
 
 	async updateOne(config: VQueryT.Update) {
 		for (const backend of this.backends) {
-			try {
-				const result = await backend.updateOne({
-					...config,
-				});
-				if (result) return result;
-			} catch (error) {}
+			const result = await backend.updateOne({
+				...config,
+			});
+			if (result) return result;
 		}
 		return null;
 	}
@@ -97,12 +93,10 @@ export class MultiBackend extends ActionsBase {
 
 	async removeOne(config: VQueryT.Remove) {
 		for (const backend of this.backends) {
-			try {
-				const result = await backend.removeOne({
-					...config,
-				});
-				if (result) return result;
-			} catch (error) {}
+			const result = await backend.removeOne({
+				...config,
+			});
+			if (result) return result;
 		}
 		return null;
 	}

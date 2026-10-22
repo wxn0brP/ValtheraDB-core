@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.13](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.12...v0.12.13) (2026-10-22)
+
+
+### Bug Fixes
+
+* harden prototype and paths ([9b7f1ed](https://github.com/wxn0brP/ValtheraDB-core/commit/9b7f1edc55f99b1d744e81aecc04c69a59de95ce))
+* MultiBackend ([8accd0c](https://github.com/wxn0brP/ValtheraDB-core/commit/8accd0cc426da145e5da33978e5d8ba79abbbe98))
+
 ### [0.12.12](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.11...v0.12.12) (2026-10-17)
 
 

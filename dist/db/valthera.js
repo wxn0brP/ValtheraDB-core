@@ -1,0 +1,374 @@
+import { VEE } from "@wxn0brp/event-emitter";
+import * as errors from "../errors.js";
+import { Collection, resolveCollection } from "../helpers/collection.js";
+import { SmartExecutor } from "../helpers/executor.js";
+import { genId } from "../helpers/gen.js";
+import { rewriteOp } from "../helpers/plugin.js";
+import * as queryDefaults from "../helpers/queryDefaults.js";
+import { getOpKind, isKnownOp } from "../utils/opKind.js";
+import { version } from "../version.js";
+import { Transaction } from "./transaction.js";
+/**
+ * Represents a database management class for performing CRUD operations.
+ * @class
+ */
+export class ValtheraClass {
+    options;
+    adapter;
+    executor;
+    emitter = new VEE();
+    version = version;
+    _plugins = [];
+    _collections = new Map();
+    plugin(p, collections) {
+        if (collections) {
+            p.collections = Array.isArray(collections)
+                ? collections
+                : [
+                    collections,
+                ];
+        }
+        p.init?.(this);
+        this._plugins.push(p);
+        return () => {
+            const i = this._plugins.indexOf(p);
+            if (i !== -1)
+                this._plugins.splice(i, 1);
+        };
+    }
+    constructor(options) {
+        this.options = options;
+        this.executor = options.executor || new SmartExecutor(undefined, false);
+        options.executorAware ??= true;
+        if (typeof options.adapter !== "function") {
+            this.adapter = options.adapter;
+            if (options.adapterOpts) {
+                this.adapter.adapterOpts = options.adapterOpts;
+            }
+        }
+    }
+    async init(...args) {
+        if (this.adapter?._inited)
+            return;
+        const self = this;
+        const failInit = (err) => {
+            if (errors.isValtheraError(err))
+                throw err;
+            throw new errors.AdapterInitError(err, {
+                adapter: self.adapter?.version,
+            });
+        };
+        return await this.executor.addOp(async () => {
+            if (self.adapter?._inited)
+                return;
+            if (typeof self.options.adapter === "function") {
+                try {
+                    self.adapter = await self.options.adapter();
+                }
+                catch (err) {
+                    failInit(err);
+                }
+            }
+            // if the executor is not set, and the action wants a smart executor
+            if (!self.options.executor &&
+                self.options.executorAware &&
+                self.adapter.smartExecutor &&
+                self.executor instanceof SmartExecutor)
+                self.executor.aware = true;
+            if (self.options.adapterOpts) {
+                self.adapter.adapterOpts = {
+                    ...self.adapter.adapterOpts,
+                    ...self.options.adapterOpts,
+                };
+            }
+            try {
+                await self.adapter.init(...args);
+            }
+            catch (err) {
+                failInit(err);
+            }
+            self.adapter._inited = true;
+        });
+    }
+    async close(...args) {
+        if (!this.adapter?._inited)
+            return;
+        const self = this;
+        return await this.executor.addOp(async () => {
+            if (!self.adapter?._inited)
+                return;
+            try {
+                await self.adapter.close(...args);
+            }
+            catch (err) {
+                if (errors.isValtheraError(err))
+                    throw err;
+                throw new errors.AdapterCloseError(err, {
+                    adapter: self.adapter?.version,
+                });
+            }
+            self.adapter._inited = false;
+        });
+    }
+    async execute(name, query, txHandle) {
+        await this.init();
+        const collection = typeof query === "string" ? query : query?.collection;
+        if (!collection && name !== "getCollections")
+            throw new errors.QueryValidationError(`Missing "collection" for operation "${String(name)}"`, {
+                op: name,
+            });
+        if (txHandle && query && typeof query === "object")
+            query.transaction = txHandle;
+        const plugins = this._plugins.filter(p => !p.collections || p.collections.includes(collection));
+        const self = this;
+        let idx = 0;
+        const ctx = {
+            op: name,
+            kind: getOpKind(name),
+            collection,
+            query,
+            next: async () => {
+                if (idx < plugins.length)
+                    return plugins[idx++].execute(ctx);
+                if (txHandle && ctx.query && typeof ctx.query === "object")
+                    ctx.query.transaction = txHandle;
+                if (!isKnownOp(ctx.op))
+                    throw new errors.QueryValidationError(`Unknown operation "${ctx.op}"`, {
+                        op: ctx.op,
+                    });
+                try {
+                    if (txHandle)
+                        return await self.adapter[ctx.op](ctx.query, txHandle);
+                    return await self.executor.addOp(self.adapter[ctx.op].bind(self.adapter), ctx.query, typeof ctx.query === "string" ? ctx.query : ctx.query.collection);
+                }
+                catch (err) {
+                    throw errors.wrapAdapterError(err, {
+                        op: ctx.op,
+                        collection: typeof ctx.query === "string" ? ctx.query : ctx.query?.collection,
+                        adapter: self.adapter?.version,
+                    });
+                }
+            },
+            setOp(op, q) {
+                rewriteOp(ctx, op, q);
+            },
+            setQuery(q) {
+                rewriteOp(ctx, ctx.op, q);
+            },
+        };
+        const result = await ctx.next();
+        const emittedCollection = typeof ctx.query === "string" ? ctx.query : ctx.query?.collection;
+        this.emitter.emit(ctx.op, ctx.query, result, emittedCollection);
+        return result;
+    }
+    /**
+     * Create a new instance of a Collection class.
+     */
+    c(collection) {
+        if (this._collections.has(collection))
+            return this._collections.get(collection);
+        const col = new Collection(this, collection);
+        this._collections.set(collection, col);
+        return col;
+    }
+    /**
+     * Get the names of all available databases.
+     */
+    async getCollections() {
+        return await this.execute("getCollections", {});
+    }
+    /**
+     * Check and create the specified collection if it doesn't exist.
+     */
+    async ensureCollection(collection) {
+        return await this.execute("ensureCollection", resolveCollection(collection));
+    }
+    /**
+     * Check if a collection exists.
+     */
+    async issetCollection(collection) {
+        return await this.execute("issetCollection", resolveCollection(collection));
+    }
+    /**
+     * Add data to a database.
+     */
+    add(query) {
+        queryDefaults.applyAddDefaults(query);
+        return this.execute("add", query);
+    }
+    bulkAdd(query) {
+        queryDefaults.applyBulkAddDefaults(query);
+        return this.execute("bulkAdd", query);
+    }
+    /**
+     * Find data in a database.
+     */
+    find(query) {
+        queryDefaults.applyFindDefaults(query);
+        return this.execute("find", query);
+    }
+    /**
+     * Find one data entry in a database.
+     */
+    findOne(query) {
+        queryDefaults.applyFindOneDefaults(query);
+        return this.execute("findOne", query);
+    }
+    /**
+     * Update data in a database.
+     */
+    update(query) {
+        queryDefaults.applyUpdateDefaults(query);
+        return this.execute("update", query);
+    }
+    /**
+     * Update one data entry in a database.
+     */
+    updateOne(query) {
+        queryDefaults.applyUpdateDefaults(query);
+        return this.execute("updateOne", query);
+    }
+    /**
+     * Remove data from a database.
+     */
+    remove(query) {
+        queryDefaults.applyRemoveDefaults(query);
+        return this.execute("remove", query);
+    }
+    /**
+     * Remove one data entry from a database.
+     */
+    removeOne(query) {
+        queryDefaults.applyRemoveDefaults(query);
+        return this.execute("removeOne", query);
+    }
+    /**
+     * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
+     */
+    updateOneOrAdd(query) {
+        queryDefaults.applyUpdateOneOrAddDefaults(query);
+        return this.execute("updateOneOrAdd", query);
+    }
+    /**
+     * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
+     */
+    toggleOne(query) {
+        queryDefaults.applyToggleOneDefaults(query);
+        return this.execute("toggleOne", query);
+    }
+    /**
+     * Removes a database collection from the database.
+     */
+    removeCollection(target) {
+        const collection = resolveCollection(target);
+        this._collections.delete(collection);
+        return this.execute("removeCollection", collection);
+    }
+    /**
+     * Create an index on a collection.
+     */
+    async createIndex(collection, fields, opts) {
+        const index = {
+            collection,
+            fields,
+            opts,
+        };
+        await this.execute("createIndex", {
+            collection,
+            index,
+        });
+    }
+    /**
+     * Remove an index from a collection. Adapter-dependent.
+     */
+    async removeIndex(collection, fields) {
+        const index = {
+            collection,
+            fields,
+        };
+        await this.execute("removeIndex", {
+            collection,
+            index,
+        });
+    }
+    count(query) {
+        queryDefaults.applyCountDefaults(query);
+        return this.execute("count", query);
+    }
+    /**
+     * Describe what the underlying adapter supports.
+     */
+    async capabilities() {
+        await this.init();
+        return {
+            ...this.adapter.capabilities,
+        };
+    }
+    /**
+     * @experimental
+     *
+     * Executes operations within a transaction. Automatically rolls back on error.
+     *
+     * Receives a transaction-scoped object (`tx`) whose operations are executed
+     * within the transaction context.
+     *
+     * This feature is highly experimental and may change or be removed at any time.
+     *
+     * - Transaction support depends on the adapter implementation.
+     * - Collections must be declared upfront to ensure proper locking.
+     * - Operations invoked via the original `db` reference are NOT part of the transaction.
+     */
+    async transaction(collections, fn) {
+        await this.init();
+        const releases = [];
+        const promises = collections.map(collection => {
+            let started;
+            const startedPromise = new Promise(r => (started = r));
+            this.executor.addOp(async () => {
+                started();
+                await new Promise(resolve => releases.push(resolve));
+            }, undefined, collection);
+            return startedPromise;
+        });
+        await Promise.all(promises);
+        try {
+            let handle;
+            try {
+                handle = await this.adapter.beginTransaction(genId(), collections);
+            }
+            catch (err) {
+                throw errors.wrapAdapterError(err, {
+                    op: "beginTransaction",
+                    adapter: this.adapter?.version,
+                });
+            }
+            const tx = new Transaction(handle, this);
+            try {
+                const result = await fn(tx);
+                await tx.commit();
+                return result;
+            }
+            catch (err) {
+                try {
+                    await tx.rollback();
+                }
+                catch (rollbackErr) {
+                    throw new errors.TransactionError("Transaction failed and rollback failed", {
+                        code: errors.ErrorCodes.TRANSACTION_ROLLBACK_FAILED,
+                        cause: new AggregateError([
+                            err,
+                            rollbackErr,
+                        ], "Transaction failed and rollback failed"),
+                        context: {
+                            collections,
+                        },
+                    });
+                }
+                throw err;
+            }
+        }
+        finally {
+            releases.forEach(release => release());
+        }
+    }
+}

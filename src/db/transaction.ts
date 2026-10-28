@@ -115,9 +115,11 @@ export class Transaction {
 	}
 
 	removeCollection(target: string | VQueryT.Collection) {
+		const collection = resolveCollection(target);
+		this._parent._collections.delete(collection);
 		return this._parent.execute<boolean>(
 			"removeCollection",
-			resolveCollection(target),
+			collection,
 			this.handle,
 		);
 	}

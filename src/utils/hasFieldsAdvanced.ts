@@ -59,6 +59,24 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 	return true;
 }
 
+let warnedRegexString = false;
+
+function warnRegexString() {
+	if (warnedRegexString) return;
+	warnedRegexString = true;
+	const message =
+		"$regex with a string pattern is deprecated; pass a RegExp instance instead.";
+	const proc = (globalThis as any).process;
+	if (typeof proc?.emitWarning === "function") {
+		proc.emitWarning(message, {
+			type: "DeprecationWarning",
+			code: "VALTHERA_REGEX_STRING_PATTERN",
+		});
+		return;
+	}
+	console.warn(message);
+}
+
 function mainCheck(obj: Object, fields: Object) {
 	return _for(fields, obj, {
 		ne: (data, value) => data !== value,
@@ -77,6 +95,7 @@ function mainCheck(obj: Object, fields: Object) {
 		},
 		regex: (data, regexData) => {
 			if (typeof data !== "string") return false;
+			if (typeof regexData === "string") warnRegexString();
 			const regex =
 				typeof regexData === "string" ? new RegExp(regexData) : regexData;
 			return regex.test(data);

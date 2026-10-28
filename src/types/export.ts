@@ -10,6 +10,8 @@ export namespace ValtheraTypes {
 	export type Data = import("./data").Data;
 	export type SearchOptions = import("./searchOpts").SearchOptions;
 	export type Id = import("./Id").Id;
+	/** @deprecated */
 	export type Context = import("./types").VContext;
+	/** @deprecated */
 	export type VContext = import("./types").VContext;
 }

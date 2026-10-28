@@ -7,7 +7,16 @@ export type Arg<T = any> = {
 	[K in keyof T]?: any;
 } & Record<string, any>;
 
+/**
+ * Function-based search.
+ * @deprecated Use operator objects or a plugin instead.
+ */
 export type SearchFunc<T = any> = (data: T, context: VContext) => boolean;
+
+/**
+ * Function-based updater.
+ * @deprecated Use operator objects instead.
+ */
 export type UpdaterFunc<T = any> = (data: T, context: VContext) => Data | void;
 
 export type Search<

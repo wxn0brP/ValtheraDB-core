@@ -20,6 +20,7 @@ export interface VQuery<T = Data, AllowFn extends boolean = true> {
 	/** logic path, dir or file, depends on context */
 	collection?: string;
 	search?: Search<T, AllowFn>;
+	/** @deprecated */
 	context?: VContext;
 	dbFindOpts?: DbFindOpts<T>;
 	findOpts?: FindOpts<T>;
@@ -54,6 +55,7 @@ export namespace VQueryT {
 		search?: Search<T, AllowFn>;
 		findOpts?: FindOpts<T>;
 		dbFindOpts?: DbFindOpts<T>;
+		/** @deprecated */
 		context?: VContext;
 	};
 
@@ -63,6 +65,7 @@ export namespace VQueryT {
 	> = QueryBase<T> & {
 		search: Search<T, AllowFn>;
 		findOpts?: FindOpts<T>;
+		/** @deprecated */
 		context?: VContext;
 	};
 
@@ -72,6 +75,7 @@ export namespace VQueryT {
 	> = QueryBase<T> & {
 		search: Search<T, AllowFn>;
 		updater: Updater<T, AllowFn>;
+		/** @deprecated */
 		context?: VContext;
 	};
 
@@ -80,6 +84,7 @@ export namespace VQueryT {
 		AllowFn extends boolean = true,
 	> = QueryBase<T> & {
 		search: Search<T, AllowFn>;
+		/** @deprecated */
 		context?: VContext;
 	};
 
@@ -91,6 +96,7 @@ export namespace VQueryT {
 		updater: Updater<T, AllowFn>;
 		add_arg?: Arg<T>;
 		id_gen?: boolean;
+		/** @deprecated */
 		context?: VContext;
 	};
 
@@ -100,6 +106,7 @@ export namespace VQueryT {
 	> = QueryBase<T> & {
 		search: Search<T, AllowFn>;
 		data: Arg<T>;
+		/** @deprecated */
 		context?: VContext;
 	};
 

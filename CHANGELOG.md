@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.14](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.13...v0.12.14) (2026-10-28)
+
+
+### Features
+
+* deprecate function search/updater ([b069d50](https://github.com/wxn0brP/ValtheraDB-core/commit/b069d5043f15393e5d7aba325459b3c1414c3dcc))
+* deprecate string patterns in $regex ([db54dec](https://github.com/wxn0brP/ValtheraDB-core/commit/db54decd3151744f89b3ed847746b85e1167c772))
+
 ### [0.12.13](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.12...v0.12.13) (2026-10-22)
 
 

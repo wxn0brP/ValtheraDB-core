@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.15](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.14...v0.12.15) (2026-10-31)
+
+
+### Bug Fixes
+
+* clear collection cache on transaction removeCollection ([6275027](https://github.com/wxn0brP/ValtheraDB-core/commit/627502734fee418acc2c357d90ac0ed4cc78a2a6))
+* transaction lock ([dfbdab8](https://github.com/wxn0brP/ValtheraDB-core/commit/dfbdab8f89c7ecfe2f05093c6a4a01a0586e3d3a))
+
 ### [0.12.14](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.13...v0.12.14) (2026-10-28)
 
 

@@ -410,25 +410,33 @@ export class ValtheraClass implements ValtheraCompatible {
 
 		const releases: Array<() => void> = [];
 
-		const promises = collections.map(collection => {
-			let started: () => void;
-			const startedPromise = new Promise<void>(r => (started = r));
+		const keys: Array<string | undefined> =
+			this.executor instanceof SmartExecutor && this.executor.aware
+				? [
+						...new Set(collections),
+					]
+				: [
+						undefined,
+					];
+		if (!keys.length) keys.push(undefined);
 
-			this.executor.addOp(
-				async () => {
-					started();
-					await new Promise<void>(resolve => releases.push(resolve));
-				},
-				undefined,
-				collection,
+		const acquire = (collection?: string) =>
+			new Promise<void>((resolve, reject) =>
+				this.executor
+					.addOp(
+						async () => {
+							resolve();
+							await new Promise<void>(release => releases.push(release));
+						},
+						undefined,
+						collection,
+					)
+					.catch(reject),
 			);
 
-			return startedPromise;
-		});
-
-		await Promise.all(promises);
-
 		try {
+			await Promise.all(keys.map(acquire));
+
 			let handle: TransactionHandle;
 			try {
 				handle = await this.adapter.beginTransaction(genId(), collections);

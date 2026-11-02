@@ -12,6 +12,7 @@ import {
 	applyUpdateOneOrAddDefaults,
 } from "../helpers/queryDefaults";
 import { Data } from "../types/data";
+import { IndexDefinition, IndexOpts } from "../types/idx";
 import { VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
@@ -28,7 +29,7 @@ export class Transaction {
 	) {}
 
 	c<T = Data>(name: string): Collection<T> {
-		return new Collection<T>(this as unknown as ValtheraCompatible, name);
+		return new Collection<T>(this as ValtheraCompatible, name);
 	}
 
 	add<T = Data>(q: VQueryT.Add<T>) {
@@ -122,6 +123,41 @@ export class Transaction {
 			collection,
 			this.handle,
 		);
+	}
+
+	createIndex(collection: string, fields: string[], opts?: IndexOpts) {
+		const index: IndexDefinition = {
+			collection,
+			fields,
+			opts,
+		};
+		return this._parent.execute(
+			"createIndex",
+			{
+				collection,
+				index,
+			},
+			this.handle,
+		);
+	}
+
+	removeIndex(collection: string, fields: string[]) {
+		const index: IndexDefinition = {
+			collection,
+			fields,
+		};
+		return this._parent.execute(
+			"removeIndex",
+			{
+				collection,
+				index,
+			},
+			this.handle,
+		);
+	}
+
+	capabilities() {
+		return this._parent.capabilities();
 	}
 
 	async commit() {

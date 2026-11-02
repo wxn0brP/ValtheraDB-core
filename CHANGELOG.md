@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.16](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.15...v0.12.16) (2026-11-02)
+
+
+### Features
+
+* rebuild kind op ([198dde1](https://github.com/wxn0brP/ValtheraDB-core/commit/198dde19694fc5294ad49fb50f86000a677fe681))
+* strict query types ([51588ce](https://github.com/wxn0brP/ValtheraDB-core/commit/51588ceb84df3f29c7a7d0445fbe00bb795b748a))
+
+
+### Bug Fixes
+
+* transaction ([35bff2d](https://github.com/wxn0brP/ValtheraDB-core/commit/35bff2d31ac706bf736985f349d0209d1a20e7d0))
+
 ### [0.12.15](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.14...v0.12.15) (2026-10-31)
 
 

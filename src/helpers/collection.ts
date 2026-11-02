@@ -94,7 +94,7 @@ export class Collection<D = Data> {
 	count(search: Search<D, false> = {}): Promise<number> {
 		return this.db.count({
 			collection: this.collection,
-			search,
+			search: search as Search<Data, false>,
 		});
 	}
 

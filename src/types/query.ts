@@ -52,7 +52,7 @@ export namespace VQueryT {
 	};
 
 	export type Find<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
-		search?: Search<T, AllowFn>;
+		search?: NoInfer<Search<T, AllowFn>>;
 		findOpts?: FindOpts<T>;
 		dbFindOpts?: DbFindOpts<T>;
 		/** @deprecated */
@@ -63,7 +63,7 @@ export namespace VQueryT {
 		T = Data,
 		AllowFn extends boolean = true,
 	> = QueryBase<T> & {
-		search: Search<T, AllowFn>;
+		search: NoInfer<Search<T, AllowFn>>;
 		findOpts?: FindOpts<T>;
 		/** @deprecated */
 		context?: VContext;
@@ -73,8 +73,8 @@ export namespace VQueryT {
 		T = Data,
 		AllowFn extends boolean = true,
 	> = QueryBase<T> & {
-		search: Search<T, AllowFn>;
-		updater: Updater<T, AllowFn>;
+		search: NoInfer<Search<T, AllowFn>>;
+		updater: NoInfer<Updater<T, AllowFn>>;
 		/** @deprecated */
 		context?: VContext;
 	};
@@ -83,7 +83,7 @@ export namespace VQueryT {
 		T = Data,
 		AllowFn extends boolean = true,
 	> = QueryBase<T> & {
-		search: Search<T, AllowFn>;
+		search: NoInfer<Search<T, AllowFn>>;
 		/** @deprecated */
 		context?: VContext;
 	};
@@ -92,9 +92,9 @@ export namespace VQueryT {
 		T = Data,
 		AllowFn extends boolean = true,
 	> = QueryBase<T> & {
-		search: Search<T, AllowFn>;
-		updater: Updater<T, AllowFn>;
-		add_arg?: Arg<T>;
+		search: NoInfer<Search<T, AllowFn>>;
+		updater: NoInfer<Updater<T, AllowFn>>;
+		add_arg?: NoInfer<Arg<T>>;
 		id_gen?: boolean;
 		/** @deprecated */
 		context?: VContext;
@@ -104,8 +104,8 @@ export namespace VQueryT {
 		T = Data,
 		AllowFn extends boolean = true,
 	> = QueryBase<T> & {
-		search: Search<T, AllowFn>;
-		data: Arg<T>;
+		search: NoInfer<Search<T, AllowFn>>;
+		data: NoInfer<Arg<T>>;
 		/** @deprecated */
 		context?: VContext;
 	};
@@ -129,7 +129,7 @@ export namespace VQueryT {
 	};
 
 	export type Count<T = Data> = QueryBase<T> & {
-		search: Search<T, false>;
+		search: NoInfer<Search<T, false>>;
 	};
 
 	export interface Collection {

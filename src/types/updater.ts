@@ -1,4 +1,5 @@
-import { DeepPartial, NestedValue } from "./utils";
+import { IsStrict } from "./config";
+import { DeepPartial, FieldsOf, NestedValue, WithId } from "./utils";
 
 /** Arrays */
 export type ArrayUpdater<T = any> = {
@@ -37,11 +38,16 @@ export type ValueUpdater<T = any> = {
 	 *
 	 * Note: same as { name: value }
 	 */
-	$set?: NestedValue<T, any>;
+	$set?: IsStrict extends true ? FieldsOf<T> : NestedValue<T, any>;
 };
 
-export type UpdaterArg<T = any> = ArrayUpdater<T> &
-	ObjectUpdater<T> &
-	ValueUpdater<T> &
-	DeepPartial<T> &
-	Record<string, any>;
+export type UpdaterArg<T = any> = IsStrict extends true
+	? ArrayUpdater<WithId<T>> &
+			ObjectUpdater<WithId<T>> &
+			ValueUpdater<WithId<T>> &
+			FieldsOf<WithId<T>>
+	: ArrayUpdater<T> &
+			ObjectUpdater<T> &
+			ValueUpdater<T> &
+			DeepPartial<T> &
+			Record<string, any>;

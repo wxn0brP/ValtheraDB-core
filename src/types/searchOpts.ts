@@ -1,4 +1,5 @@
-import { DeepPartial, NestedValue } from "./utils";
+import { IsStrict } from "./config";
+import { DeepPartial, FieldsOf, NestedValue, WithId } from "./utils";
 
 export type JSPrimitiveType =
 	| "string"
@@ -122,9 +123,6 @@ export type PredefinedSearchOperators<T = any> = LogicalOperators<T> &
 	StringOperators<T> &
 	OtherOperators<T>;
 
-/**
- * SearchOptions can be either a function or an object with predefined operators.
- */
-export type SearchOptions<T = any> = PredefinedSearchOperators<T> &
-	DeepPartial<T> &
-	Record<string, any>;
+export type SearchOptions<T = any> = IsStrict extends true
+	? FieldsOf<WithId<T>> & PredefinedSearchOperators<WithId<T>>
+	: PredefinedSearchOperators<T> & DeepPartial<T> & Record<string, any>;

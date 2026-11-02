@@ -1,8 +1,22 @@
 import { ActionsBase } from "../base/actions";
 import { ExecutorInterface } from "../helpers/executor";
+import { Data } from "./data";
+import { Id } from "./Id";
+import { TransactionHandle } from "./transaction";
 import { KeysMatching } from "./utils";
 
 export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
+
+/**
+ * Custom ID generator. Receives only records without the ID key set and
+ * returns generated IDs in the same order.
+ */
+export type IdGen = (
+	data: Data[],
+	collection: string,
+	adapter: ActionsBase,
+	transaction?: TransactionHandle,
+) => Id[] | Promise<Id[]>;
 
 export interface DbOpts {
 	adapter: AdapterValue;
@@ -14,6 +28,9 @@ export interface DbOpts {
 export interface AdapterOpts {
 	numberId?: boolean;
 	idKey?: string;
+	idGen?: IdGen;
+	/** Parts lengths passed to `genId` for the default ID generator. */
+	idParts?: number[];
 }
 
 export type FieldPath<T = any> =

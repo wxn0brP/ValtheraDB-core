@@ -1,6 +1,10 @@
 import { ActionsBase } from "../base/actions";
 import { QueryValidationError } from "../errors";
-import { VQuery, VQueryT } from "../types/query";
+import { Data } from "../types/data";
+import { Id } from "../types/Id";
+import { IdGen } from "../types/options";
+import { VQueryT } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
 import { isUnsafeKey } from "../utils/security";
 import { genId } from "./gen";
 
@@ -12,33 +16,17 @@ function assertSafeIdKey(idKey: string) {
 	});
 }
 
-export async function addId(
-	query: VQuery,
-	actions: ActionsBase,
-	defaultGen = true,
-) {
-	const collection = query.collection!;
-	const data = query.data!;
-	const id_gen = query.id_gen ?? defaultGen;
+const defaultIdGen: IdGen = (data, _collection, adapter) =>
+	data.map(() => genId(adapter.adapterOpts.idParts));
 
-	const { idKey = "_id", numberId } = actions.adapterOpts;
-
-	if (!id_gen) return data;
-	assertSafeIdKey(idKey);
-	if (data[idKey]) return data;
-
-	if (!numberId) {
-		data[idKey] = genId();
-		return;
-	}
-
-	const txOpts = query.transaction
+const numberIdGen: IdGen = async (data, collection, adapter, transaction) => {
+	const txOpts = transaction
 		? {
-				transaction: query.transaction,
+				transaction,
 			}
 		: {};
 
-	const find = (await actions.findOne({
+	const found = (await adapter.findOne({
 		collection: "__vdb_id",
 		search: {
 			c: collection,
@@ -46,21 +34,66 @@ export async function addId(
 		...txOpts,
 	})) as {
 		i: number;
-	};
-	data[idKey] = find?.i ? find.i + 1 : 1;
-	await actions.updateOneOrAdd({
+	} | null;
+
+	const start = found?.i ?? 0;
+
+	await adapter.updateOneOrAdd({
 		collection: "__vdb_id",
 		search: {
 			c: collection,
 		},
 		updater: {
 			$inc: {
-				i: 1,
+				i: data.length,
 			},
 		},
 		id_gen: false,
 		...txOpts,
 	});
+
+	return data.map((_, i) => (start + i + 1) as unknown as Id);
+};
+
+async function applyIdGen(
+	records: Data[],
+	collection: string,
+	actions: ActionsBase,
+	idGenEnabled: boolean,
+	transaction?: TransactionHandle,
+) {
+	if (!idGenEnabled) return;
+
+	const { idKey = "_id", numberId, idGen } = actions.adapterOpts;
+	assertSafeIdKey(idKey);
+
+	const targets = records.filter(data => !data[idKey]);
+	if (!targets.length) return;
+
+	const generator = idGen ?? (numberId ? numberIdGen : defaultIdGen);
+	const ids = await generator(targets, collection, actions, transaction);
+
+	for (let i = 0; i < targets.length; i++) {
+		targets[i][idKey] = ids[i];
+	}
+}
+
+export async function addId(
+	query: VQueryT.Add,
+	actions: ActionsBase,
+	defaultGen = true,
+) {
+	const id_gen = query.id_gen ?? defaultGen;
+
+	await applyIdGen(
+		[
+			query.data,
+		],
+		query.collection,
+		actions,
+		id_gen,
+		query.transaction,
+	);
 }
 
 export async function addIdBulk(
@@ -68,56 +101,13 @@ export async function addIdBulk(
 	actions: ActionsBase,
 	defaultGen = true,
 ) {
-	const collection = query.collection;
 	const id_gen = query.id_gen ?? defaultGen;
-	const { idKey = "_id", numberId } = actions.adapterOpts;
 
-	if (!id_gen) return;
-	assertSafeIdKey(idKey);
-
-	if (!numberId) {
-		for (const data of query.datas) {
-			if (!data[idKey]) data[idKey] = genId();
-		}
-		return;
-	}
-
-	const txOpts = query.transaction
-		? {
-				transaction: query.transaction,
-			}
-		: {};
-
-	const find = (await actions.findOne({
-		collection: "__vdb_id",
-		search: {
-			c: collection,
-		},
-		...txOpts,
-	})) as {
-		i: number;
-	};
-
-	const start = find?.i ?? 0;
-
-	for (let i = 0; i < query.datas.length; i++) {
-		const data = query.datas[i];
-		if (!data[idKey]) {
-			data[idKey] = start + i + 1;
-		}
-	}
-
-	await actions.updateOneOrAdd({
-		collection: "__vdb_id",
-		search: {
-			c: collection,
-		},
-		updater: {
-			$inc: {
-				i: query.datas.length,
-			},
-		},
-		id_gen: false,
-		...txOpts,
-	});
+	await applyIdGen(
+		query.datas,
+		query.collection,
+		actions,
+		id_gen,
+		query.transaction,
+	);
 }

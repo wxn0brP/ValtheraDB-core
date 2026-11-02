@@ -5,9 +5,10 @@ export type PluginOpKind =
 	| "collection"
 	| "index"
 	| "meta"
+	| "unknown"
 	| "control";
 
-const OP_KINDS: Readonly<Record<string, PluginOpKind>> = {
+export const OP_KINDS = {
 	find: "read",
 	findOne: "read",
 	count: "read",
@@ -35,37 +36,43 @@ const OP_KINDS: Readonly<Record<string, PluginOpKind>> = {
 	beginTransaction: "control",
 	commitTransaction: "control",
 	rollbackTransaction: "control",
-};
+} as const satisfies Readonly<Record<string, PluginOpKind>>;
+
+/** Every operation name known to the adapter contract. */
+export type OpName = keyof typeof OP_KINDS;
+
+/**
+ * Operations routed through {@link ValtheraClass.execute}.
+ */
+export type DbOp = Exclude<
+	OpName,
+	| "beginTransaction"
+	| "commitTransaction"
+	| "rollbackTransaction"
+	| "capabilities"
+>;
 
 export function getOpKind(op: string): PluginOpKind {
-	return Object.hasOwn(OP_KINDS, op) ? OP_KINDS[op] : "write";
+	return Object.hasOwn(OP_KINDS, op) ? OP_KINDS[op as OpName] : "unknown";
 }
 
 export function isKnownOp(op: string) {
 	return Object.hasOwn(OP_KINDS, op);
 }
 
-export function isMutation(kind: PluginOpKind) {
-	return kind === "write" || kind === "delete";
-}
+const COLLECTION_OP_KINDS: ReadonlySet<PluginOpKind> = new Set([
+	"read",
+	"write",
+	"delete",
+	"index",
+]);
 
+/** db[collection][op] */
 export function isCollectionOp(op: string) {
-	return getOpKind(op) === "collection";
+	return isKnownOp(op) && COLLECTION_OP_KINDS.has(getOpKind(op));
 }
 
-export function isIndexOp(op: string) {
-	return getOpKind(op) === "index";
-}
-
-export function isMetaOp(op: string) {
-	return getOpKind(op) === "meta";
-}
-
-export function isControlOp(op: string) {
-	return getOpKind(op) === "control";
-}
-
-export function isNoQueryOp(op: string) {
-	const kind = getOpKind(op);
-	return kind === "collection" || kind === "meta";
+/** db[op] */
+export function isDbOp(op: string) {
+	return isKnownOp(op) && getOpKind(op) !== "control";
 }

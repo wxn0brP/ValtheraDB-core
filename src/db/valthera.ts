@@ -14,7 +14,7 @@ import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
-import { getOpKind, isKnownOp } from "../utils/opKind";
+import { getOpKind, isKnownOp, type DbOp } from "../utils/opKind";
 import { version } from "../version";
 import { Transaction } from "./transaction";
 
@@ -27,14 +27,14 @@ export class ValtheraClass implements ValtheraCompatible {
 	executor: ExecutorInterface;
 	emitter: VEE<
 		{
-			[K in keyof Omit<ValtheraCompatible, "c">]: (
+			[K in DbOp]: (
 				query: VQuery,
-				result: Awaited<ReturnType<ValtheraCompatible[K]>>,
+				result: Awaited<ReturnType<ValtheraClass[K]>>,
 				collection?: string,
 			) => void;
 		} & {
 			"*": (
-				name: keyof Omit<ValtheraCompatible, "c">,
+				name: DbOp,
 				query: VQuery,
 				result: any,
 				collection?: string,
@@ -141,7 +141,7 @@ export class ValtheraClass implements ValtheraCompatible {
 	}
 
 	async execute<T>(
-		name: keyof ValtheraCompatible,
+		name: DbOp,
 		query: VQuery<any> | string,
 		txHandle?: TransactionHandle,
 	) {
@@ -213,7 +213,7 @@ export class ValtheraClass implements ValtheraCompatible {
 		const result = await ctx.next();
 		const emittedCollection =
 			typeof ctx.query === "string" ? ctx.query : ctx.query?.collection;
-		this.emitter.emit(ctx.op, ctx.query, result, emittedCollection);
+		this.emitter.emit(ctx.op as DbOp, ctx.query, result, emittedCollection);
 		return result as T;
 	}
 

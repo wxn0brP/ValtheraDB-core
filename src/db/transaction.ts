@@ -22,14 +22,14 @@ import { ValtheraClass } from "./valthera";
  * Transaction context. Operations are executed directly through the parent
  * database with the transaction handle passed to the executor.
  */
-export class Transaction {
+export class Transaction implements ValtheraCompatible {
 	constructor(
 		public readonly handle: TransactionHandle,
 		public _parent: ValtheraClass,
 	) {}
 
 	c<T = Data>(name: string): Collection<T> {
-		return new Collection<T>(this as ValtheraCompatible, name);
+		return new Collection<T>(this, name);
 	}
 
 	add<T = Data>(q: VQueryT.Add<T>) {
@@ -125,7 +125,11 @@ export class Transaction {
 		);
 	}
 
-	createIndex(collection: string, fields: string[], opts?: IndexOpts) {
+	createIndex(
+		collection: string,
+		fields: string[],
+		opts?: IndexOpts,
+	): Promise<void> {
 		const index: IndexDefinition = {
 			collection,
 			fields,
@@ -141,7 +145,7 @@ export class Transaction {
 		);
 	}
 
-	removeIndex(collection: string, fields: string[]) {
+	removeIndex(collection: string, fields: string[]): Promise<void> {
 		const index: IndexDefinition = {
 			collection,
 			fields,

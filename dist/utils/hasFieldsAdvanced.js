@@ -1,0 +1,164 @@
+import { QueryValidationError } from "../errors.js";
+import { warnDeprecated } from "./deprecation.js";
+import { hasFields } from "./hasFields.js";
+import { compareIds } from "./id.js";
+import { isUnsafeKey } from "./security.js";
+/**
+ * Checks if an object meets the criteria specified in the fields with operators.
+ */
+export function hasFieldsAdvanced(obj, fields) {
+    if (typeof fields !== "object" || fields === null) {
+        throw new QueryValidationError("Fields must be an object", {
+            op: "search",
+        });
+    }
+    if (Object.keys(fields).length === 0)
+        return true;
+    const $fields = {};
+    const subsetFields = {};
+    let hasSubset = false;
+    for (const key in fields) {
+        if (!Object.hasOwn(fields, key) || isUnsafeKey(key))
+            continue;
+        if (key.charCodeAt(0) === 36) {
+            $fields[key.toLowerCase()] = fields[key];
+        }
+        else {
+            subsetFields[key] = fields[key];
+            hasSubset = true;
+        }
+    }
+    // Shallow fields first
+    if (hasSubset && !hasFields(obj, subsetFields))
+        return false;
+    // Direct fields only
+    if (Object.keys($fields).length === 0)
+        return true;
+    // Subset check
+    if (Object.hasOwn($fields, "$subset") && !hasFields(obj, $fields["$subset"]))
+        return false;
+    // Advanced operators
+    if (!mainCheck(obj, $fields))
+        return false;
+    if (!checkNot(obj, $fields))
+        return false;
+    if (Object.hasOwn($fields, "$and")) {
+        return $fields["$and"].every((subFields) => hasFieldsAdvanced(obj, subFields));
+    }
+    if (Object.hasOwn($fields, "$or")) {
+        return $fields["$or"].some((subFields) => hasFieldsAdvanced(obj, subFields));
+    }
+    return true;
+}
+function mainCheck(obj, fields) {
+    return _for(fields, obj, {
+        ne: (data, value) => data !== value,
+        gt: (data, value) => typeof data === typeof value && data > value,
+        lt: (data, value) => typeof data === typeof value && data < value,
+        gte: (data, value) => typeof data === typeof value && data >= value,
+        lte: (data, value) => typeof data === typeof value && data <= value,
+        in: (data, value) => value.includes(data),
+        nin: (data, value) => !value.includes(data),
+        type: (data, value) => typeof data === value,
+        exists: (targetObj, shouldExist, key) => {
+            if (shouldExist && !Object.hasOwn(targetObj, key))
+                return false;
+            if (!shouldExist && Object.hasOwn(targetObj, key))
+                return false;
+            return true;
+        },
+        regex: (data, regexData) => {
+            if (typeof data !== "string")
+                return false;
+            if (typeof regexData === "string")
+                warnDeprecated("VALTHERA_REGEX_STRING_PATTERN", "$regex with a string pattern is deprecated; pass a RegExp instance instead.");
+            const regex = typeof regexData === "string" ? new RegExp(regexData) : regexData;
+            return regex.test(data);
+        },
+        size: (data, size) => {
+            if (Array.isArray(data) || typeof data === "string") {
+                return data.length === size;
+            }
+            else {
+                return false;
+            }
+        },
+        startswith: (data, value) => typeof data === "string" && data.startsWith(value),
+        endswith: (data, value) => typeof data === "string" && data.endsWith(value),
+        istartswith: (data, value) => typeof data === "string" &&
+            data.toLowerCase().startsWith(value.toLowerCase()),
+        iendswith: (data, value) => typeof data === "string" &&
+            data.toLowerCase().endsWith(value.toLowerCase()),
+        between: (data, [min, max]) => typeof data === "number" && data >= min && data <= max,
+        arrinc: (data, values) => Array.isArray(data) && values.some((val) => data.includes(val)),
+        arrincall: (data, values) => Array.isArray(data) && values.every((val) => data.includes(val)),
+        idgt: (data, value) => compareIds(data, value) > 0,
+        idlt: (data, value) => compareIds(data, value) < 0,
+        idgte: (data, value) => compareIds(data, value) >= 0,
+        idlte: (data, value) => compareIds(data, value) <= 0,
+    });
+}
+function checkNot(obj, fields) {
+    if (Object.hasOwn(fields, "$not")) {
+        return !hasFieldsAdvanced(obj, fields["$not"]);
+    }
+    return true;
+}
+function _for(fields, obj, opts) {
+    for (const [field, value] of Object.entries(fields)) {
+        const fieldRaw = field.slice(1);
+        const fieldFn = Object.hasOwn(opts, fieldRaw) ? opts[fieldRaw] : undefined;
+        if (!fieldFn)
+            continue;
+        for (const [key, val] of Object.entries(value)) {
+            if (isUnsafeKey(key))
+                continue;
+            const targetValue = obj != null && Object.hasOwn(obj, key) ? obj[key] : undefined;
+            if (typeof val === "object" &&
+                val !== null &&
+                !Array.isArray(val) &&
+                !(val instanceof RegExp)) {
+                if (!deepCheck(val, targetValue, fieldFn, fieldRaw))
+                    return false;
+            }
+            else {
+                if (fieldRaw === "exists") {
+                    if (!fieldFn(obj, val, key))
+                        return false;
+                }
+                else {
+                    if (!fieldFn(targetValue, val, key))
+                        return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+function deepCheck(valueObj, targetObj, fieldFn, fieldRaw) {
+    if (typeof targetObj !== "object" || targetObj === null)
+        return false;
+    for (const [k, v] of Object.entries(valueObj)) {
+        if (isUnsafeKey(k))
+            continue;
+        const targetValue = Object.hasOwn(targetObj, k) ? targetObj[k] : undefined;
+        if (typeof v === "object" &&
+            v !== null &&
+            !Array.isArray(v) &&
+            !(v instanceof RegExp)) {
+            if (!deepCheck(v, targetValue, fieldFn, fieldRaw))
+                return false;
+        }
+        else {
+            if (fieldRaw === "exists") {
+                if (!fieldFn(targetObj, v, k))
+                    return false;
+            }
+            else {
+                if (!fieldFn(targetValue, v, k))
+                    return false;
+            }
+        }
+    }
+    return true;
+}

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.17](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.16...v0.12.17) (2026-11-03)
+
+
+### Features
+
+* custom id gen ([f315940](https://github.com/wxn0brP/ValtheraDB-core/commit/f315940a279ab00eec2deaf70f8d38ffd5a36775))
+
 ### [0.12.16](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.15...v0.12.16) (2026-11-02)
 
 

@@ -1,9 +1,9 @@
 import { CustomActionsBase } from "../base/custom";
 import { CustomFileCpu } from "../customFileCpu";
-import { Collection } from "../helpers/collection";
 import { forgeTypedValthera } from "../helpers/forge";
 import { Data } from "../types/data";
 import { VQueryT } from "../types/query";
+import { TypedValthera } from "../types/typed";
 import { hasFieldsAdvanced } from "../utils/hasFieldsAdvanced";
 import { ValtheraClass } from "./valthera";
 
@@ -75,7 +75,7 @@ export class ValtheraMemory extends ValtheraClass {
 
 export function createMemoryValthera<T extends Record<string, Data[]>>(
 	data?: T,
-): ValtheraMemory & { [K in keyof T]: Collection<T[K][number]> } {
+): TypedValthera<T, ValtheraMemory> {
 	const db = new ValtheraMemory();
 	if (!data) return forgeTypedValthera(db) as any;
 

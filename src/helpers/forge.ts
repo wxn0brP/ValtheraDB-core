@@ -1,7 +1,7 @@
-import { Collection } from "./collection";
-import { Data } from "../types/data";
-import { ValtheraCompatible } from "../types/valthera";
 import { ValtheraClass } from "../db/valthera";
+import { Data } from "../types/data";
+import { TypedValthera } from "../types/typed";
+import { ValtheraCompatible } from "../types/valthera";
 import { isUnsafeKey } from "../utils/security";
 
 function hasApiProperty(target: object, prop: string) {
@@ -17,10 +17,10 @@ function hasApiProperty(target: object, prop: string) {
 
 export function forgeTypedValthera<T extends Record<string, Data>>(
 	target: ValtheraClass,
-): ValtheraClass & { [K in keyof T]: Collection<T[K]> };
+): TypedValthera<T, ValtheraClass>;
 export function forgeTypedValthera<T extends Record<string, Data>>(
 	target: ValtheraCompatible,
-): ValtheraCompatible & { [K in keyof T]: Collection<T[K]> };
+): TypedValthera<T, ValtheraCompatible>;
 export function forgeTypedValthera(target: ValtheraClass) {
 	return new Proxy(target, {
 		get(target, prop: string, receiver) {

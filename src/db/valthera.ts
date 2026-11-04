@@ -1,14 +1,14 @@
 import { VEE } from "@wxn0brp/event-emitter";
-import { ActionsBase } from "../base/actions";
+import { AdapterBase } from "../base/adapter";
 import * as errors from "../errors";
 import { Collection, resolveCollection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
-import { genId } from "../helpers/gen";
-import { rewriteOp } from "../helpers/plugin";
+import { genId } from "../helpers/idGen";
 import * as queryDefaults from "../helpers/queryDefaults";
-import { AdapterCapabilities } from "../types/action";
+import { rewriteOp } from "../helpers/rewriteOp";
+import { AdapterCapabilities } from "../types/adapter";
 import { Data } from "../types/data";
-import { IndexDefinition, IndexOpts } from "../types/idx";
+import { IndexDefinition, IndexOpts } from "../types/indexes";
 import { DbOpts } from "../types/options";
 import { PluginContext, ValtheraPlugin } from "../types/plugin";
 import { VQuery, VQueryT } from "../types/query";
@@ -23,7 +23,7 @@ import { Transaction } from "./transaction";
  * @class
  */
 export class ValtheraClass implements ValtheraCompatible {
-	adapter: ActionsBase;
+	adapter: AdapterBase;
 	executor: ExecutorInterface;
 	emitter: VEE<
 		{
@@ -68,7 +68,7 @@ export class ValtheraClass implements ValtheraCompatible {
 		options.executorAware ??= true;
 
 		if (typeof options.adapter !== "function") {
-			this.adapter = options.adapter as ActionsBase;
+			this.adapter = options.adapter as AdapterBase;
 			if (options.adapterOpts) {
 				this.adapter.adapterOpts = options.adapterOpts;
 			}
@@ -97,7 +97,7 @@ export class ValtheraClass implements ValtheraCompatible {
 				}
 			}
 
-			// if the executor is not set, and the action wants a smart executor
+			// if the executor is not set, and the adapter wants a smart executor
 			if (
 				!self.options.executor &&
 				self.options.executorAware &&

@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { assignDataPush } from "#helpers/assignDataPush";
+import { assignDataPush } from "#helpers/queryData";
 import { describe, expect, test } from "bun:test";
 
 describe("assignDataPush - property-based", () => {

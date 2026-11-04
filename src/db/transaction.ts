@@ -12,7 +12,7 @@ import {
 	applyUpdateOneOrAddDefaults,
 } from "../helpers/queryDefaults";
 import { Data } from "../types/data";
-import { IndexDefinition, IndexOpts } from "../types/idx";
+import { IndexDefinition, IndexOpts } from "../types/indexes";
 import { VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";

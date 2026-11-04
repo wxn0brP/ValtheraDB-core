@@ -1,4 +1,4 @@
-import { genId, getIdData } from "#helpers/gen";
+import { genId, getIdData } from "#helpers/idGen";
 import { describe, expect, test } from "bun:test";
 
 describe("getIdData", () => {

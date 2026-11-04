@@ -2,8 +2,8 @@ import { Data, DataInternal } from "../types/data";
 import { VQuery, VQueryT } from "../types/query";
 import { warnDeprecated } from "./deprecation";
 import { hasFieldsAdvanced } from "./hasFieldsAdvanced";
-import { updateFindObject } from "./updateFindObject";
-import { updateObjectAdvanced } from "./updateObject";
+import { updateFindObject } from "./projection";
+import { updateObjectAdvanced } from "./updateOperators";
 
 export function findObj(
 	config: VQueryT.Find | VQueryT.FindOne,

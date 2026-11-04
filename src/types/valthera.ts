@@ -1,7 +1,7 @@
 import { Collection } from "../helpers/collection";
-import { AdapterCapabilities } from "./action";
+import { AdapterCapabilities } from "./adapter";
 import { Data } from "./data";
-import { IndexOpts } from "./idx";
+import { IndexOpts } from "./indexes";
 import { VQueryT } from "./query";
 
 export interface ValtheraCompatible {

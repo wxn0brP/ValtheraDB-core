@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { updateObjectAdvanced } from "#utils/updateObject";
+import { updateObjectAdvanced } from "#utils/updateOperators";
 import { describe, expect, test } from "bun:test";
 
 describe("updateObjectAdvanced - property-based", () => {

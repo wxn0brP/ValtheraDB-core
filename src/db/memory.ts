@@ -1,74 +1,19 @@
-import { CustomActionsBase } from "../base/custom";
-import { CustomFileCpu } from "../customFileCpu";
+import { MemoryAdapter } from "../adapters/memoryAdapter";
 import { forgeTypedValthera } from "../helpers/forge";
 import { Data } from "../types/data";
-import { VQueryT } from "../types/query";
 import { TypedValthera } from "../types/typed";
-import { hasFieldsAdvanced } from "../utils/hasFieldsAdvanced";
 import { ValtheraClass } from "./valthera";
 
-export class MemoryAction extends CustomActionsBase {
-	memory: Map<string, any[]>;
-	smartExecutor = true;
-	capabilities = {
-		transactions: false,
-		indexes: false,
-		persistent: false,
-	};
-
-	constructor() {
-		super();
-		this.fileCpu = new CustomFileCpu(
-			this._readMemory.bind(this),
-			this._writeMemory.bind(this),
-			true,
-		);
-		this.memory = new Map();
-	}
-
-	_readMemory(key: string) {
-		if (!this.memory.has(key)) return [];
-		return this.memory.get(key)!;
-	}
-
-	_writeMemory(key: string, data: any[]) {
-		this.memory.set(key, data);
-	}
-
-	async getCollections() {
-		return Array.from(this.memory.keys());
-	}
-
-	async ensureCollection(collection: string) {
-		if (this.memory.has(collection)) return false;
-		this.memory.set(collection, []);
-		return true;
-	}
-
-	async issetCollection(collection: string) {
-		return this.memory.has(collection);
-	}
-
-	async removeCollection(collection: string) {
-		if (!this.memory.has(collection)) return false;
-		this.memory.delete(collection);
-		return true;
-	}
-
-	async count(config: VQueryT.Count) {
-		const collection = this._readMemory(config.collection);
-		let count = 0;
-		for (const item of collection)
-			if (hasFieldsAdvanced(item, config.search)) count++;
-
-		return count;
-	}
-}
+export {
+	/** @deprecated Use MemoryAdapter. */
+	MemoryAction,
+	MemoryAdapter,
+} from "../adapters/memoryAdapter";
 
 export class ValtheraMemory extends ValtheraClass {
 	constructor(...args: any[]) {
 		super({
-			adapter: new MemoryAction(),
+			adapter: new MemoryAdapter(),
 		});
 	}
 }
@@ -80,7 +25,7 @@ export function createMemoryValthera<T extends Record<string, Data[]>>(
 	if (!data) return forgeTypedValthera(db) as any;
 
 	for (const collection of Object.keys(data)) {
-		(db.adapter as MemoryAction).memory.set(collection, data[collection]);
+		(db.adapter as MemoryAdapter).memory.set(collection, data[collection]);
 	}
 
 	return forgeTypedValthera(db) as any;

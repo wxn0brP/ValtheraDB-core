@@ -1,0 +1,130 @@
+import { UnsupportedOperationError } from "../errors";
+import {
+	setDataForToggleOne,
+	setDataForUpdateOneOrAdd,
+} from "../helpers/queryData";
+import { AdapterBaseInterface, AdapterCapabilities } from "../types/adapter";
+import { DataInternal } from "../types/data";
+import { Id } from "../types/Id";
+import { AdapterOpts } from "../types/options";
+import { VQueryT } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
+import { version } from "../version";
+
+export abstract class AdapterBase implements AdapterBaseInterface {
+	_inited: boolean = true;
+	adapterOpts: AdapterOpts = {
+		numberId: false,
+		idKey: "_id",
+	};
+	smartExecutor: boolean = false;
+	capabilities: AdapterCapabilities = {
+		transactions: false,
+		indexes: false,
+		persistent: true,
+	};
+	version = "AdapterBase-core-" + version;
+
+	async init(...args: any[]) {}
+	async close(...args: any[]) {}
+
+	abstract getCollections(): Promise<string[]>;
+	abstract ensureCollection(collection: string): Promise<boolean>;
+	abstract issetCollection(collection: string): Promise<boolean>;
+	abstract removeCollection(collection: string): Promise<boolean>;
+
+	abstract add(config: VQueryT.Add): Promise<DataInternal>;
+	abstract find(config: VQueryT.Find): Promise<DataInternal[]>;
+	abstract findOne(config: VQueryT.FindOne): Promise<DataInternal | null>;
+	abstract update(config: VQueryT.Update): Promise<DataInternal[]>;
+	abstract updateOne(config: VQueryT.Update): Promise<DataInternal | null>;
+	abstract remove(config: VQueryT.Remove): Promise<DataInternal[]>;
+	abstract removeOne(config: VQueryT.Remove): Promise<DataInternal | null>;
+
+	async beginTransaction(
+		id: Id,
+		collections: string[],
+	): Promise<TransactionHandle> {
+		throw new UnsupportedOperationError("beginTransaction");
+	}
+
+	async commitTransaction(handle: TransactionHandle) {
+		throw new UnsupportedOperationError("commitTransaction");
+	}
+
+	async rollbackTransaction(handle: TransactionHandle) {
+		throw new UnsupportedOperationError("rollbackTransaction");
+	}
+
+	async createIndex(config: VQueryT.CreateIndex) {
+		// No-op: adapter does not use indexes internally
+	}
+
+	async removeIndex(config: VQueryT.RemoveIndex) {
+		// No-op: adapter does not use indexes internally
+	}
+
+	async updateOneOrAdd(
+		config: VQueryT.UpdateOneOrAdd,
+	): Promise<VQueryT.UpdateOneOrAddResult<DataInternal>> {
+		const res = await this.updateOne(config);
+
+		if (res)
+			return {
+				data: res,
+				type: "updated",
+			};
+
+		// transform UpdateOneQuery to AddQuery
+		setDataForUpdateOneOrAdd(config);
+
+		return {
+			data: await this.add(config as any),
+			type: "added",
+		};
+	}
+
+	async toggleOne(
+		config: VQueryT.ToggleOne,
+	): Promise<VQueryT.ToggleOneResult<DataInternal>> {
+		const res = await this.removeOne(config);
+
+		if (res)
+			return {
+				data: res,
+				type: "removed",
+			};
+
+		// transform ToggleOneQuery to AddQuery
+		setDataForToggleOne(config);
+
+		return {
+			data: await this.add(config as any),
+			type: "added",
+		};
+	}
+
+	async count(config: VQueryT.Count): Promise<number> {
+		return await this.find(config).then(res => res.length);
+	}
+
+	async bulkAdd(config: VQueryT.BulkAdd): Promise<DataInternal[]> {
+		const results: DataInternal[] = [];
+		for (const item of config.datas) {
+			const result = await this.add({
+				collection: config.collection,
+				data: item,
+				id_gen: config.id_gen,
+				control: config.control,
+				transaction: config.transaction,
+			});
+			results.push(result);
+		}
+		return results;
+	}
+}
+
+export {
+	/** @deprecated Use AdapterBase. */
+	AdapterBase as ActionsBase,
+};

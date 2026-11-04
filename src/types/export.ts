@@ -1,3 +1,6 @@
+/**
+ * @deprecated Import types directly from their modules instead.
+ */
 export namespace ValtheraTypes {
 	export type Arg = import("./arg").Arg;
 	export type Search = import("./arg").Search;
@@ -7,12 +10,12 @@ export namespace ValtheraTypes {
 	export type DbOpts = import("./options").DbOpts;
 	export type AdapterOpts = import("./options").AdapterOpts;
 	export type IdGen = import("./options").IdGen;
-	export type AdapterCapabilities = import("./action").AdapterCapabilities;
+	export type AdapterCapabilities = import("./adapter").AdapterCapabilities;
 	export type Data = import("./data").Data;
 	export type SearchOptions = import("./searchOpts").SearchOptions;
 	export type Id = import("./Id").Id;
 	/** @deprecated */
-	export type Context = import("./types").VContext;
+	export type Context = import("./context").VContext;
 	/** @deprecated */
-	export type VContext = import("./types").VContext;
+	export type VContext = import("./context").VContext;
 }

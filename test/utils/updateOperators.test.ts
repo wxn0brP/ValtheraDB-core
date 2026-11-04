@@ -1,5 +1,5 @@
 import { Data } from "#types/data";
-import { updateObjectAdvanced } from "#utils/updateObject";
+import { updateObjectAdvanced } from "#utils/updateOperators";
 import { describe, expect, test } from "bun:test";
 
 describe("updateObjectAdvanced", () => {

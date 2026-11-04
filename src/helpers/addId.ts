@@ -1,4 +1,4 @@
-import { ActionsBase } from "../base/actions";
+import { AdapterBase } from "../base/adapter";
 import { QueryValidationError } from "../errors";
 import { Data } from "../types/data";
 import { Id } from "../types/Id";
@@ -6,7 +6,7 @@ import { IdGen } from "../types/options";
 import { VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { isUnsafeKey } from "../utils/security";
-import { genId } from "./gen";
+import { genId } from "./idGen";
 
 function assertSafeIdKey(idKey: string) {
 	if (!isUnsafeKey(idKey)) return;
@@ -58,20 +58,20 @@ const numberIdGen: IdGen = async (data, collection, adapter, transaction) => {
 async function applyIdGen(
 	records: Data[],
 	collection: string,
-	actions: ActionsBase,
+	adapter: AdapterBase,
 	idGenEnabled: boolean,
 	transaction?: TransactionHandle,
 ) {
 	if (!idGenEnabled) return;
 
-	const { idKey = "_id", numberId, idGen } = actions.adapterOpts;
+	const { idKey = "_id", numberId, idGen } = adapter.adapterOpts;
 	assertSafeIdKey(idKey);
 
 	const targets = records.filter(data => !data[idKey]);
 	if (!targets.length) return;
 
 	const generator = idGen ?? (numberId ? numberIdGen : defaultIdGen);
-	const ids = await generator(targets, collection, actions, transaction);
+	const ids = await generator(targets, collection, adapter, transaction);
 
 	for (let i = 0; i < targets.length; i++) {
 		targets[i][idKey] = ids[i];
@@ -80,7 +80,7 @@ async function applyIdGen(
 
 export async function addId(
 	query: VQueryT.Add,
-	actions: ActionsBase,
+	adapter: AdapterBase,
 	defaultGen = true,
 ) {
 	const id_gen = query.id_gen ?? defaultGen;
@@ -90,7 +90,7 @@ export async function addId(
 			query.data,
 		],
 		query.collection,
-		actions,
+		adapter,
 		id_gen,
 		query.transaction,
 	);
@@ -98,7 +98,7 @@ export async function addId(
 
 export async function addIdBulk(
 	query: VQueryT.BulkAdd,
-	actions: ActionsBase,
+	adapter: AdapterBase,
 	defaultGen = true,
 ) {
 	const id_gen = query.id_gen ?? defaultGen;
@@ -106,7 +106,7 @@ export async function addIdBulk(
 	await applyIdGen(
 		query.datas,
 		query.collection,
-		actions,
+		adapter,
 		id_gen,
 		query.transaction,
 	);

@@ -1,8 +1,8 @@
-import { MemoryAction } from "../src/db/memory.js";
+import { MemoryAdapter } from "../src/adapters/memoryAdapter.js";
 
 export default async () => {
-    const actions = new MemoryAction();
-    await actions.init();
-    actions._inited = true;
-    return actions;
+    const adapter = new MemoryAdapter();
+    await adapter.init();
+    adapter._inited = true;
+    return adapter;
 }

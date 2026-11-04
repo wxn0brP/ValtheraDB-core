@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { updateFindObject } from "#utils/updateFindObject";
+import { updateFindObject } from "#utils/projection";
 import { describe, expect, test } from "bun:test";
 
 const flatObjArb = fc.dictionary(

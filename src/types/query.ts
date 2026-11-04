@@ -1,9 +1,9 @@
 import { Arg, Search, Updater } from "./arg";
 import { Data } from "./data";
-import { IndexDefinition } from "./idx";
+import { IndexDefinition } from "./indexes";
 import { DbFindOpts, FindOpts } from "./options";
 import { TransactionHandle } from "./transaction";
-import { VContext } from "./types";
+import { VContext } from "./context";
 
 /**
  * To extend via adapters

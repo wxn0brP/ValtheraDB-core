@@ -1,0 +1,124 @@
+import { QueryValidationError } from "../errors";
+import { Data, DataInternal } from "../types/data";
+import { FileCpu } from "../types/fileCpu";
+import { VQueryT } from "../types/query";
+import { matchObj, updateObj } from "../utils/process";
+import { updateFindObject } from "../utils/projection";
+
+export type WriteFile = (file: string, data: any[]) => Promise<void>;
+export type ReadFile = (file: string) => Promise<any[]>;
+
+export function pathRepair(path: string) {
+	const repaired = path.replace(/\/+/g, "/");
+	if (repaired.split(/[/\\]+/).includes("..")) {
+		throw new QueryValidationError("Path traversal is not allowed", {
+			op: "pathRepair",
+			path,
+		});
+	}
+	return repaired;
+}
+
+export class CustomFileCpu implements FileCpu {
+	_readFile: ReadFile;
+	_writeFile: WriteFile;
+
+	constructor(
+		readFile: ReadFile,
+		writeFile: WriteFile,
+		public requireClone = false,
+	) {
+		this._readFile = readFile;
+		this._writeFile = writeFile;
+	}
+
+	async add(file: string, config: VQueryT.Add): Promise<void> {
+		file = pathRepair(file);
+		const entries = await this._readFile(file);
+		entries.push(config.data);
+		await this._writeFile(file, entries);
+	}
+
+	async find(file: string, config: VQueryT.Find): Promise<Data[]> {
+		file = pathRepair(file);
+		const entries = await this._readFile(file);
+		const findOpts = config.findOpts || {};
+		const result: Data[] = [];
+		for (let i = 0; i < entries.length; i++) {
+			if (matchObj(config, entries[i])) {
+				const obj = this.requireClone
+					? structuredClone(entries[i])
+					: entries[i];
+				result.push(updateFindObject(obj, findOpts));
+			}
+		}
+		return result;
+	}
+
+	async findOne(
+		file: string,
+		config: VQueryT.FindOne,
+	): Promise<DataInternal | false> {
+		file = pathRepair(file);
+		const entries = await this._readFile(file);
+
+		for (const entry of entries) {
+			const isMatch = matchObj(config, entry);
+			if (!isMatch) continue;
+			const obj = this.requireClone ? structuredClone(entry) : entry;
+			return updateFindObject(obj, config.findOpts || {}) as DataInternal;
+		}
+		return false;
+	}
+
+	async remove(
+		file: string,
+		config: VQueryT.Remove,
+		one: boolean,
+	): Promise<DataInternal[]> {
+		file = pathRepair(file);
+		let entries: DataInternal[] = await this._readFile(file);
+		const removed: DataInternal[] = [];
+
+		entries = entries.filter(entry => {
+			if (removed.length && one) return true;
+
+			if (matchObj(config, entry)) {
+				removed.push(entry);
+				return false;
+			}
+
+			return true;
+		});
+
+		if (removed.length) await this._writeFile(file, entries);
+
+		return removed;
+	}
+
+	async update(
+		file: string,
+		config: VQueryT.Update,
+		one: boolean,
+	): Promise<DataInternal[]> {
+		file = pathRepair(file);
+		let entries: DataInternal[] = await this._readFile(file);
+		const updated: DataInternal[] = [];
+
+		entries = entries.map(entry => {
+			if (updated.length && one) return entry;
+
+			if (matchObj(config, entry)) {
+				const updatedEntry = updateObj(config, entry);
+				updated.push(updatedEntry);
+				return updatedEntry;
+			}
+
+			return entry;
+		});
+
+		if (updated.length) await this._writeFile(file, entries);
+
+		return updated;
+	}
+}

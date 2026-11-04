@@ -1,8 +1,8 @@
-import { MemoryAction } from "#db/memory";
+import { MemoryAdapter } from "#adapters/memoryAdapter";
 import { ValtheraClass } from "#db/valthera";
 import { describe, expect, test } from "bun:test";
 
-class LifecycleMemoryAction extends MemoryAction {
+class LifecycleMemoryAdapter extends MemoryAdapter {
 	initCalls = 0;
 	closeCalls = 0;
 
@@ -21,22 +21,22 @@ class LifecycleMemoryAction extends MemoryAction {
 }
 
 describe("ValtheraClass.close", () => {
-	test("1. should skip close when the action is not initialized", async () => {
-		const action = new LifecycleMemoryAction();
+	test("1. should skip close when the adapter is not initialized", async () => {
+		const adapter = new LifecycleMemoryAdapter();
 		const db = new ValtheraClass({
-			adapter: action,
+			adapter: adapter,
 		});
 
 		await db.close();
 
-		expect(action.closeCalls).toBe(0);
-		expect(action._inited).toBe(false);
+		expect(adapter.closeCalls).toBe(0);
+		expect(adapter._inited).toBe(false);
 	});
 
 	test("2. should close once and let the next operation initialize again", async () => {
-		const action = new LifecycleMemoryAction();
+		const adapter = new LifecycleMemoryAdapter();
 		const db = new ValtheraClass({
-			adapter: action,
+			adapter: adapter,
 		});
 
 		await db.find({
@@ -48,19 +48,19 @@ describe("ValtheraClass.close", () => {
 			collection: "users",
 		});
 
-		expect(action.initCalls).toBe(2);
-		expect(action.closeCalls).toBe(1);
-		expect(action._inited).toBe(true);
+		expect(adapter.initCalls).toBe(2);
+		expect(adapter.closeCalls).toBe(1);
+		expect(adapter._inited).toBe(true);
 	});
 
-	test("3. should support actions that use the default ActionsBase close", async () => {
-		const action = new MemoryAction();
+	test("3. should support adapters that use the default AdapterBase close", async () => {
+		const adapter = new MemoryAdapter();
 		const db = new ValtheraClass({
-			adapter: action,
+			adapter: adapter,
 		});
 
 		await db.close();
 
-		expect(action._inited).toBe(false);
+		expect(adapter._inited).toBe(false);
 	});
 });

@@ -1,10 +1,10 @@
 import { Arg, Search, Updater } from "../types/arg";
-import { UpdateOneOrAdd } from "../types/collection";
+import { UpdateOneOrAdd } from "../types/updateOneOrAdd";
 import { Data } from "../types/data";
-import { IndexOpts } from "../types/idx";
+import { IndexOpts } from "../types/indexes";
 import { DbFindOpts, FindOpts } from "../types/options";
 import { VQueryT } from "../types/query";
-import { VContext } from "../types/types";
+import { VContext } from "../types/context";
 import { ValtheraCompatible } from "../types/valthera";
 
 export function resolveCollection(target: string | VQueryT.Collection) {

@@ -1,10 +1,10 @@
-import { MemoryAction } from "#db/memory";
+import { MemoryAdapter } from "#adapters/memoryAdapter";
 import { addId } from "#helpers/addId";
 import { describe, expect, test } from "bun:test";
 
 describe("addId", () => {
 	test("1. should add a generated ID when id_gen is true and data has no _id", async () => {
-		const db = new MemoryAction();
+		const db = new MemoryAdapter();
 		const query: any = {
 			collection: "test",
 			data: {
@@ -19,7 +19,7 @@ describe("addId", () => {
 	});
 
 	test("2. should not add ID when id_gen is false", async () => {
-		const db = new MemoryAction();
+		const db = new MemoryAdapter();
 		const query: any = {
 			collection: "test",
 			data: {
@@ -34,7 +34,7 @@ describe("addId", () => {
 	});
 
 	test("3. should not add ID when data already has _id", async () => {
-		const db = new MemoryAction();
+		const db = new MemoryAdapter();
 		const query = {
 			collection: "test",
 			data: {
@@ -49,7 +49,7 @@ describe("addId", () => {
 	});
 
 	test("4. should use number ID when numberId is enabled", async () => {
-		const db = new MemoryAction();
+		const db = new MemoryAdapter();
 		db.adapterOpts.numberId = true;
 
 		const query: any = {
@@ -65,7 +65,7 @@ describe("addId", () => {
 	});
 
 	test("5. should increment number ID correctly", async () => {
-		const db = new MemoryAction();
+		const db = new MemoryAdapter();
 		db.adapterOpts.numberId = true;
 
 		const query1: any = {

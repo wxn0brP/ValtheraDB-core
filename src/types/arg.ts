@@ -1,7 +1,7 @@
 import { Data } from "./data";
 import { IsStrict } from "./config";
 import { SearchOptions } from "./searchOpts";
-import { VContext } from "./types";
+import { VContext } from "./context";
 import { UpdaterArg } from "./updater";
 import { FieldsOf, WithId } from "./utils";
 

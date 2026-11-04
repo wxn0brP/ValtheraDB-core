@@ -1,10 +1,10 @@
 import { ErrorCodes, TransactionError } from "#errors";
 import { ValtheraClass } from "#db/valthera";
-import { MemoryAction } from "#db/memory";
+import { MemoryAdapter } from "#adapters/memoryAdapter";
 import { SmartExecutor } from "#helpers/executor";
 import { describe, expect, test } from "bun:test";
 
-class TransactionalMemoryAction extends MemoryAction {
+class TransactionalMemoryAdapter extends MemoryAdapter {
 	async beginTransaction(id: string) {
 		return {
 			id,
@@ -23,7 +23,7 @@ class TransactionalMemoryAction extends MemoryAction {
 function createTransactionalValthera() {
 	const executor = new SmartExecutor(5 * 60 * 1000, true);
 	return new ValtheraClass({
-		adapter: new TransactionalMemoryAction(),
+		adapter: new TransactionalMemoryAdapter(),
 		executor,
 	});
 }
@@ -81,14 +81,14 @@ describe("ValtheraClass.transaction", () => {
 	});
 
 	test("3. should throw TransactionError if both transaction and rollback fail", async () => {
-		class FailingRollbackAction extends TransactionalMemoryAction {
+		class FailingRollbackAdapter extends TransactionalMemoryAdapter {
 			async rollbackTransaction(handle: { id: string }) {
 				throw new Error("Rollback failed");
 			}
 		}
 
 		const db = new ValtheraClass({
-			adapter: new FailingRollbackAction(),
+			adapter: new FailingRollbackAdapter(),
 		});
 		await db.init();
 
@@ -169,7 +169,7 @@ describe("ValtheraClass.transaction", () => {
 
 	test("6. should pass transaction handle to operations", async () => {
 		let capturedHandle: any = null;
-		class CapturingAction extends TransactionalMemoryAction {
+		class CapturingAdapter extends TransactionalMemoryAdapter {
 			async add(query: any) {
 				capturedHandle = query.transaction;
 				return super.add(query);
@@ -177,7 +177,7 @@ describe("ValtheraClass.transaction", () => {
 		}
 
 		const db = new ValtheraClass({
-			adapter: new CapturingAction(),
+			adapter: new CapturingAdapter(),
 		});
 		await db.init();
 

@@ -1,5 +1,5 @@
 import { FindOpts } from "#types/options";
-import { updateFindObject } from "#utils/updateFindObject";
+import { updateFindObject } from "#utils/projection";
 import { describe, expect, test } from "bun:test";
 
 describe("updateFindObject", () => {

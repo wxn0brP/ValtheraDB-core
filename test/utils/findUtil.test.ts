@@ -1,5 +1,5 @@
 import { Data } from "#types/data";
-import { findUtil } from "#utils/action";
+import { findUtil } from "#utils/findUtil";
 import { describe, expect, test } from "bun:test";
 
 const mockFileCpu = {

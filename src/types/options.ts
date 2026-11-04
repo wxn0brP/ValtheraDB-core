@@ -1,11 +1,11 @@
-import { ActionsBase } from "../base/actions";
+import { AdapterBase } from "../base/adapter";
 import { ExecutorInterface } from "../helpers/executor";
 import { Data } from "./data";
 import { Id } from "./Id";
 import { TransactionHandle } from "./transaction";
 import { KeysMatching } from "./utils";
 
-export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
+export type AdapterValue = AdapterBase | (() => Promise<AdapterBase>);
 
 /**
  * Custom ID generator. Receives only records without the ID key set and
@@ -14,7 +14,7 @@ export type AdapterValue = ActionsBase | (() => Promise<ActionsBase>);
 export type IdGen = (
 	data: Data[],
 	collection: string,
-	adapter: ActionsBase,
+	adapter: AdapterBase,
 	transaction?: TransactionHandle,
 ) => Id[] | Promise<Id[]>;
 

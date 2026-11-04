@@ -2,7 +2,7 @@ import {
 	assignDataPush,
 	setDataForToggleOne,
 	setDataForUpdateOneOrAdd,
-} from "#helpers/assignDataPush";
+} from "#helpers/queryData";
 import { VQuery } from "#types/query";
 import { describe, expect, test } from "bun:test";
 

@@ -14,14 +14,14 @@
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>Represents a database management class for performing CRUD operations.</p>
 </div></section>
-<section class="tsd-panel tsd-hierarchy" data-refl="489">
+<section class="tsd-panel tsd-hierarchy" data-refl="670">
 <h4>Hierarchy (<a href="../hierarchy.html#db/memory.ValtheraMemory">View Summary</a>)</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><a href="db_valthera.ValtheraClass.html" class="tsd-signature-type tsd-kind-class">ValtheraClass</a>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">ValtheraMemory</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/memory.ts:68</li></ul></aside>
+<li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/memory.ts:13</li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -84,7 +84,7 @@
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">ValtheraMemory</a></h4><aside class="tsd-sources">
 <p>Overrides <a href="db_valthera.ValtheraClass.html">ValtheraClass</a>.<a href="db_valthera.ValtheraClass.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/memory.ts:69</li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/memory.ts:14</li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -102,7 +102,7 @@
 <li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/valthera.ts:46</li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-inherited">
 <h3 class="tsd-anchor-link" id="adapter"><span>adapter</span><a href="#adapter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">adapter</span><span class="tsd-signature-symbol">:</span> <a href="base_actions.ActionsBase.html" class="tsd-signature-type tsd-kind-class">ActionsBase</a></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">adapter</span><span class="tsd-signature-symbol">:</span> <a href="base_adapter.AdapterBase.html" class="tsd-signature-type tsd-kind-class">AdapterBase</a></div><aside class="tsd-sources">
 <p>Inherited from <a href="db_valthera.ValtheraClass.html">ValtheraClass</a>.<a href="db_valthera.ValtheraClass.html#adapter">adapter</a></p>
 <ul>
 <li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/valthera.ts:26</li></ul></aside></section>
@@ -195,11 +195,11 @@
 <h3 class="tsd-anchor-link" id="capabilities"><span>capabilities</span><a href="#capabilities" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="capabilities-1"><span class="tsd-kind-call-signature">capabilities</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_action.AdapterCapabilities.html" class="tsd-signature-type tsd-kind-interface">AdapterCapabilities</a><span class="tsd-signature-symbol">&gt;</span><a href="#capabilities-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="capabilities-1"><span class="tsd-kind-call-signature">capabilities</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_adapter.AdapterCapabilities.html" class="tsd-signature-type tsd-kind-interface">AdapterCapabilities</a><span class="tsd-signature-symbol">&gt;</span><a href="#capabilities-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Describe what the underlying adapter supports.</p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_action.AdapterCapabilities.html" class="tsd-signature-type tsd-kind-interface">AdapterCapabilities</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types_adapter.AdapterCapabilities.html" class="tsd-signature-type tsd-kind-interface">AdapterCapabilities</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="db_valthera.ValtheraClass.html">ValtheraClass</a>.<a href="db_valthera.ValtheraClass.html#capabilities">capabilities</a></p>
 <ul>
 <li>Defined in work/ValtheraDB-core/ValtheraDB-core/src/db/valthera.ts:384</li></ul></aside></div></li></ul></section>
@@ -235,7 +235,7 @@
 <h3 class="tsd-anchor-link" id="createindex"><span>create<wbr/>Index</span><a href="#createindex" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
 <li class="tsd-is-inherited">
-<div class="tsd-signature tsd-anchor-link" id="createindex-1"><span class="tsd-kind-call-signature">createIndex</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">collection</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fields</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">opts</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/types_idx.IndexOpts.html" class="tsd-signature-type tsd-kind-interface">IndexOpts</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#createindex-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="createindex-1"><span class="tsd-kind-call-signature">createIndex</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">collection</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fields</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">opts</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/types_indexes.IndexOpts.html" class="tsd-signature-type tsd-kind-interface">IndexOpts</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#createindex-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Create an index on a collection.</p>
 </div>
@@ -244,7 +244,7 @@
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">collection</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">fields</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></span></li>
-<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">opts</span>: <a href="../interfaces/types_idx.IndexOpts.html" class="tsd-signature-type tsd-kind-interface">IndexOpts</a></span></li></ul></div>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">opts</span>: <a href="../interfaces/types_indexes.IndexOpts.html" class="tsd-signature-type tsd-kind-interface">IndexOpts</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <p>Inherited from <a href="db_valthera.ValtheraClass.html">ValtheraClass</a>.<a href="db_valthera.ValtheraClass.html#createindex">createIndex</a></p>
 <ul>

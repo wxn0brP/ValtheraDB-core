@@ -60,7 +60,15 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 				updater,
 			];
 		},
-		pushall: (item, updater) => {
+		pushall: (item, updater, key) => {
+			if (!Array.isArray(updater))
+				throw new QueryValidationError(
+					"Cannot push all values: the updater is not an array",
+					{
+						op: "update",
+						key,
+					},
+				);
 			if (Array.isArray(item)) {
 				item.push(...updater);
 				return item;
@@ -83,7 +91,15 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 			if (Array.isArray(item)) return item.filter(i => i !== updater);
 		},
 
-		pullall: (item, updater) => {
+		pullall: (item, updater, key) => {
+			if (!Array.isArray(updater))
+				throw new QueryValidationError(
+					"Cannot pull all values: the updater is not an array",
+					{
+						op: "update",
+						key,
+					},
+				);
 			if (Array.isArray(item))
 				return item.filter(i => !(updater as string[]).includes(i));
 		},
@@ -141,9 +157,15 @@ function mainUpdate(obj: Object, fields: UpdaterArg) {
 		},
 
 		rename: (_, newKey, oldKey, deepObj) => {
-			if (isUnsafeKey(oldKey) || isUnsafeKey(newKey as string)) return;
+			if (isUnsafeKey(oldKey)) return;
+			if (typeof newKey !== "string")
+				throw new QueryValidationError("Cannot rename to a non-string key", {
+					op: "update",
+					key: oldKey,
+				});
+			if (isUnsafeKey(newKey)) return;
 			if (Object.hasOwn(deepObj, oldKey)) {
-				deepObj[newKey as string] = deepObj[oldKey];
+				deepObj[newKey] = deepObj[oldKey];
 				delete deepObj[oldKey];
 			}
 		},
@@ -182,6 +204,14 @@ function _for(
 		const fieldRaw = field.slice(1);
 		const fieldFn = Object.hasOwn(opts, fieldRaw) ? opts[fieldRaw] : undefined;
 		if (!fieldFn) continue;
+		if (value === null || typeof value !== "object" || Array.isArray(value))
+			throw new QueryValidationError(
+				`Operator "${field}" requires an object value`,
+				{
+					op: "update",
+					key: fieldRaw,
+				},
+			);
 
 		for (const [key, val] of Object.entries(value as Record<string, any>)) {
 			if (isUnsafeKey(key)) continue;

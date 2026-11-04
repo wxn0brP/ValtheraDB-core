@@ -46,12 +46,22 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 	if (!checkNot(obj, $fields)) return false;
 
 	if (Object.hasOwn($fields, "$and")) {
+		if (!Array.isArray($fields["$and"]))
+			throw new QueryValidationError("$and must be an array", {
+				op: "search",
+				key: "$and",
+			});
 		return $fields["$and"].every((subFields: Object) =>
 			hasFieldsAdvanced(obj, subFields),
 		);
 	}
 
 	if (Object.hasOwn($fields, "$or")) {
+		if (!Array.isArray($fields["$or"]))
+			throw new QueryValidationError("$or must be an array", {
+				op: "search",
+				key: "$or",
+			});
 		return $fields["$or"].some((subFields: Object) =>
 			hasFieldsAdvanced(obj, subFields),
 		);
@@ -67,8 +77,22 @@ function mainCheck(obj: Object, fields: Object) {
 		lt: (data, value) => typeof data === typeof value && data < value,
 		gte: (data, value) => typeof data === typeof value && data >= value,
 		lte: (data, value) => typeof data === typeof value && data <= value,
-		in: (data, value) => value.includes(data),
-		nin: (data, value) => !value.includes(data),
+		in: (data, value) => {
+			if (!Array.isArray(value))
+				throw new QueryValidationError("$in requires an array", {
+					op: "search",
+					key: "in",
+				});
+			return value.includes(data);
+		},
+		nin: (data, value) => {
+			if (!Array.isArray(value))
+				throw new QueryValidationError("$nin requires an array", {
+					op: "search",
+					key: "nin",
+				});
+			return !value.includes(data);
+		},
 		type: (data, value) => typeof data === value,
 
 		exists: (targetObj, shouldExist, key) => {
@@ -104,12 +128,39 @@ function mainCheck(obj: Object, fields: Object) {
 		iendswith: (data, value) =>
 			typeof data === "string" &&
 			data.toLowerCase().endsWith(value.toLowerCase()),
-		between: (data, [min, max]) =>
-			typeof data === "number" && data >= min && data <= max,
-		arrinc: (data, values) =>
-			Array.isArray(data) && values.some((val: any) => data.includes(val)),
-		arrincall: (data, values) =>
-			Array.isArray(data) && values.every((val: any) => data.includes(val)),
+		between: (data, value) => {
+			if (
+				!Array.isArray(value) ||
+				value.length !== 2 ||
+				typeof value[0] !== "number" ||
+				typeof value[1] !== "number"
+			)
+				throw new QueryValidationError("$between requires [min, max]", {
+					op: "search",
+					key: "between",
+				});
+			return typeof data === "number" && data >= value[0] && data <= value[1];
+		},
+		arrinc: (data, values) => {
+			if (!Array.isArray(values))
+				throw new QueryValidationError("$arrinc requires an array", {
+					op: "search",
+					key: "arrinc",
+				});
+			return (
+				Array.isArray(data) && values.some((val: any) => data.includes(val))
+			);
+		},
+		arrincall: (data, values) => {
+			if (!Array.isArray(values))
+				throw new QueryValidationError("$arrincall requires an array", {
+					op: "search",
+					key: "arrincall",
+				});
+			return (
+				Array.isArray(data) && values.every((val: any) => data.includes(val))
+			);
+		},
 
 		idgt: (data, value) => compareIds(data, value) > 0,
 		idlt: (data, value) => compareIds(data, value) < 0,
@@ -134,6 +185,14 @@ function _for(
 		const fieldRaw = field.slice(1);
 		const fieldFn = Object.hasOwn(opts, fieldRaw) ? opts[fieldRaw] : undefined;
 		if (!fieldFn) continue;
+		if (value === null || typeof value !== "object" || Array.isArray(value))
+			throw new QueryValidationError(
+				`Operator "${field}" requires an object value`,
+				{
+					op: "search",
+					key: fieldRaw,
+				},
+			);
 
 		for (const [key, val] of Object.entries(value as Record<string, any>)) {
 			if (isUnsafeKey(key)) continue;

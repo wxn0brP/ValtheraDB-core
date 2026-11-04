@@ -1,0 +1,52 @@
+import { VEE } from "@wxn0brp/event-emitter";
+import { AdapterBase } from "../base/adapter";
+import { Collection } from "../helpers/collection";
+import { ExecutorInterface } from "../helpers/executor";
+import { AdapterCapabilities } from "../types/adapter";
+import { Data } from "../types/data";
+import { IndexOpts } from "../types/indexes";
+import { DbOpts } from "../types/options";
+import { ValtheraPlugin } from "../types/plugin";
+import { VQuery, VQueryT } from "../types/query";
+import { TransactionHandle } from "../types/transaction";
+import { ValtheraCompatible } from "../types/valthera";
+import { type DbOp } from "../utils/opKind";
+import { Transaction } from "./transaction";
+export declare class ValtheraClass implements ValtheraCompatible {
+    options: DbOpts;
+    adapter: AdapterBase;
+    executor: ExecutorInterface;
+    emitter: VEE<{
+        [K in DbOp]: (query: VQuery, result: Awaited<ReturnType<ValtheraClass[K]>>, collection?: string) => void;
+    } & {
+        "*": (name: DbOp, query: VQuery, result: any, collection?: string) => void;
+    }>;
+    version: string;
+    _plugins: ValtheraPlugin[];
+    _collections: Map<string, Collection<any>>;
+    plugin(p: ValtheraPlugin, collections?: string[] | string): () => void;
+    constructor(options: DbOpts);
+    init(...args: any[]): Promise<any>;
+    close(...args: any[]): Promise<any>;
+    execute<T>(name: DbOp, query: VQuery<any> | string, txHandle?: TransactionHandle): Promise<T>;
+    c<T = Data>(collection: string): Collection<T>;
+    getCollections(): Promise<string[]>;
+    ensureCollection(collection: string | VQueryT.Collection): Promise<boolean>;
+    issetCollection(collection: string | VQueryT.Collection): Promise<boolean>;
+    add<T = Data>(query: VQueryT.Add<T>): Promise<T>;
+    bulkAdd<T = Data>(query: VQueryT.BulkAdd<T>): Promise<T[]>;
+    find<T = Data>(query: VQueryT.Find<T>): Promise<T[]>;
+    findOne<T = Data>(query: VQueryT.FindOne<T>): Promise<T | null>;
+    update<T = Data>(query: VQueryT.Update<T>): Promise<T[]>;
+    updateOne<T = Data>(query: VQueryT.Update<T>): Promise<T | null>;
+    remove<T = Data>(query: VQueryT.Remove<T>): Promise<T[]>;
+    removeOne<T = Data>(query: VQueryT.Remove<T>): Promise<T | null>;
+    updateOneOrAdd<T = Data>(query: VQueryT.UpdateOneOrAdd<T>): Promise<VQueryT.UpdateOneOrAddResult<T>>;
+    toggleOne<T = Data>(query: VQueryT.ToggleOne<T>): Promise<VQueryT.ToggleOneResult<T>>;
+    removeCollection(target: string | VQueryT.Collection): Promise<boolean>;
+    createIndex(collection: string, fields: string[], opts?: IndexOpts): Promise<void>;
+    removeIndex(collection: string, fields: string[]): Promise<void>;
+    count(query: VQueryT.Count): Promise<number>;
+    capabilities(): Promise<AdapterCapabilities>;
+    transaction<T>(collections: string[], fn: (tx: Transaction) => Promise<T>): Promise<T>;
+}

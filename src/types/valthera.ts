@@ -1,4 +1,5 @@
 import { Collection } from "../helpers/collection";
+import { ResultPromise } from "../helpers/resultPromise";
 import { AdapterCapabilities } from "./adapter";
 import { Data } from "./data";
 import { IndexOpts } from "./indexes";
@@ -19,10 +20,10 @@ export interface ValtheraCompatible {
 	removeCollection(collection: string | VQueryT.Collection): Promise<boolean>;
 	updateOneOrAdd<T = Data>(
 		query: VQueryT.UpdateOneOrAdd<T>,
-	): Promise<VQueryT.UpdateOneOrAddResult<T>>;
+	): ResultPromise<VQueryT.UpdateOneOrAddResult<T>>;
 	toggleOne<T = Data>(
 		query: VQueryT.ToggleOne<T>,
-	): Promise<VQueryT.ToggleOneResult<T>>;
+	): ResultPromise<VQueryT.ToggleOneResult<T>>;
 	createIndex(
 		collection: string,
 		fields: string[],

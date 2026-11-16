@@ -4,6 +4,7 @@ import * as errors from "../errors";
 import { Collection, resolveCollection } from "../helpers/collection";
 import { ExecutorInterface, SmartExecutor } from "../helpers/executor";
 import { genId } from "../helpers/idGen";
+import { ResultPromise } from "../helpers/resultPromise";
 import * as queryDefaults from "../helpers/queryDefaults";
 import { rewriteOp } from "../helpers/rewriteOp";
 import { AdapterCapabilities } from "../types/adapter";
@@ -321,9 +322,8 @@ export class ValtheraClass implements ValtheraCompatible {
 	 */
 	updateOneOrAdd<T = Data>(query: VQueryT.UpdateOneOrAdd<T>) {
 		queryDefaults.applyUpdateOneOrAddDefaults(query);
-		return this.execute<VQueryT.UpdateOneOrAddResult<T>>(
-			"updateOneOrAdd",
-			query,
+		return ResultPromise.wrap(
+			this.execute<VQueryT.UpdateOneOrAddResult<T>>("updateOneOrAdd", query),
 		);
 	}
 
@@ -332,7 +332,9 @@ export class ValtheraClass implements ValtheraCompatible {
 	 */
 	toggleOne<T = Data>(query: VQueryT.ToggleOne<T>) {
 		queryDefaults.applyToggleOneDefaults(query);
-		return this.execute<VQueryT.ToggleOneResult<T>>("toggleOne", query);
+		return ResultPromise.wrap(
+			this.execute<VQueryT.ToggleOneResult<T>>("toggleOne", query),
+		);
 	}
 
 	/**

@@ -6,6 +6,7 @@ import { DbFindOpts, FindOpts } from "../types/options";
 import { VQueryT } from "../types/query";
 import { VContext } from "../types/context";
 import { ValtheraCompatible } from "../types/valthera";
+import { ResultPromise } from "./resultPromise";
 
 export function resolveCollection(target: string | VQueryT.Collection) {
 	return typeof target === "string" ? target : target.collection;
@@ -159,7 +160,7 @@ export class Collection<D = Data> {
 		search: Search<D>,
 		updater: Updater<D>,
 		{ add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<D> = {},
-	): Promise<VQueryT.UpdateOneOrAddResult<D>> {
+	): ResultPromise<VQueryT.UpdateOneOrAddResult<D>> {
 		return this.db.updateOneOrAdd({
 			collection: this.collection,
 			search,
@@ -177,7 +178,7 @@ export class Collection<D = Data> {
 		search: Search<D>,
 		data: Arg<D> = {},
 		context: VContext = {},
-	): Promise<VQueryT.ToggleOneResult<D>> {
+	): ResultPromise<VQueryT.ToggleOneResult<D>> {
 		return this.db.toggleOne({
 			collection: this.collection,
 			search,

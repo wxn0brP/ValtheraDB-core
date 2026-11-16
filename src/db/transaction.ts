@@ -11,6 +11,7 @@ import {
 	applyUpdateDefaults,
 	applyUpdateOneOrAddDefaults,
 } from "../helpers/queryDefaults";
+import { ResultPromise } from "../helpers/resultPromise";
 import { Data } from "../types/data";
 import { IndexDefinition, IndexOpts } from "../types/indexes";
 import { VQueryT } from "../types/query";
@@ -74,19 +75,23 @@ export class Transaction implements ValtheraCompatible {
 
 	updateOneOrAdd<T = Data>(q: VQueryT.UpdateOneOrAdd<T>) {
 		applyUpdateOneOrAddDefaults(q);
-		return this._parent.execute<VQueryT.UpdateOneOrAddResult<T>>(
-			"updateOneOrAdd",
-			q,
-			this.handle,
+		return ResultPromise.wrap(
+			this._parent.execute<VQueryT.UpdateOneOrAddResult<T>>(
+				"updateOneOrAdd",
+				q,
+				this.handle,
+			),
 		);
 	}
 
 	toggleOne<T = Data>(q: VQueryT.ToggleOne<T>) {
 		applyToggleOneDefaults(q);
-		return this._parent.execute<VQueryT.ToggleOneResult<T>>(
-			"toggleOne",
-			q,
-			this.handle,
+		return ResultPromise.wrap(
+			this._parent.execute<VQueryT.ToggleOneResult<T>>(
+				"toggleOne",
+				q,
+				this.handle,
+			),
 		);
 	}
 

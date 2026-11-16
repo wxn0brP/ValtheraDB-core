@@ -1,12 +1,11 @@
 import { Arg, Search, Updater } from "../types/arg";
-import { UpdateOneOrAdd } from "../types/updateOneOrAdd";
+import { VContext } from "../types/context";
 import { Data } from "../types/data";
 import { IndexOpts } from "../types/indexes";
 import { DbFindOpts, FindOpts } from "../types/options";
 import { VQueryT } from "../types/query";
-import { VContext } from "../types/context";
+import { UpdateOneOrAdd } from "../types/updateOneOrAdd";
 import { ValtheraCompatible } from "../types/valthera";
-import { ResultPromise } from "./resultPromise";
 
 export function resolveCollection(target: string | VQueryT.Collection) {
 	return typeof target === "string" ? target : target.collection;
@@ -63,8 +62,8 @@ export class Collection<D = Data> {
 		options: DbFindOpts<D> = {},
 		findOpts: FindOpts<D> = {},
 		context: VContext = {},
-	): Promise<D[]> {
-		return this.db.find({
+	) {
+		return this.db.find<D>({
 			collection: this.collection,
 			search,
 			dbFindOpts: options,
@@ -80,8 +79,8 @@ export class Collection<D = Data> {
 		search: Search<D> = {},
 		findOpts: FindOpts<D> = {},
 		context: VContext = {},
-	): Promise<D | null> {
-		return this.db.findOne({
+	) {
+		return this.db.findOne<D>({
 			collection: this.collection,
 			search,
 			findOpts,
@@ -92,7 +91,7 @@ export class Collection<D = Data> {
 	/**
 	 * Count data entries in a database.
 	 */
-	count(search: Search<D, false> = {}): Promise<number> {
+	count(search: Search<D, false> = {}) {
 		return this.db.count({
 			collection: this.collection,
 			search: search as Search<Data, false>,
@@ -102,12 +101,8 @@ export class Collection<D = Data> {
 	/**
 	 * Update data in a database.
 	 */
-	update(
-		search: Search<D>,
-		updater: Updater<D>,
-		context: VContext = {},
-	): Promise<D[]> {
-		return this.db.update({
+	update(search: Search<D>, updater: Updater<D>, context: VContext = {}) {
+		return this.db.update<D>({
 			collection: this.collection,
 			search,
 			updater,
@@ -118,12 +113,8 @@ export class Collection<D = Data> {
 	/**
 	 * Update one data entry in a database.
 	 */
-	updateOne(
-		search: Search<D>,
-		updater: Updater<D>,
-		context: VContext = {},
-	): Promise<D | null> {
-		return this.db.updateOne({
+	updateOne(search: Search<D>, updater: Updater<D>, context: VContext = {}) {
+		return this.db.updateOne<D>({
 			collection: this.collection,
 			search,
 			updater,
@@ -134,8 +125,8 @@ export class Collection<D = Data> {
 	/**
 	 * Remove data from a database.
 	 */
-	remove(search: Search<D>, context: VContext = {}): Promise<D[]> {
-		return this.db.remove({
+	remove(search: Search<D>, context: VContext = {}) {
+		return this.db.remove<D>({
 			collection: this.collection,
 			search,
 			context,
@@ -145,8 +136,8 @@ export class Collection<D = Data> {
 	/**
 	 * Remove one data entry from a database.
 	 */
-	removeOne(search: Search<D>, context: VContext = {}): Promise<D | null> {
-		return this.db.removeOne({
+	removeOne(search: Search<D>, context: VContext = {}) {
+		return this.db.removeOne<D>({
 			collection: this.collection,
 			search,
 			context,
@@ -160,8 +151,8 @@ export class Collection<D = Data> {
 		search: Search<D>,
 		updater: Updater<D>,
 		{ add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<D> = {},
-	): ResultPromise<VQueryT.UpdateOneOrAddResult<D>> {
-		return this.db.updateOneOrAdd({
+	) {
+		return this.db.updateOneOrAdd<D>({
 			collection: this.collection,
 			search,
 			updater,
@@ -174,12 +165,8 @@ export class Collection<D = Data> {
 	/**
 	 * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
 	 */
-	toggleOne(
-		search: Search<D>,
-		data: Arg<D> = {},
-		context: VContext = {},
-	): ResultPromise<VQueryT.ToggleOneResult<D>> {
-		return this.db.toggleOne({
+	toggleOne(search: Search<D>, data: Arg<D> = {}, context: VContext = {}) {
+		return this.db.toggleOne<D>({
 			collection: this.collection,
 			search,
 			data,

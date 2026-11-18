@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.20](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.19...v0.12.20) (2026-11-18)
+
+
+### Features
+
+* .type and .data accessors on updateOneOrAdd/toggleOne results ([b061d57](https://github.com/wxn0brP/ValtheraDB-core/commit/b061d5739479ee9bb3989a17700cf1ee73b1ded5))
+
 ### [0.12.19](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.18...v0.12.19) (2026-11-04)
 
 

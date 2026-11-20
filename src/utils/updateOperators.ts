@@ -49,133 +49,143 @@ function deepMerge(obj: Object, fields: UpdaterArg) {
 	return obj;
 }
 
+const UPDATE_HANDLERS: Record<
+	string,
+	(data: any, value: any, key: string, deepObj: Record<string, any>) => any
+> = {
+	push: (item, updater) => {
+		if (Array.isArray(item)) {
+			item.push(updater);
+			return item;
+		}
+		return [
+			updater,
+		];
+	},
+	pushall: (item, updater, key) => {
+		if (!Array.isArray(updater))
+			throw new QueryValidationError(
+				"Cannot push all values: the updater is not an array",
+				{
+					op: "update",
+					key,
+				},
+			);
+		if (Array.isArray(item)) {
+			item.push(...updater);
+			return item;
+		}
+		return updater;
+	},
+	pushset: (item, updater) => {
+		if (Array.isArray(item)) {
+			item.push(updater);
+			return [
+				...new Set(item),
+			];
+		}
+		return [
+			updater,
+		];
+	},
+
+	pull: (item, updater) => {
+		if (Array.isArray(item)) return item.filter(i => i !== updater);
+	},
+
+	pullall: (item, updater, key) => {
+		if (!Array.isArray(updater))
+			throw new QueryValidationError(
+				"Cannot pull all values: the updater is not an array",
+				{
+					op: "update",
+					key,
+				},
+			);
+		if (Array.isArray(item))
+			return item.filter(i => !(updater as string[]).includes(i));
+	},
+
+	merge: (item, updater) => {
+		if (Array.isArray(item) && Array.isArray(updater)) {
+			return [
+				...item,
+				...updater,
+			];
+		}
+		if (
+			typeof item === "object" &&
+			item !== null &&
+			typeof updater === "object" &&
+			updater !== null &&
+			!Array.isArray(item) &&
+			!Array.isArray(updater)
+		) {
+			for (const key of Object.keys(updater)) {
+				if (isUnsafeKey(key)) continue;
+				item[key] = updater[key];
+			}
+			return item;
+		}
+		return updater;
+	},
+
+	inc: (item, updater, key, deepObj) => {
+		if (typeof item === "number" && typeof updater === "number") {
+			return item + updater;
+		}
+		if (!Object.hasOwn(deepObj, key)) return updater;
+		throw new QueryValidationError(
+			`Cannot increment non-numeric value at key: ${key}`,
+			{
+				op: "update",
+				key,
+			},
+		);
+	},
+
+	dec: (item, updater, key, deepObj) => {
+		if (typeof item === "number" && typeof updater === "number") {
+			return item - updater;
+		}
+		if (!Object.hasOwn(deepObj, key)) return -updater;
+		throw new QueryValidationError(
+			`Cannot decrement non-numeric value at key: ${key}`,
+			{
+				op: "update",
+				key,
+			},
+		);
+	},
+
+	rename: (_, newKey, oldKey, deepObj) => {
+		if (isUnsafeKey(oldKey)) return;
+		if (typeof newKey !== "string")
+			throw new QueryValidationError("Cannot rename to a non-string key", {
+				op: "update",
+				key: oldKey,
+			});
+		if (isUnsafeKey(newKey)) return;
+		if (Object.hasOwn(deepObj, oldKey)) {
+			deepObj[newKey] = deepObj[oldKey];
+			delete deepObj[oldKey];
+		}
+	},
+
+	set: (_, value) => value,
+
+	unset: (_, __, key, deepObj) => {
+		if (Object.hasOwn(deepObj, key)) delete deepObj[key];
+	},
+};
+
+export const UPDATE_OPERATOR_NAMES = [
+	...Object.keys(UPDATE_HANDLERS).map(name => `$${name}`),
+	"$deepmerge",
+];
+
 function mainUpdate(obj: Object, fields: UpdaterArg) {
-	_for(fields, obj, {
-		push: (item, updater) => {
-			if (Array.isArray(item)) {
-				item.push(updater);
-				return item;
-			}
-			return [
-				updater,
-			];
-		},
-		pushall: (item, updater, key) => {
-			if (!Array.isArray(updater))
-				throw new QueryValidationError(
-					"Cannot push all values: the updater is not an array",
-					{
-						op: "update",
-						key,
-					},
-				);
-			if (Array.isArray(item)) {
-				item.push(...updater);
-				return item;
-			}
-			return updater;
-		},
-		pushset: (item, updater) => {
-			if (Array.isArray(item)) {
-				item.push(updater);
-				return [
-					...new Set(item),
-				];
-			}
-			return [
-				updater,
-			];
-		},
-
-		pull: (item, updater) => {
-			if (Array.isArray(item)) return item.filter(i => i !== updater);
-		},
-
-		pullall: (item, updater, key) => {
-			if (!Array.isArray(updater))
-				throw new QueryValidationError(
-					"Cannot pull all values: the updater is not an array",
-					{
-						op: "update",
-						key,
-					},
-				);
-			if (Array.isArray(item))
-				return item.filter(i => !(updater as string[]).includes(i));
-		},
-
-		merge: (item, updater) => {
-			if (Array.isArray(item) && Array.isArray(updater)) {
-				return [
-					...item,
-					...updater,
-				];
-			}
-			if (
-				typeof item === "object" &&
-				item !== null &&
-				typeof updater === "object" &&
-				updater !== null &&
-				!Array.isArray(item) &&
-				!Array.isArray(updater)
-			) {
-				for (const key of Object.keys(updater)) {
-					if (isUnsafeKey(key)) continue;
-					item[key] = updater[key];
-				}
-				return item;
-			}
-			return updater;
-		},
-
-		inc: (item, updater, key, deepObj) => {
-			if (typeof item === "number" && typeof updater === "number") {
-				return item + updater;
-			}
-			if (!Object.hasOwn(deepObj, key)) return updater;
-			throw new QueryValidationError(
-				`Cannot increment non-numeric value at key: ${key}`,
-				{
-					op: "update",
-					key,
-				},
-			);
-		},
-
-		dec: (item, updater, key, deepObj) => {
-			if (typeof item === "number" && typeof updater === "number") {
-				return item - updater;
-			}
-			if (!Object.hasOwn(deepObj, key)) return -updater;
-			throw new QueryValidationError(
-				`Cannot decrement non-numeric value at key: ${key}`,
-				{
-					op: "update",
-					key,
-				},
-			);
-		},
-
-		rename: (_, newKey, oldKey, deepObj) => {
-			if (isUnsafeKey(oldKey)) return;
-			if (typeof newKey !== "string")
-				throw new QueryValidationError("Cannot rename to a non-string key", {
-					op: "update",
-					key: oldKey,
-				});
-			if (isUnsafeKey(newKey)) return;
-			if (Object.hasOwn(deepObj, oldKey)) {
-				deepObj[newKey] = deepObj[oldKey];
-				delete deepObj[oldKey];
-			}
-		},
-
-		set: (_, value) => value,
-
-		unset: (_, __, key, deepObj) => {
-			if (Object.hasOwn(deepObj, key)) delete deepObj[key];
-		},
-	});
+	_for(fields, obj, UPDATE_HANDLERS);
 }
 
 /**

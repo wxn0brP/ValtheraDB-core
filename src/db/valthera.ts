@@ -16,6 +16,7 @@ import { VQuery, VQueryT } from "../types/query";
 import { TransactionHandle } from "../types/transaction";
 import { ValtheraCompatible } from "../types/valthera";
 import { getOpKind, isKnownOp, type DbOp } from "../utils/opKind";
+import { validateQuery } from "../utils/validateQuery";
 import { version } from "../version";
 import { Transaction } from "./transaction";
 
@@ -185,6 +186,8 @@ export class ValtheraClass implements ValtheraCompatible {
 							op: ctx.op,
 						},
 					);
+
+				if (self.options.validateQueries) validateQuery(ctx.query, ctx.op);
 
 				try {
 					if (txHandle) return await self.adapter[ctx.op](ctx.query, txHandle);

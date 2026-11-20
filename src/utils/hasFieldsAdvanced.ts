@@ -70,103 +70,110 @@ export function hasFieldsAdvanced(obj: Object, fields: Arg) {
 	return true;
 }
 
+const SEARCH_HANDLERS: Record<
+	string,
+	(data: any, value: any, key: string) => boolean
+> = {
+	ne: (data, value) => data !== value,
+	gt: (data, value) => typeof data === typeof value && data > value,
+	lt: (data, value) => typeof data === typeof value && data < value,
+	gte: (data, value) => typeof data === typeof value && data >= value,
+	lte: (data, value) => typeof data === typeof value && data <= value,
+	in: (data, value) => {
+		if (!Array.isArray(value))
+			throw new QueryValidationError("$in requires an array", {
+				op: "search",
+				key: "in",
+			});
+		return value.includes(data);
+	},
+	nin: (data, value) => {
+		if (!Array.isArray(value))
+			throw new QueryValidationError("$nin requires an array", {
+				op: "search",
+				key: "nin",
+			});
+		return !value.includes(data);
+	},
+	type: (data, value) => typeof data === value,
+
+	exists: (targetObj, shouldExist, key) => {
+		if (shouldExist && !Object.hasOwn(targetObj, key)) return false;
+		if (!shouldExist && Object.hasOwn(targetObj, key)) return false;
+		return true;
+	},
+	regex: (data, regexData) => {
+		if (typeof data !== "string") return false;
+		if (typeof regexData === "string")
+			warnDeprecated(
+				"VALTHERA_REGEX_STRING_PATTERN",
+				"$regex with a string pattern is deprecated; pass a RegExp instance instead.",
+			);
+		const regex =
+			typeof regexData === "string" ? new RegExp(regexData) : regexData;
+		return regex.test(data);
+	},
+	size: (data, size) => {
+		if (Array.isArray(data) || typeof data === "string") {
+			return data.length === size;
+		} else {
+			return false;
+		}
+	},
+
+	startswith: (data, value) =>
+		typeof data === "string" && data.startsWith(value),
+	endswith: (data, value) => typeof data === "string" && data.endsWith(value),
+	istartswith: (data, value) =>
+		typeof data === "string" &&
+		data.toLowerCase().startsWith(value.toLowerCase()),
+	iendswith: (data, value) =>
+		typeof data === "string" &&
+		data.toLowerCase().endsWith(value.toLowerCase()),
+	between: (data, value) => {
+		if (
+			!Array.isArray(value) ||
+			value.length !== 2 ||
+			typeof value[0] !== "number" ||
+			typeof value[1] !== "number"
+		)
+			throw new QueryValidationError("$between requires [min, max]", {
+				op: "search",
+				key: "between",
+			});
+		return typeof data === "number" && data >= value[0] && data <= value[1];
+	},
+	arrinc: (data, values) => {
+		if (!Array.isArray(values))
+			throw new QueryValidationError("$arrinc requires an array", {
+				op: "search",
+				key: "arrinc",
+			});
+		return Array.isArray(data) && values.some((val: any) => data.includes(val));
+	},
+	arrincall: (data, values) => {
+		if (!Array.isArray(values))
+			throw new QueryValidationError("$arrincall requires an array", {
+				op: "search",
+				key: "arrincall",
+			});
+		return (
+			Array.isArray(data) && values.every((val: any) => data.includes(val))
+		);
+	},
+
+	idgt: (data, value) => compareIds(data, value) > 0,
+	idlt: (data, value) => compareIds(data, value) < 0,
+	idgte: (data, value) => compareIds(data, value) >= 0,
+	idlte: (data, value) => compareIds(data, value) <= 0,
+};
+
+export const SEARCH_OPERATOR_NAMES = Object.keys(SEARCH_HANDLERS).map(
+	name => `$${name}`,
+);
+
 function mainCheck(obj: Object, fields: Object) {
-	return _for(fields, obj, {
-		ne: (data, value) => data !== value,
-		gt: (data, value) => typeof data === typeof value && data > value,
-		lt: (data, value) => typeof data === typeof value && data < value,
-		gte: (data, value) => typeof data === typeof value && data >= value,
-		lte: (data, value) => typeof data === typeof value && data <= value,
-		in: (data, value) => {
-			if (!Array.isArray(value))
-				throw new QueryValidationError("$in requires an array", {
-					op: "search",
-					key: "in",
-				});
-			return value.includes(data);
-		},
-		nin: (data, value) => {
-			if (!Array.isArray(value))
-				throw new QueryValidationError("$nin requires an array", {
-					op: "search",
-					key: "nin",
-				});
-			return !value.includes(data);
-		},
-		type: (data, value) => typeof data === value,
-
-		exists: (targetObj, shouldExist, key) => {
-			if (shouldExist && !Object.hasOwn(targetObj, key)) return false;
-			if (!shouldExist && Object.hasOwn(targetObj, key)) return false;
-			return true;
-		},
-		regex: (data, regexData) => {
-			if (typeof data !== "string") return false;
-			if (typeof regexData === "string")
-				warnDeprecated(
-					"VALTHERA_REGEX_STRING_PATTERN",
-					"$regex with a string pattern is deprecated; pass a RegExp instance instead.",
-				);
-			const regex =
-				typeof regexData === "string" ? new RegExp(regexData) : regexData;
-			return regex.test(data);
-		},
-		size: (data, size) => {
-			if (Array.isArray(data) || typeof data === "string") {
-				return data.length === size;
-			} else {
-				return false;
-			}
-		},
-
-		startswith: (data, value) =>
-			typeof data === "string" && data.startsWith(value),
-		endswith: (data, value) => typeof data === "string" && data.endsWith(value),
-		istartswith: (data, value) =>
-			typeof data === "string" &&
-			data.toLowerCase().startsWith(value.toLowerCase()),
-		iendswith: (data, value) =>
-			typeof data === "string" &&
-			data.toLowerCase().endsWith(value.toLowerCase()),
-		between: (data, value) => {
-			if (
-				!Array.isArray(value) ||
-				value.length !== 2 ||
-				typeof value[0] !== "number" ||
-				typeof value[1] !== "number"
-			)
-				throw new QueryValidationError("$between requires [min, max]", {
-					op: "search",
-					key: "between",
-				});
-			return typeof data === "number" && data >= value[0] && data <= value[1];
-		},
-		arrinc: (data, values) => {
-			if (!Array.isArray(values))
-				throw new QueryValidationError("$arrinc requires an array", {
-					op: "search",
-					key: "arrinc",
-				});
-			return (
-				Array.isArray(data) && values.some((val: any) => data.includes(val))
-			);
-		},
-		arrincall: (data, values) => {
-			if (!Array.isArray(values))
-				throw new QueryValidationError("$arrincall requires an array", {
-					op: "search",
-					key: "arrincall",
-				});
-			return (
-				Array.isArray(data) && values.every((val: any) => data.includes(val))
-			);
-		},
-
-		idgt: (data, value) => compareIds(data, value) > 0,
-		idlt: (data, value) => compareIds(data, value) < 0,
-		idgte: (data, value) => compareIds(data, value) >= 0,
-		idlte: (data, value) => compareIds(data, value) <= 0,
-	});
+	return _for(fields, obj, SEARCH_HANDLERS);
 }
 
 function checkNot(obj: Object, fields: Object) {

@@ -23,6 +23,7 @@ export interface DbOpts {
 	executor?: ExecutorInterface;
 	executorAware?: boolean;
 	adapterOpts?: AdapterOpts;
+	validateQueries?: boolean;
 }
 
 export interface AdapterOpts {

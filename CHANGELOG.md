@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.21](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.20...v0.12.21) (2026-11-21)
+
+
+### Features
+
+* validate query ([9ed6039](https://github.com/wxn0brP/ValtheraDB-core/commit/9ed60397ff78ebc15c005401ea065821bb7ea3dd))
+
+
+### Bug Fixes
+
+* count ([3b8f4e6](https://github.com/wxn0brP/ValtheraDB-core/commit/3b8f4e61a364269d027529ae4538b103bed32fd4))
+* validator ([0583c21](https://github.com/wxn0brP/ValtheraDB-core/commit/0583c21afecb766f71b20d8d198ea5cea8965191))
+
 ### [0.12.20](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.19...v0.12.20) (2026-11-18)
 
 

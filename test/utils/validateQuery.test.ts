@@ -28,7 +28,7 @@ describe("validateQuery", () => {
 		).toThrow('Missing required field "data"');
 	});
 
-	test("4. rejects non-object data unless id_gen is false", () => {
+	test("4. rejects non-object data even when id_gen is false", () => {
 		expect(() =>
 			validateQuery(
 				{
@@ -47,7 +47,17 @@ describe("validateQuery", () => {
 				} as any,
 				"add",
 			),
-		).not.toThrow();
+		).toThrow('"data" must be an object');
+		expect(() =>
+			validateQuery(
+				{
+					collection: "c",
+					data: [],
+					id_gen: false,
+				} as any,
+				"add",
+			),
+		).toThrow('"data" must be an object');
 	});
 
 	test("5. rejects nullish bulkAdd items", () => {
@@ -65,7 +75,7 @@ describe("validateQuery", () => {
 		).toThrow('"datas" must not contain nullish items');
 	});
 
-	test("6. rejects non-object bulkAdd items when generating ids", () => {
+	test("6. rejects non-object bulkAdd items regardless of id_gen", () => {
 		expect(() =>
 			validateQuery(
 				{
@@ -73,6 +83,30 @@ describe("validateQuery", () => {
 					datas: [
 						1,
 					],
+				} as any,
+				"bulkAdd",
+			),
+		).toThrow('"datas" must be an array of objects');
+		expect(() =>
+			validateQuery(
+				{
+					collection: "c",
+					datas: [
+						1,
+					],
+					id_gen: false,
+				} as any,
+				"bulkAdd",
+			),
+		).toThrow('"datas" must be an array of objects');
+		expect(() =>
+			validateQuery(
+				{
+					collection: "c",
+					datas: [
+						[],
+					],
+					id_gen: false,
 				} as any,
 				"bulkAdd",
 			),

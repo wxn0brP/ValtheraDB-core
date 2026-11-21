@@ -22,6 +22,10 @@ function isOperatorValue(value: unknown): value is Record<string, any> {
 	return isObject(value) && !Array.isArray(value);
 }
 
+function isDataObject(value: unknown): value is Record<string, any> {
+	return isObject(value) && !Array.isArray(value);
+}
+
 function fail(message: string, key: string, op: string): never {
 	throw new QueryValidationError(message, {
 		op,
@@ -184,8 +188,7 @@ function validateAdd(q: Record<string, any>, op?: string) {
 	if (op !== "add") return;
 	if (q.data === undefined || q.data === null)
 		fail('Missing required field "data"', "data", "query");
-	if (q.id_gen !== false && typeof q.data !== "object")
-		fail('"data" must be an object', "data", "query");
+	if (!isDataObject(q.data)) fail('"data" must be an object', "data", "query");
 }
 
 function validateBulkAdd(q: Record<string, any>, op?: string) {
@@ -194,10 +197,7 @@ function validateBulkAdd(q: Record<string, any>, op?: string) {
 		fail('"datas" must be an array', "datas", "query");
 	if (q.datas.some((item: unknown) => item === undefined || item === null))
 		fail('"datas" must not contain nullish items', "datas", "query");
-	if (
-		q.id_gen !== false &&
-		q.datas.some((item: unknown) => typeof item !== "object")
-	)
+	if (!q.datas.every(isDataObject))
 		fail('"datas" must be an array of objects', "datas", "query");
 }
 

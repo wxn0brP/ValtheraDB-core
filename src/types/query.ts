@@ -129,7 +129,7 @@ export namespace VQueryT {
 	};
 
 	export type Count<T = Data> = QueryBase<T> & {
-		search: NoInfer<Search<T, false>>;
+		search?: NoInfer<Search<T, false>>;
 	};
 
 	export interface Collection {

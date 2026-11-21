@@ -30,9 +30,6 @@ function fail(message: string, key: string, op: string): never {
 }
 
 const REQUIRED_FIELDS: Record<string, string[]> = {
-	count: [
-		"search",
-	],
 	createIndex: [
 		"index",
 	],

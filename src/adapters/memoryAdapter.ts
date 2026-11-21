@@ -52,12 +52,10 @@ export class MemoryAdapter extends CustomAdapterBase {
 	}
 
 	async count(config: VQueryT.Count) {
-		const collection = this._readMemory(config.collection);
-		let count = 0;
-		for (const item of collection)
-			if (hasFieldsAdvanced(item, config.search)) count++;
-
-		return count;
+		const search = config.search ?? {};
+		return this._readMemory(config.collection).filter(item =>
+			hasFieldsAdvanced(item, search),
+		).length;
 	}
 }
 

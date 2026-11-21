@@ -105,7 +105,14 @@ export abstract class AdapterBase implements AdapterBaseInterface {
 	}
 
 	async count(config: VQueryT.Count): Promise<number> {
-		return await this.find(config).then(res => res.length);
+		const { collection, search, control, transaction } = config;
+		const data = await this.find({
+			collection,
+			search: search ?? {},
+			control,
+			transaction,
+		});
+		return data.length;
 	}
 
 	async bulkAdd(config: VQueryT.BulkAdd): Promise<DataInternal[]> {

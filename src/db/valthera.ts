@@ -68,6 +68,7 @@ export class ValtheraClass implements ValtheraCompatible {
 		this.executor = options.executor || new SmartExecutor(undefined, false);
 
 		options.executorAware ??= true;
+		options.validateQueries ??= true;
 
 		if (typeof options.adapter !== "function") {
 			this.adapter = options.adapter as AdapterBase;

@@ -8,33 +8,18 @@ export function findObj(
 	config: VQueryT.Find | VQueryT.FindOne,
 	obj: Data,
 ): DataInternal | null {
-	if (matchObj(config, obj))
-		return updateFindObject(obj, config.findOpts || {}) as DataInternal;
-	return null;
+	if (!matchObj(config, obj)) return null;
+	return updateFindObject(obj, config.findOpts ?? {}) as DataInternal;
 }
 
-export function matchObj(config: VQuery, obj: Data): boolean {
-	const { search } = config;
-
-	if (search === undefined || search === null) return true;
-	if (
-		typeof search === "object" &&
-		!Array.isArray(search) &&
-		hasFieldsAdvanced(obj, search)
-	)
-		return true;
-
-	return false;
+export function matchObj(config: VQuery, obj: Data) {
+	return hasFieldsAdvanced(obj, config.search!);
 }
 
 /**
  * @returns reference to object or new object
  */
 export function updateObj(config: VQueryT.Update, obj: Data): DataInternal {
-	const { updater } = config;
-
-	if (typeof updater === "object" && !Array.isArray(updater))
-		updateObjectAdvanced(obj, updater);
-
+	updateObjectAdvanced(obj, config.updater);
 	return obj;
 }

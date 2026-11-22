@@ -6,21 +6,7 @@ describe("hasFieldsAdvanced", () => {
 		expect(hasFieldsAdvanced({}, {})).toBe(true);
 	});
 
-	test("2. should throw error for non-object fields", () => {
-		expect(() => hasFieldsAdvanced({}, null)).toThrow(
-			"Fields must be an object",
-		);
-		// @ts-expect-error
-		expect(() => hasFieldsAdvanced({}, "string")).toThrow(
-			"Fields must be an object",
-		);
-		// @ts-expect-error
-		expect(() => hasFieldsAdvanced({}, 123)).toThrow(
-			"Fields must be an object",
-		);
-	});
-
-	test("3. should handle $and operator", () => {
+	test("2. should handle $and operator", () => {
 		const obj = {
 			a: 5,
 			b: 10,

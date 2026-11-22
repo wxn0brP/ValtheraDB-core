@@ -4,10 +4,10 @@ import { findObj, matchObj, updateObj } from "#utils/process";
 import { describe, expect, test } from "bun:test";
 
 describe("matchObj", () => {
-	test("1. should return true when search is undefined", () => {
+	test("1. should return true for empty search", () => {
 		const config: VQuery = {
 			collection: "users",
-			search: undefined,
+			search: {},
 		};
 		const obj = {
 			_id: "1",
@@ -16,19 +16,7 @@ describe("matchObj", () => {
 		expect(matchObj(config, obj)).toBe(true);
 	});
 
-	test("2. should return true when search is null", () => {
-		const config: VQuery = {
-			collection: "users",
-			search: null,
-		};
-		const obj = {
-			_id: "1",
-			name: "John",
-		};
-		expect(matchObj(config, obj)).toBe(true);
-	});
-
-	test("3. should return true when search object matches", () => {
+	test("2. should return true when search object matches", () => {
 		const config: VQuery = {
 			collection: "users",
 			search: {
@@ -42,28 +30,12 @@ describe("matchObj", () => {
 		expect(matchObj(config, obj)).toBe(true);
 	});
 
-	test("4. should return false when search object does not match", () => {
+	test("3. should return false when search object does not match", () => {
 		const config: VQuery = {
 			collection: "users",
 			search: {
 				name: "Jane",
 			},
-		};
-		const obj = {
-			_id: "1",
-			name: "John",
-		};
-		expect(matchObj(config, obj)).toBe(false);
-	});
-
-	test("5. should return false when search is array", () => {
-		const config: VQuery = {
-			collection: "users",
-			search: [
-				1,
-				2,
-				3,
-			] as any,
 		};
 		const obj = {
 			_id: "1",
@@ -144,22 +116,5 @@ describe("updateObj", () => {
 		};
 		const result = updateObj(config as any, obj);
 		expect(result.name).toBe("Jane");
-	});
-
-	test("2. should return original object when updater is array", () => {
-		const config: VQuery = {
-			collection: "users",
-			updater: [
-				1,
-				2,
-				3,
-			] as any,
-		};
-		const obj: Data = {
-			_id: "1",
-			name: "John",
-		};
-		const result = updateObj(config as any, obj);
-		expect(result).toBe(obj);
 	});
 });

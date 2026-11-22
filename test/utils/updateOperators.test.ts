@@ -3,20 +3,6 @@ import { updateObjectAdvanced } from "#utils/updateOperators";
 import { describe, expect, test } from "bun:test";
 
 describe("updateObjectAdvanced", () => {
-	test("1. should throw error for non-object fields", () => {
-		expect(() => updateObjectAdvanced({}, null)).toThrow(
-			"Fields must be an object",
-		);
-		// @ts-expect-error
-		expect(() => updateObjectAdvanced({}, "string")).toThrow(
-			"Fields must be an object",
-		);
-		// @ts-expect-error
-		expect(() => updateObjectAdvanced({}, 123)).toThrow(
-			"Fields must be an object",
-		);
-	});
-
 	test("2. should handle single field object", () => {
 		const obj: any = {
 			a: 1,

@@ -34,6 +34,36 @@ function fail(message: string, key: string, op: string): never {
 }
 
 const REQUIRED_FIELDS: Record<string, string[]> = {
+	find: [
+		"search",
+	],
+	findOne: [
+		"search",
+	],
+	count: [
+		"search",
+	],
+	update: [
+		"search",
+		"updater",
+	],
+	updateOne: [
+		"search",
+		"updater",
+	],
+	updateOneOrAdd: [
+		"search",
+		"updater",
+	],
+	remove: [
+		"search",
+	],
+	removeOne: [
+		"search",
+	],
+	toggleOne: [
+		"search",
+	],
 	createIndex: [
 		"index",
 	],

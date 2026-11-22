@@ -73,8 +73,3 @@ export abstract class CustomAdapterBase extends AdapterBase {
 		return res.length ? res[0] : null;
 	}
 }
-
-export {
-	/** @deprecated Use CustomAdapterBase. */
-	CustomAdapterBase as CustomActionsBase,
-};

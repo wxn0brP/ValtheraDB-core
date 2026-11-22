@@ -367,21 +367,21 @@ describe("hasFieldsAdvanced", () => {
 		expect(
 			hasFieldsAdvanced(obj, {
 				$regex: {
-					text: "hello",
+					text: /hello/,
 				},
 			}),
 		).toBe(true);
 		expect(
 			hasFieldsAdvanced(obj, {
 				$regex: {
-					text: "^hello",
+					text: /^hello/,
 				},
 			}),
 		).toBe(true);
 		expect(
 			hasFieldsAdvanced(obj, {
 				$regex: {
-					text: "goodbye",
+					text: /goodbye/,
 				},
 			}),
 		).toBe(false);
@@ -949,7 +949,7 @@ describe("hasFieldsAdvanced", () => {
 				$regex: {
 					user: {
 						profile: {
-							email: "example",
+							email: /example/,
 						},
 					},
 				},
@@ -960,7 +960,7 @@ describe("hasFieldsAdvanced", () => {
 				$regex: {
 					user: {
 						profile: {
-							email: "^john",
+							email: /^john/,
 						},
 					},
 				},
@@ -971,7 +971,7 @@ describe("hasFieldsAdvanced", () => {
 				$regex: {
 					user: {
 						profile: {
-							description: "developer",
+							description: /developer/,
 						},
 					},
 				},
@@ -982,7 +982,7 @@ describe("hasFieldsAdvanced", () => {
 				$regex: {
 					user: {
 						profile: {
-							email: "test",
+							email: /test/,
 						},
 					},
 				},

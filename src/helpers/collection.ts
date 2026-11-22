@@ -1,5 +1,4 @@
 import { Arg, Search, Updater } from "../types/arg";
-import { VContext } from "../types/context";
 import { Data } from "../types/data";
 import { IndexOpts } from "../types/indexes";
 import { DbFindOpts, FindOpts } from "../types/options";
@@ -61,86 +60,75 @@ export class Collection<D = Data> {
 		search: Search<D> = {},
 		options: DbFindOpts<D> = {},
 		findOpts: FindOpts<D> = {},
-		context: VContext = {},
 	) {
 		return this.db.find<D>({
 			collection: this.collection,
 			search,
 			dbFindOpts: options,
 			findOpts,
-			context,
 		});
 	}
 
 	/**
 	 * Find one data entry in a database.
 	 */
-	findOne(
-		search: Search<D> = {},
-		findOpts: FindOpts<D> = {},
-		context: VContext = {},
-	) {
+	findOne(search: Search<D> = {}, findOpts: FindOpts<D> = {}) {
 		return this.db.findOne<D>({
 			collection: this.collection,
 			search,
 			findOpts,
-			context,
 		});
 	}
 
 	/**
 	 * Count data entries in a database.
 	 */
-	count(search: Search<D, false> = {}) {
+	count(search: Search<D> = {}) {
 		return this.db.count({
 			collection: this.collection,
-			search: search as Search<Data, false>,
+			search: search as Search<Data>,
 		});
 	}
 
 	/**
 	 * Update data in a database.
 	 */
-	update(search: Search<D>, updater: Updater<D>, context: VContext = {}) {
+	update(search: Search<D>, updater: Updater<D>) {
 		return this.db.update<D>({
 			collection: this.collection,
 			search,
 			updater,
-			context,
 		});
 	}
 
 	/**
 	 * Update one data entry in a database.
 	 */
-	updateOne(search: Search<D>, updater: Updater<D>, context: VContext = {}) {
+	updateOne(search: Search<D>, updater: Updater<D>) {
 		return this.db.updateOne<D>({
 			collection: this.collection,
 			search,
 			updater,
-			context,
 		});
 	}
 
 	/**
 	 * Remove data from a database.
 	 */
-	remove(search: Search<D>, context: VContext = {}) {
+	remove(search: Search<D>) {
 		return this.db.remove<D>({
 			collection: this.collection,
 			search,
-			context,
 		});
 	}
 
 	/**
 	 * Remove one data entry from a database.
 	 */
-	removeOne(search: Search<D>, context: VContext = {}) {
+	removeOne(search: Search<D>) {
 		return this.db.removeOne<D>({
 			collection: this.collection,
 			search,
-			context,
 		});
 	}
 
@@ -150,14 +138,13 @@ export class Collection<D = Data> {
 	updateOneOrAdd(
 		search: Search<D>,
 		updater: Updater<D>,
-		{ add_arg = {}, context = {}, id_gen = true }: UpdateOneOrAdd<D> = {},
+		{ add_arg = {}, id_gen = true }: UpdateOneOrAdd<D> = {},
 	) {
 		return this.db.updateOneOrAdd<D>({
 			collection: this.collection,
 			search,
 			updater,
 			add_arg,
-			context,
 			id_gen,
 		});
 	}
@@ -165,12 +152,11 @@ export class Collection<D = Data> {
 	/**
 	 * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
 	 */
-	toggleOne(search: Search<D>, data: Arg<D> = {}, context: VContext = {}) {
+	toggleOne(search: Search<D>, data: Arg<D> = {}) {
 		return this.db.toggleOne<D>({
 			collection: this.collection,
 			search,
 			data,
-			context,
 		});
 	}
 

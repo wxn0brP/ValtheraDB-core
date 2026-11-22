@@ -1,7 +1,5 @@
 export interface Task {
 	func: Function;
-	/** @deprecated use query instead */
-	param?: any[];
 	query?: any;
 	resolve: Function;
 	reject: Function;
@@ -48,10 +46,7 @@ export class Executor implements ExecutorInterface {
 		this.isExecuting = true;
 		while (this.queue.length > 0) {
 			const q = this.queue.shift()!;
-			await q
-				.func(q.query || q.param?.[0])
-				.then(q.resolve)
-				.catch(q.reject);
+			await q.func(q.query).then(q.resolve).catch(q.reject);
 		}
 		this.isExecuting = false;
 	}

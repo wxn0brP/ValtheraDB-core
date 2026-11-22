@@ -8,10 +8,6 @@ export { Relation } from "./helpers/relation";
 export { convertIdToUnix, sortByIds } from "./utils/id";
 
 export type { AdapterCapabilities } from "./types/adapter";
-export type {
-	/** @deprecated Import types directly from their modules. */
-	ValtheraTypes,
-} from "./types/export";
 export type { Id } from "./types/Id";
 export type { RelationTypes } from "./types/relation";
 export type { ValtheraCompatible } from "./types/valthera";

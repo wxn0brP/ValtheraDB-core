@@ -46,6 +46,3 @@ export interface AdapterBaseInterface {
 	createIndex(config: VQueryT.CreateIndex): Promise<void>;
 	removeIndex(config: VQueryT.RemoveIndex): Promise<void>;
 }
-
-/** @deprecated Use AdapterBaseInterface. */
-export type ActionsBaseInterface = AdapterBaseInterface;

@@ -85,20 +85,12 @@ export type ArrayOperators<T = any> = {
 	$size?: NestedValue<T, number>;
 };
 
-/**
- * Raw regex pattern string.
- * @deprecated Pass a `RegExp` instance instead.
- */
-export interface RawRegexPattern extends String {}
-
 /** String Operators with nested support */
 export type StringOperators<T = any> = {
 	/**
 	 * "John" matches /oh/
-	 *
-	 * Prefer a `RegExp` instance; raw strings ({@link RawRegexPattern}) are deprecated.
 	 */
-	$regex?: NestedValue<T, RegExp | RawRegexPattern, string>;
+	$regex?: NestedValue<T, RegExp, string>;
 	/** "John" starts with "Jo" */
 	$startsWith?: NestedValue<T, string, string>;
 	/** "John" ends with "hn" */

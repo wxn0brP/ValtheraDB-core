@@ -3,7 +3,6 @@ import { Data } from "./data";
 import { IndexDefinition } from "./indexes";
 import { DbFindOpts, FindOpts } from "./options";
 import { TransactionHandle } from "./transaction";
-import { VContext } from "./context";
 
 /**
  * To extend via adapters
@@ -16,19 +15,17 @@ import { VContext } from "./context";
  */
 export interface VQuery_Control {}
 
-export interface VQuery<T = Data, AllowFn extends boolean = true> {
+export interface VQuery<T = Data> {
 	/** logic path, dir or file, depends on context */
 	collection?: string;
-	search?: Search<T, AllowFn>;
-	/** @deprecated */
-	context?: VContext;
+	search?: Search<T>;
 	dbFindOpts?: DbFindOpts<T>;
 	findOpts?: FindOpts<T>;
 	data?: Arg<T>;
 	datas?: Arg<T>[];
 	id_gen?: boolean;
 	add_arg?: Arg<T>;
-	updater?: Updater<T, AllowFn>;
+	updater?: Updater<T>;
 	control?: VQuery_Control;
 	transaction?: TransactionHandle;
 	index?: IndexDefinition;
@@ -51,63 +48,36 @@ export namespace VQueryT {
 		id_gen?: boolean;
 	};
 
-	export type Find<T = Data, AllowFn extends boolean = true> = QueryBase<T> & {
-		search?: NoInfer<Search<T, AllowFn>>;
+	export type Find<T = Data> = QueryBase<T> & {
+		search?: NoInfer<Search<T>>;
 		findOpts?: FindOpts<T>;
 		dbFindOpts?: DbFindOpts<T>;
-		/** @deprecated */
-		context?: VContext;
 	};
 
-	export type FindOne<
-		T = Data,
-		AllowFn extends boolean = true,
-	> = QueryBase<T> & {
-		search: NoInfer<Search<T, AllowFn>>;
+	export type FindOne<T = Data> = QueryBase<T> & {
+		search: NoInfer<Search<T>>;
 		findOpts?: FindOpts<T>;
-		/** @deprecated */
-		context?: VContext;
 	};
 
-	export type Update<
-		T = Data,
-		AllowFn extends boolean = true,
-	> = QueryBase<T> & {
-		search: NoInfer<Search<T, AllowFn>>;
-		updater: NoInfer<Updater<T, AllowFn>>;
-		/** @deprecated */
-		context?: VContext;
+	export type Update<T = Data> = QueryBase<T> & {
+		search: NoInfer<Search<T>>;
+		updater: NoInfer<Updater<T>>;
 	};
 
-	export type Remove<
-		T = Data,
-		AllowFn extends boolean = true,
-	> = QueryBase<T> & {
-		search: NoInfer<Search<T, AllowFn>>;
-		/** @deprecated */
-		context?: VContext;
+	export type Remove<T = Data> = QueryBase<T> & {
+		search: NoInfer<Search<T>>;
 	};
 
-	export type UpdateOneOrAdd<
-		T = Data,
-		AllowFn extends boolean = true,
-	> = QueryBase<T> & {
-		search: NoInfer<Search<T, AllowFn>>;
-		updater: NoInfer<Updater<T, AllowFn>>;
+	export type UpdateOneOrAdd<T = Data> = QueryBase<T> & {
+		search: NoInfer<Search<T>>;
+		updater: NoInfer<Updater<T>>;
 		add_arg?: NoInfer<Arg<T>>;
 		id_gen?: boolean;
-		/** @deprecated */
-		context?: VContext;
 	};
 
-	export type ToggleOne<
-		T = Data,
-		AllowFn extends boolean = true,
-	> = QueryBase<T> & {
-		search: NoInfer<Search<T, AllowFn>>;
+	export type ToggleOne<T = Data> = QueryBase<T> & {
+		search: NoInfer<Search<T>>;
 		data: NoInfer<Arg<T>>;
-		/** @deprecated */
-		context?: VContext;
 	};
 
 	export interface UpdateOneOrAddResult<T> {
@@ -129,7 +99,7 @@ export namespace VQueryT {
 	};
 
 	export type Count<T = Data> = QueryBase<T> & {
-		search?: NoInfer<Search<T, false>>;
+		search?: NoInfer<Search<T>>;
 	};
 
 	export interface Collection {

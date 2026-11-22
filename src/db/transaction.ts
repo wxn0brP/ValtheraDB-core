@@ -43,7 +43,7 @@ export class Transaction implements ValtheraCompatible {
 		return this._parent.execute<T[]>("bulkAdd", q, this.handle);
 	}
 
-	find<T = Data>(q: VQueryT.Find<T, true>) {
+	find<T = Data>(q: VQueryT.Find<T>) {
 		applyFindDefaults(q);
 		return this._parent.execute<T[]>("find", q, this.handle);
 	}

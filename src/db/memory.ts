@@ -4,12 +4,6 @@ import { Data } from "../types/data";
 import { TypedValthera } from "../types/typed";
 import { ValtheraClass } from "./valthera";
 
-export {
-	/** @deprecated Use MemoryAdapter. */
-	MemoryAction,
-	MemoryAdapter,
-} from "../adapters/memoryAdapter";
-
 export class ValtheraMemory extends ValtheraClass {
 	constructor(...args: any[]) {
 		super({

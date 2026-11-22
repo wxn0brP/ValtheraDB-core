@@ -1,6 +1,5 @@
 import { QueryValidationError } from "../errors";
 import { Arg } from "../types/arg";
-import { warnDeprecated } from "./deprecation";
 import { hasFields } from "./hasFields";
 import { compareIds } from "./id";
 import { isUnsafeKey } from "./security";
@@ -103,15 +102,12 @@ const SEARCH_HANDLERS: Record<
 		return true;
 	},
 	regex: (data, regexData) => {
-		if (typeof data !== "string") return false;
-		if (typeof regexData === "string")
-			warnDeprecated(
-				"VALTHERA_REGEX_STRING_PATTERN",
-				"$regex with a string pattern is deprecated; pass a RegExp instance instead.",
-			);
-		const regex =
-			typeof regexData === "string" ? new RegExp(regexData) : regexData;
-		return regex.test(data);
+		if (!(regexData instanceof RegExp))
+			throw new QueryValidationError("$regex requires a RegExp", {
+				op: "search",
+				key: "regex",
+			});
+		return typeof data === "string" && regexData.test(data);
 	},
 	size: (data, size) => {
 		if (Array.isArray(data) || typeof data === "string") {

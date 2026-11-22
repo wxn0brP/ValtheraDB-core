@@ -58,8 +58,3 @@ export class MemoryAdapter extends CustomAdapterBase {
 		).length;
 	}
 }
-
-export {
-	/** @deprecated Use MemoryAdapter. */
-	MemoryAdapter as MemoryAction,
-};

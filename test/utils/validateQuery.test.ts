@@ -145,9 +145,11 @@ describe("validateQuery", () => {
 });
 
 describe("validateSearch", () => {
-	test("8. requires an object or function", () => {
+	test("8. requires an object", () => {
 		expect(() => validateSearch(null)).not.toThrow();
-		expect(() => validateSearch(() => true)).not.toThrow();
+		expect(() => validateSearch(() => true)).toThrow(
+			"Search must be an object",
+		);
 		expect(() => validateSearch([] as any)).toThrow("Search must be an object");
 	});
 
@@ -229,6 +231,13 @@ describe("validateSearch", () => {
 				},
 			}),
 		).not.toThrow();
+		expect(() =>
+			validateSearch({
+				$regex: {
+					a: "x",
+				},
+			}),
+		).toThrow("$regex requires a RegExp");
 	});
 
 	test("12. accepts nested conditions", () => {
@@ -254,13 +263,13 @@ describe("validateSearch", () => {
 });
 
 describe("validateUpdater", () => {
-	test("13. requires an object or function", () => {
+	test("13. requires an object", () => {
 		expect(() => validateUpdater(null)).not.toThrow();
 		expect(() =>
 			validateUpdater(() => ({
 				a: 1,
 			})),
-		).not.toThrow();
+		).toThrow("Updater must be an object");
 		expect(() => validateUpdater([] as any)).toThrow(
 			"Updater must be an object",
 		);

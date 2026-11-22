@@ -44,7 +44,6 @@ const REQUIRED_FIELDS: Record<string, string[]> = {
 
 export function validateSearch(search: unknown) {
 	if (search === undefined || search === null) return;
-	if (typeof search === "function") return;
 	if (!isOperatorValue(search))
 		fail("Search must be an object", "search", "search");
 	checkSearch(search);
@@ -96,7 +95,6 @@ function checkSearch(search: Record<string, any>) {
 
 export function validateUpdater(updater: unknown) {
 	if (updater === undefined || updater === null) return;
-	if (typeof updater === "function") return;
 	if (!isOperatorValue(updater))
 		fail("Updater must be an object", "updater", "update");
 
@@ -145,9 +143,7 @@ function searchValueError(op: string, value: unknown) {
 				? null
 				: "requires [min, max]";
 		case "$regex":
-			return value instanceof RegExp || typeof value === "string"
-				? null
-				: "requires a RegExp or string";
+			return value instanceof RegExp ? null : "requires a RegExp";
 		default:
 			return null;
 	}

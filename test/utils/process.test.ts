@@ -28,31 +28,7 @@ describe("matchObj", () => {
 		expect(matchObj(config, obj)).toBe(true);
 	});
 
-	test("3. should return true when search function returns true", () => {
-		const config: VQuery = {
-			collection: "users",
-			search: (obj: any) => obj.name === "John",
-		};
-		const obj = {
-			_id: "1",
-			name: "John",
-		};
-		expect(matchObj(config, obj)).toBe(true);
-	});
-
-	test("4. should return false when search function returns false", () => {
-		const config: VQuery = {
-			collection: "users",
-			search: (obj: any) => obj.name === "Jane",
-		};
-		const obj = {
-			_id: "1",
-			name: "John",
-		};
-		expect(matchObj(config, obj)).toBe(false);
-	});
-
-	test("5. should return true when search object matches", () => {
+	test("3. should return true when search object matches", () => {
 		const config: VQuery = {
 			collection: "users",
 			search: {
@@ -66,7 +42,7 @@ describe("matchObj", () => {
 		expect(matchObj(config, obj)).toBe(true);
 	});
 
-	test("6. should return false when search object does not match", () => {
+	test("4. should return false when search object does not match", () => {
 		const config: VQuery = {
 			collection: "users",
 			search: {
@@ -80,7 +56,7 @@ describe("matchObj", () => {
 		expect(matchObj(config, obj)).toBe(false);
 	});
 
-	test("7. should return false when search is array", () => {
+	test("5. should return false when search is array", () => {
 		const config: VQuery = {
 			collection: "users",
 			search: [
@@ -170,39 +146,7 @@ describe("updateObj", () => {
 		expect(result.name).toBe("Jane");
 	});
 
-	test("2. should update object with updater function returning value", () => {
-		const config: VQuery = {
-			collection: "users",
-			updater: (obj: any) => ({
-				...obj,
-				name: "Jane",
-			}),
-		};
-		const obj: Data = {
-			_id: "1",
-			name: "John",
-		};
-		const result = updateObj(config as any, obj);
-		expect(result.name).toBe("Jane");
-	});
-
-	test("3. should return original object when updater function returns void", () => {
-		const config: VQuery = {
-			collection: "users",
-			updater: (obj: any) => {
-				obj.name = "Jane";
-			},
-		};
-		const obj: Data = {
-			_id: "1",
-			name: "John",
-		};
-		const result = updateObj(config as any, obj);
-		expect(result.name).toBe("Jane");
-		expect(result).toBe(obj);
-	});
-
-	test("4. should return original object when updater is array", () => {
+	test("2. should return original object when updater is array", () => {
 		const config: VQuery = {
 			collection: "users",
 			updater: [
@@ -217,24 +161,5 @@ describe("updateObj", () => {
 		};
 		const result = updateObj(config as any, obj);
 		expect(result).toBe(obj);
-	});
-
-	test("5. should pass context to updater function", () => {
-		const config: VQuery = {
-			collection: "users",
-			context: {
-				userId: "123",
-			},
-			updater: (obj: any, context: any) => ({
-				...obj,
-				updatedBy: context.userId,
-			}),
-		};
-		const obj: Data = {
-			_id: "1",
-			name: "John",
-		};
-		const result = updateObj(config as any, obj);
-		expect(result.updatedBy).toBe("123");
 	});
 });

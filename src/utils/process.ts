@@ -1,6 +1,5 @@
 import { Data, DataInternal } from "../types/data";
 import { VQuery, VQueryT } from "../types/query";
-import { warnDeprecated } from "./deprecation";
 import { hasFieldsAdvanced } from "./hasFieldsAdvanced";
 import { updateFindObject } from "./projection";
 import { updateObjectAdvanced } from "./updateOperators";
@@ -15,16 +14,9 @@ export function findObj(
 }
 
 export function matchObj(config: VQuery, obj: Data): boolean {
-	const { search, context } = config;
+	const { search } = config;
 
 	if (search === undefined || search === null) return true;
-	if (typeof search === "function") {
-		warnDeprecated(
-			"VALTHERA_FUNCTION_SEARCH",
-			"Function-based search is deprecated; use operator objects or a plugin.",
-		);
-		if (search(obj, context!)) return true;
-	}
 	if (
 		typeof search === "object" &&
 		!Array.isArray(search) &&
@@ -39,23 +31,10 @@ export function matchObj(config: VQuery, obj: Data): boolean {
  * @returns reference to object or new object
  */
 export function updateObj(config: VQueryT.Update, obj: Data): DataInternal {
-	const { updater, context } = config;
+	const { updater } = config;
 
-	if (typeof updater === "object" && !Array.isArray(updater)) {
+	if (typeof updater === "object" && !Array.isArray(updater))
 		updateObjectAdvanced(obj, updater);
-		return obj;
-	}
-
-	if (typeof updater === "function") {
-		warnDeprecated(
-			"VALTHERA_FUNCTION_UPDATER",
-			"Function-based updater is deprecated; use operator objects.",
-		);
-		const updateObjValue = updater(obj, context!);
-
-		if (updateObjValue) return updateObjValue;
-		return obj;
-	}
 
 	return obj;
 }

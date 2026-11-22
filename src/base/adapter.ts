@@ -130,8 +130,3 @@ export abstract class AdapterBase implements AdapterBaseInterface {
 		return results;
 	}
 }
-
-export {
-	/** @deprecated Use AdapterBase. */
-	AdapterBase as ActionsBase,
-};

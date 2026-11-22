@@ -52,6 +52,7 @@ describe("createMemoryValthera - collection operations", () => {
 					_id: "1",
 					name: "John",
 					email: "john@example.com",
+					age: 25,
 				},
 			],
 		};

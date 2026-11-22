@@ -1,11 +1,10 @@
 /**
- * Enable strict mode.
- * Currently opt-in, but will be enabled by default later.
+ * Strict mode is enabled by default.
  *
  * ```
  * declare module "@wxn0brp/db-core/types/config" {
  *   interface TypeConfig {
- *     strict: true;
+ *     strict: false;
  *   }
  * }
  * ```
@@ -16,8 +15,4 @@ export type IsStrict = TypeConfig extends {
 	strict: false;
 }
 	? false
-	: TypeConfig extends {
-				strict: true;
-			}
-		? true
-		: false;
+	: true;

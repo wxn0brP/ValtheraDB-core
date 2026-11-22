@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.13.0-alpha.0](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.21...v0.13.0-alpha.0) (2026-11-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* enable query validation by default and drop runtime guards
+* enable strict types by default
+* remove deprecated code
+
+### Features
+
+* enable strict types by default ([b15a36d](https://github.com/wxn0brP/ValtheraDB-core/commit/b15a36dfa3f2d5087a2da95980bd3bc62c907c83))
+
+
+* enable query validation by default and drop runtime guards ([c6eacd2](https://github.com/wxn0brP/ValtheraDB-core/commit/c6eacd29a225d5a9e2e5aef274566d2cfaa0889f))
+* remove deprecated code ([28a7010](https://github.com/wxn0brP/ValtheraDB-core/commit/28a7010fcc7a918f0c60f2d558cc62188bdcaa33))
+
 ### [0.12.21](https://github.com/wxn0brP/ValtheraDB-core/compare/v0.12.20...v0.12.21) (2026-11-21)
 
 

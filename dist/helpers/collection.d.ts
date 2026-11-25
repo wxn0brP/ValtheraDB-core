@@ -1,0 +1,68 @@
+import { Arg, Search, Updater } from "../types/arg.js";
+import { Data } from "../types/data.js";
+import { IndexOpts } from "../types/indexes.js";
+import { DbFindOpts, FindOpts } from "../types/options.js";
+import { VQueryT } from "../types/query.js";
+import { UpdateOneOrAdd } from "../types/updateOneOrAdd.js";
+import { ValtheraCompatible } from "../types/valthera.js";
+export declare function resolveCollection(target: string | VQueryT.Collection): string;
+export declare class Collection<D = Data> {
+    db: ValtheraCompatible;
+    collection: string;
+    constructor(db: ValtheraCompatible, collection: string);
+    /**
+     * Add data to a database.
+     */
+    add(data: Arg<D>, id_gen: false): Promise<D>;
+    add(data: Arg<D>, id_gen?: true): Promise<D & {
+        _id: string;
+    }>;
+    bulkAdd(data: Arg<D>[], id_gen: false): Promise<D[]>;
+    bulkAdd(data: Arg<D>[], id_gen?: true): Promise<(D & {
+        _id: string;
+    })[]>;
+    /**
+     * Find data in a database.
+     */
+    find(search?: Search<D>, options?: DbFindOpts<D>, findOpts?: FindOpts<D>): Promise<D[]>;
+    /**
+     * Find one data entry in a database.
+     */
+    findOne(search?: Search<D>, findOpts?: FindOpts<D>): Promise<D | null>;
+    /**
+     * Count data entries in a database.
+     */
+    count(search?: Search<D>): Promise<number>;
+    /**
+     * Update data in a database.
+     */
+    update(search: Search<D>, updater: Updater<D>): Promise<D[]>;
+    /**
+     * Update one data entry in a database.
+     */
+    updateOne(search: Search<D>, updater: Updater<D>): Promise<D | null>;
+    /**
+     * Remove data from a database.
+     */
+    remove(search: Search<D>): Promise<D[]>;
+    /**
+     * Remove one data entry from a database.
+     */
+    removeOne(search: Search<D>): Promise<D | null>;
+    /**
+     * Asynchronously updates one entry in a database or adds a new one if it doesn't exist.
+     */
+    updateOneOrAdd(search: Search<D>, updater: Updater<D>, { add_arg, id_gen }?: UpdateOneOrAdd<D>): import("./resultPromise.js").ResultPromise<VQueryT.UpdateOneOrAddResult<D>>;
+    /**
+     * Asynchronously removes one entry in a database or adds a new one if it doesn't exist. Usage e.g. for toggling a flag.
+     */
+    toggleOne(search: Search<D>, data?: Arg<D>): import("./resultPromise.js").ResultPromise<VQueryT.ToggleOneResult<D>>;
+    /**
+     * Create an index on this collection.
+     */
+    createIndex(fields: string[], opts?: IndexOpts): Promise<void>;
+    /**
+     * Remove an index from this collection. Adapter-dependent.
+     */
+    removeIndex(fields: string[]): Promise<void>;
+}
